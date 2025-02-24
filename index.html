@@ -25,5 +25,15 @@
         <li><a href="light_poles.html">7. Light Poles</a></li>
         <li><a href="fuel_skid.html">8. Fuel Skid</a></li>
     </ul>
-</body>
+</body><script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }, function(error) {
+        console.log('Service Worker registration failed:', error);
+      });
+    });
+  }
+</script>
 </html>
