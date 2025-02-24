@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Compressor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .task { margin-bottom: 15px; }
+        .nav-buttons { margin-top: 20px; }
+        button { padding: 10px 20px; margin: 0 5px; }
+    </style>
+</head>
+<body>
+    <h1>Air Compressor</h1>
+    <p>Follow these steps for the Air Compressor setup:</p>
+    
+    <div class="task">
+        <p>1. Air Compressor.</p>
+        <label><input type="checkbox" class="completed" data-task="air-1"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="air-1-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>2. Install 3/4" conduit from air compressor disconnect to power panel rack to disconnect on air compressor skid.</p>
+        <label><input type="checkbox" class="completed" data-task="air-2"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="air-2-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>3. Pull wire (#8/#8/#8/#10 thn) from disconnect to disconnect.</p>
+        <label><input type="checkbox" class="completed" data-task="air-3"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="air-3-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>4. Install 3/4" flex from the end of conduit to the bottom of disconnect on skid.</p>
+        <label><input type="checkbox" class="completed" data-task="air-4"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="air-4-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>5. Terminate wires on top side of disconnect on air compressor skid.</p>
+        <label><input type="checkbox" class="completed" data-task="air-5"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="air-5-na"> N/A</label>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="window.location.href='bottoms_pump.html'">Back</button>
+        <button onclick="window.location.href='salt_water_pump.html'">Next Task</button>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
+                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
+                const other = checkbox.parentElement.parentElement.querySelector(pair);
+                if (checkbox.checked && other.checked) other.checked = false;
+                localStorage.setItem(other.dataset.task, other.checked);
+            });
+        });
+    </script>
+</body>
+</html>
