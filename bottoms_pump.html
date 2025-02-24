@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bottoms Pump</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .task { margin-bottom: 15px; }
+        .nav-buttons { margin-top: 20px; }
+        button { padding: 10px 20px; margin: 0 5px; }
+    </style>
+</head>
+<body>
+    <h1>Bottoms Pump</h1>
+    <p>Follow these steps for the Bottoms Pump setup:</p>
+    
+    <div class="task">
+        <p>1. Bottoms Pump (Circulation Pump) - Location varies.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-1"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-1-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>2. Get needed 5' of 2" rigid conduit. Install 3/4" conduit from panel rack to location of bottoms pump.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-2"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-2-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>3. Install 3/4" flex from conduit to pump location.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-3"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-3-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>4. Cut 2 pieces of unistrut at 5". Use 2 exhaust clamps to mount unistrut to leg of bottoms pump stand.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-4"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-4-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>5. Cut 5' of 2" rigid conduit. Mount conduit on unistrut with 2" unistrut straps, exhaust clamps, pole needs holes.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-5"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-5-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>6. Drill 4 holes in mounting brackets of bottoms pump panel. (Use exhaust clamps for hole reference) 2 holes on top and 2 holes on bottom.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-6"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-6-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>7. Mount pump panel to pole using exhaust clamps.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-7"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-7-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>8. Install 3/4" flex from the end of conduit run to the bottom of pump panel (brown/or/yel/grn).</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-8"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-8-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>9. Pull wire from power panel rack from flare disconnect to pump panel and terminate at the top of disconnect inside pump panel.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-9"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-9-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>10. Install 3/4" flex from panel to pump motor on stand.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-10"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-10-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>11. Pull #10 thn (brn/or/yel/green) from panel to motor and terminate. Panel wires terminate on the bottom of the overloads on motor starter. Motor wires terminate in accordance with nameplate.</p>
+        <label><input type="checkbox" class="completed" data-task="bottoms-11"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="bottoms-11-na"> N/A</label>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="window.location.href='flare.html'">Back</button>
+        <button onclick="window.location.href='air_compressor.html'">Next Task</button>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
+                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
+                const other = checkbox.parentElement.parentElement.querySelector(pair);
+                if (checkbox.checked && other.checked) other.checked = false;
+                localStorage.setItem(other.dataset.task, other.checked);
+            });
+        });
+    </script>
+</body>
+</html>
