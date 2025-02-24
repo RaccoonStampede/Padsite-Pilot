@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flare</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .task { margin-bottom: 15px; }
+        .nav-buttons { margin-top: 20px; }
+        button { padding: 10px 20px; margin: 0 5px; }
+    </style>
+</head>
+<body>
+    <h1>Flare</h1>
+    <p>Follow these steps for the Flare setup:</p>
+    
+    <div class="task">
+        <p>1. New location - Flare located at far end of most pad sights.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-1"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-1-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>2. Install 3/4" conduit from flare disconnect to location of flare VFD panel, where VFD is located.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-2"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-2-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>3. Install a QUAT box on conduit and continue conduit run to the end of pipe rack that runs right at flare stack, add flex from QUAT to panel.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-3"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-3-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>4. Pull wire through conduit to QUAT box with enough wire to go.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-4"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-4-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>5. Install 3/4" flex from QUAT box to SPCC panel or other type of flare VFD panel.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-5"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-5-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>6. Install 3/4" flex from end of conduit run to flare blower motor.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-6"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-6-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>7. Pull wire (#10 thn, brown/orange/yellow/green) from flare disconnect on panel rack to QUAT box, flare panel, VFD panel.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-7"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-7-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>8. Pull wire from flare panel to flare blower motor and terminate in panel.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-8"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-8-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>9. Terminating wires - Flare panel wires (white) coming from disconnect will terminate on P side of breaker inside VFD.</p>
+        <label><input type="checkbox" class="completed" data-task="flare-9"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-9-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>10. Blower motor wires will terminate on the drive inside panel. Will have to remove covers to access. (L1-brown as indicated on nameplate).</p>
+        <label><input type="checkbox" class="completed" data-task="flare-10"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="flare-10-na"> N/A</label>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="window.location.href='index.html'">Back to Checklist</button>
+        <button onclick="window.location.href='bottoms_pump.html'">Next Task</button>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
+                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
+                const other = checkbox.parentElement.parentElement.querySelector(pair);
+                if (checkbox.checked && other.checked) other.checked = false;
+                localStorage.setItem(other.dataset.task, other.checked);
+            });
+        });
+    </script>
+</body>
+</html>
