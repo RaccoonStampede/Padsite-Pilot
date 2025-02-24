@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burner Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .task { margin-bottom: 15px; }
+        .nav-buttons { margin-top: 20px; }
+        button { padding: 10px 20px; margin: 0 5px; }
+    </style>
+</head>
+<body>
+    <h1>Burner Management</h1>
+    <p>Follow these steps for Burner Management setup (add specific steps as needed):</p>
+    
+    <div class="task">
+        <p>1. [Placeholder] Inspect burner system for electrical connections.</p>
+        <label><input type="checkbox" class="completed" data-task="burner-1"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="burner-1-na"> N/A</label>
+    </div>
+    <div class="task">
+        <p>2. [Placeholder] Verify power supply to burner controls.</p>
+        <label><input type="checkbox" class="completed" data-task="burner-2"> Completed</label>
+        <label><input type="checkbox" class="na" data-task="burner-2-na"> N/A</label>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="window.location.href='salt_water_pump.html'">Back</button>
+        <button onclick="window.location.href='battery_charger.html'">Next Task</button>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
+                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
+                const other = checkbox.parentElement.parentElement.querySelector(pair);
+                if (checkbox.checked && other.checked) other.checked = false;
+                localStorage.setItem(other.dataset.task, other.checked);
+            });
+        });
+    </script>
+</body>
+</html>
