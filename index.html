@@ -10,30 +10,112 @@
         .checklist li { margin: 10px 0; }
         a { text-decoration: none; color: #0066cc; }
         a:hover { text-decoration: underline; }
+        #savedJobsList { margin-top: 20px; }
     </style>
-</head><link rel="manifest" href="/manifest.json">
+</head>
+<link rel="manifest" href="/manifest.json">
 <body>
     <h1>Job Walkthrough Checklist</h1>
     <p>Welcome! Complete the tasks below:</p>
-    <ul class="checklist">
-        <li><a href="flare.html">1. Flare</a></li>
-        <li><a href="bottoms_pump.html">2. Bottoms Pump</a></li>
-        <li><a href="air_compressor.html">3. Air Compressor</a></li>
-        <li><a href="salt_water_pump.html">4. Salt Water Pump (SWP)</a></li>
-        <li><a href="burner_management.html">5. Burner Management</a></li>
-        <li><a href="battery_charger.html">6. Battery Charger</a></li>
-        <li><a href="light_poles.html">7. Light Poles</a></li>
-        <li><a href="fuel_skid.html">8. Fuel Skid</a></li>
+    
+    <!-- Checklist -->
+    <ul class="checklist" id="taskList">
+        <li><input type="checkbox" id="flare"> <a href="flare.html">1. Flare</a></li>
+        <li><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html">2. Bottoms Pump</a></li>
+        <li><input type="checkbox" id="air_compressor"> <a href="air_compressor.html">3. Air Compressor</a></li>
+        <li><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html">4. Salt Water Pump (SWP)</a></li>
+        <li><input type="checkbox" id="burner_management"> <a href="burner_management.html">5. Burner Management</a></li>
+        <li><input type="checkbox" id="battery_charger"> <a href="battery_charger.html">6. Battery Charger</a></li>
+        <li><input type="checkbox" id="light_poles"> <a href="light_poles.html">7. Light Poles</a></li>
+        <li><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html">8. Fuel Skid</a></li>
     </ul>
-</body><script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }, function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-    });
-  }
-</script>
+
+    <!-- Save Button -->
+    <button onclick="saveJob()">Save Job Progress</button>
+
+    <!-- Saved Jobs Section -->
+    <h2>Saved Jobs</h2>
+    <ul id="savedJobsList"></ul>
+
+    <script>
+        // Load saved jobs when page loads
+        window.addEventListener('load', function() {
+            loadSavedJobs();
+            // Keep service worker registration
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                }, function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+            }
+        });
+
+        function saveJob() {
+            // Get checklist state
+            const tasks = {
+                flare: document.getElementById('flare').checked,
+                bottoms_pump: document.getElementById('bottoms_pump').checked,
+                air_compressor: document.getElementById('air_compressor').checked,
+                salt_water_pump: document.getElementById('salt_water_pump').checked,
+                burner_management: document.getElementById('burner_management').checked,
+                battery_charger: document.getElementById('battery_charger').checked,
+                light_poles: document.getElementById('light_poles').checked,
+                fuel_skid: document.getElementById('fuel_skid').checked
+            };
+
+            // Create job object with timestamp as identifier
+            const job = {
+                tasks: tasks,
+                timestamp: new Date().toISOString()
+            };
+
+            // Load existing jobs or initialize array
+            let savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+            savedJobs.push(job);
+
+            // Save to local storage
+            localStorage.setItem('jobs', JSON.stringify(savedJobs));
+
+            // Refresh saved jobs list
+            loadSavedJobs();
+        }
+
+        function loadSavedJobs() {
+            const savedJobsList = document.getElementById('savedJobsList');
+            savedJobsList.innerHTML = ''; // Clear current list
+
+            // Get jobs from local storage
+            const savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+
+            // Display each saved job
+            savedJobs.forEach((job, index) => {
+                const completedCount = Object.values(job.tasks).filter(completed => completed).length;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    Job from ${new Date(job.timestamp).toLocaleString()} 
+                    (${completedCount}/8 tasks completed)
+                    <button onclick="loadJob(${index})">Revisit Job</button>
+                `;
+                savedJobsList.appendChild(li);
+            });
+        }
+
+        function loadJob(index) {
+            // Get jobs from local storage
+            const savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+            const job = savedJobs[index];
+
+            // Load task states back into checklist
+            document.getElementById('flare').checked = job.tasks.flare;
+            document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
+            document.getElementById('air_compressor').checked = job.tasks.air_compressor;
+            document.getElementById('salt_water_pump').checked = job.tasks.salt_water_pump;
+            document.getElementById('burner_management').checked = job.tasks.burner_management;
+            document.getElementById('battery_charger').checked = job.tasks.battery_charger;
+            document.getElementById('light_poles').checked = job.tasks.light_poles;
+            document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
+        }
+    </script>
+</body>
 </html>
