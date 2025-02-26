@@ -72,7 +72,6 @@
                     console.log('Service Worker registration failed:', error);
                 });
             }
-            // Restore state from localStorage if available, unless revisiting a saved job
             const savedJobName = localStorage.getItem('currentJobName');
             if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
                 currentJobName = savedJobName;
@@ -87,14 +86,13 @@
                 document.getElementById('light_poles').checked = savedTasks.light_poles || false;
                 document.getElementById('fuel_skid').checked = savedTasks.fuel_skid || false;
             }
-            // Check for revisited job from saved-jobs.html
             const jobIndex = sessionStorage.getItem('loadJobIndex');
             if (jobIndex !== null) {
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
+            } else {
+                checkSubtaskCompletion();
             }
-            // Load subtask states and update link states
-            checkSubtaskCompletion();
         });
 
         function saveCurrentState() {
@@ -142,6 +140,7 @@
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
                     saveCurrentState();
+                    checkSubtaskCompletion();
                 })
                 .catch(error => {
                     console.error('Error saving job:', error);
@@ -191,25 +190,26 @@
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
             saveCurrentState();
-            checkSubtaskCompletion(); // Reset link states for new job
+            checkSubtaskCompletion();
         }
 
         function checkSubtaskCompletion() {
             const tasks = [
                 { id: 'flare', linkId: 'flareLink', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
-                { id: 'bottoms_pump', linkId: 'bottomsPumpLink', subtaskIds: ['example1', 'example2'] }, // Adjust these
-                { id: 'air_compressor', linkId: 'airCompressorLink', subtaskIds: ['example3', 'example4'] },
-                { id: 'salt_water_pump', linkId: 'saltWaterPumpLink', subtaskIds: ['example5', 'example6'] },
-                { id: 'burner_management', linkId: 'burnerManagementLink', subtaskIds: ['example7', 'example8'] },
-                { id: 'battery_charger', linkId: 'batteryChargerLink', subtaskIds: ['example9', 'example10'] },
-                { id: 'light_poles', linkId: 'lightPolesLink', subtaskIds: ['example11', 'example12'] },
-                { id: 'fuel_skid', linkId: 'fuelSkidLink', subtaskIds: ['example13', 'example14'] }
+                { id: 'bottoms_pump', linkId: 'bottomsPumpLink', subtaskIds: ['motor', 'pressure', 'valve'] },
+                { id: 'air_compressor', linkId: 'airCompressorLink', subtaskIds: ['belt', 'pressureGauge', 'oilLevel'] },
+                { id: 'salt_water_pump', linkId: 'saltWaterPumpLink', subtaskIds: ['seal', 'inlet', 'motor'] },
+                { id: 'burner_management', linkId: 'burnerManagementLink', subtaskIds: ['sensor', 'controlUnit', 'ignition'] },
+                { id: 'battery_charger', linkId: 'batteryChargerLink', subtaskIds: ['voltage', 'cables', 'indicator'] },
+                { id: 'light_poles', linkId: 'lightPolesLink', subtaskIds: ['wiring', 'bulb', 'grounding'] },
+                { id: 'fuel_skid', linkId: 'fuelSkidLink', subtaskIds: ['pump', 'filter', 'valve'] }
             ];
 
             tasks.forEach(task => {
                 db.collection('subtasks').doc(task.id).get()
                     .then(doc => {
                         const link = document.getElementById(task.linkId);
+                        const checkbox = document.getElementById(task.id);
                         if (doc.exists) {
                             const subtasks = doc.data();
                             const allCompleted = task.subtaskIds.every(subtaskId => 
@@ -217,15 +217,13 @@
                             );
                             if (allCompleted) {
                                 link.classList.remove('disabled');
-                                document.getElementById(task.id).disabled = false; // Enable checkbox
+                                checkbox.disabled = false;
                             } else {
                                 link.classList.add('disabled');
-                                document.getElementById(task.id).disabled = true; // Disable checkbox
+                                checkbox.disabled = true;
                             }
-                        } else {
-                            link.classList.add('disabled');
-                            document.getElementById(task.id).disabled = true; // Disable if no subtasks saved
                         }
+                        // Links remain enabled if no subtask data exists yet
                     })
                     .catch(error => console.error('Error checking subtasks:', error));
             });
