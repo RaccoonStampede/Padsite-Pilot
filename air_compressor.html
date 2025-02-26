@@ -3,60 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Air Compressor</title>
+    <title>Air Compressor Subtasks</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .task { margin-bottom: 15px; }
-        .nav-buttons { margin-top: 20px; }
-        button { padding: 10px 20px; margin: 0 5px; }
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        .subtask-list { list-style: none; padding: 0; }
+        .subtask-list li { margin: 10px 0; }
+        button { margin-right: 10px; }
     </style>
 </head>
 <body>
-    <h1>Air Compressor</h1>
-    <p>Follow these steps for the Air Compressor setup:</p>
-    
-    <div class="task">
-        <p>1. Air Compressor.</p>
-        <label><input type="checkbox" class="completed" data-task="air-1"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="air-1-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>2. Install 3/4" conduit from air compressor disconnect to power panel rack to disconnect on air compressor skid.</p>
-        <label><input type="checkbox" class="completed" data-task="air-2"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="air-2-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>3. Pull wire (#8/#8/#8/#10 thn) from disconnect to disconnect.</p>
-        <label><input type="checkbox" class="completed" data-task="air-3"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="air-3-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>4. Install 3/4" flex from the end of conduit to the bottom of disconnect on skid.</p>
-        <label><input type="checkbox" class="completed" data-task="air-4"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="air-4-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>5. Terminate wires on top side of disconnect on air compressor skid.</p>
-        <label><input type="checkbox" class="completed" data-task="air-5"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="air-5-na"> N/A</label>
-    </div>
+    <h1>Air Compressor Subtasks</h1>
+    <ul class="subtask-list" id="subtaskList">
+        <li>Check Belt Tension: <select id="belt">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="na">N/A</option>
+        </select></li>
+        <li>Inspect Pressure Gauge: <select id="pressureGauge">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="na">N/A</option>
+        </select></li>
+        <li>Check Oil Level: <select id="oilLevel">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="na">N/A</option>
+        </select></li>
+    </ul>
+    <button onclick="saveSubtasks('air_compressor')">Save Subtasks</button>
+    <button onclick="window.location.href='index.html'">Back to Checklist</button>
 
-    <div class="nav-buttons">
-        <button onclick="window.location.href='bottoms_pump.html'">Back</button>
-        <button onclick="window.location.href='salt_water_pump.html'">Next Task</button>
-    </div>
-
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
-            checkbox.addEventListener('change', () => {
-                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
-                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
-                const other = checkbox.parentElement.parentElement.querySelector(pair);
-                if (checkbox.checked && other.checked) other.checked = false;
-                localStorage.setItem(other.dataset.task, other.checked);
-            });
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            loadSubtasks('air_compressor');
         });
+
+        function saveSubtasks(taskId) {
+            const subtasks = {
+                belt: document.getElementById('belt').value,
+                pressureGauge: document.getElementById('pressureGauge').value,
+                oilLevel: document.getElementById('oilLevel').value
+            };
+            db.collection('subtasks').doc(taskId).set(subtasks)
+                .then(() => {
+                    console.log('Subtasks saved for', taskId);
+                    alert('Subtasks saved!');
+                })
+                .catch(error => console.error('Error saving subtasks:', error));
+        }
+
+        function loadSubtasks(taskId) {
+            db.collection('subtasks').doc(taskId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        document.getElementById('belt').value = subtasks.belt || 'pending';
+                        document.getElementById('pressureGauge').value = subtasks.pressureGauge || 'pending';
+                        document.getElementById('oilLevel').value = subtasks.oilLevel || 'pending';
+                    }
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
     </script>
 </body>
 </html>
