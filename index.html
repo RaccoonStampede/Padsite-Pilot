@@ -18,16 +18,15 @@
         .checklist li { margin: 10px 0; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
-        #savedJobsList { margin-top: 20px; }
         button { margin-right: 10px; }
-        #currentJobName { margin: 10px 0; font-weight: bold; } /* Display current job name */
+        #currentJobName { margin: 10px 0; font-weight: bold; }
     </style>
 </head>
 <link rel="manifest" href="/manifest.json">
 <body>
     <h1>Padsite Pilot</h1>
     <p>Welcome! Complete the tasks below:</p>
-    <div id="currentJobName">Current Job: None</div> <!-- Show current job name -->
+    <div id="currentJobName">Current Job: None</div>
     
     <!-- Checklist -->
     <ul class="checklist" id="taskList">
@@ -44,22 +43,24 @@
     <!-- Buttons -->
     <button onclick="newJob()">New Job</button>
     <button onclick="saveJob()">Save Job Progress</button>
-
-    <!-- Saved Jobs Section -->
-    <h2>Saved Jobs</h2>
-    <ul id="savedJobsList"></ul>
+    <button onclick="window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
     <script>
-        let currentJobName = null; // Track the current job name
+        let currentJobName = null;
 
         window.addEventListener('load', function() {
-            loadSavedJobs();
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
                     console.log('Service Worker registered with scope:', registration.scope);
                 }, function(error) {
                     console.log('Service Worker registration failed:', error);
                 });
+            }
+            // Load job from sessionStorage if redirected from saved-jobs.html
+            const jobIndex = sessionStorage.getItem('loadJobIndex');
+            if (jobIndex !== null) {
+                loadJob(parseInt(jobIndex));
+                sessionStorage.removeItem('loadJobIndex');
             }
         });
 
@@ -81,7 +82,7 @@
             };
 
             const job = {
-                name: currentJobName, // Use the name set at start
+                name: currentJobName,
                 tasks: tasks,
                 timestamp: new Date().toISOString()
             };
@@ -89,23 +90,6 @@
             let savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
             savedJobs.push(job);
             localStorage.setItem('jobs', JSON.stringify(savedJobs));
-            loadSavedJobs();
-        }
-
-        function loadSavedJobs() {
-            const savedJobsList = document.getElementById('savedJobsList');
-            savedJobsList.innerHTML = '';
-            const savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-            savedJobs.forEach((job, index) => {
-                const completedCount = Object.values(job.tasks).filter(completed => completed).length;
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
-                    ${completedCount}/8 tasks completed)
-                    <button onclick="loadJob(${index})">Revisit Job</button>
-                `;
-                savedJobsList.appendChild(li);
-            });
         }
 
         function loadJob(index) {
@@ -119,7 +103,7 @@
             document.getElementById('battery_charger').checked = job.tasks.battery_charger;
             document.getElementById('light_poles').checked = job.tasks.light_poles;
             document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
-            currentJobName = job.name; // Set current job name when revisiting
+            currentJobName = job.name;
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
         }
 
@@ -138,7 +122,7 @@
             document.getElementById('battery_charger').checked = false;
             document.getElementById('light_poles').checked = false;
             document.getElementById('fuel_skid').checked = false;
-            currentJobName = jobName.trim(); // Set the new job name
+            currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
         }
     </script>
