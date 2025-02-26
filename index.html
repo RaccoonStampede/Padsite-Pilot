@@ -18,7 +18,6 @@
         .checklist li { margin: 10px 0; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
-        a.disabled { color: #666; pointer-events: none; text-decoration: none; }
         button { margin-right: 10px; }
         #currentJobName { margin: 10px 0; font-weight: bold; }
     </style>
@@ -30,14 +29,14 @@
     
     <!-- Checklist with labels for accessibility -->
     <ul class="checklist" id="taskList">
-        <li><label><input type="checkbox" id="flare"> <a href="flare.html" id="flareLink" onclick="saveCurrentState()">1. Flare</a></label></li>
-        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" id="bottomsPumpLink" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
-        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" id="airCompressorLink" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
-        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" id="saltWaterPumpLink" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
-        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" id="burnerManagementLink" onclick="saveCurrentState()">5. Burner Management</a></label></li>
-        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" id="batteryChargerLink" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
-        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" id="lightPolesLink" onclick="saveCurrentState()">7. Light Poles</a></label></li>
-        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" id="fuelSkidLink" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
     </ul>
 
     <!-- Buttons -->
@@ -140,7 +139,7 @@
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
                     saveCurrentState();
-                    checkSubtaskCompletion();
+                    checkSubtaskCompletion(); // Update checkbox states after saving
                 })
                 .catch(error => {
                     console.error('Error saving job:', error);
@@ -195,35 +194,29 @@
 
         function checkSubtaskCompletion() {
             const tasks = [
-                { id: 'flare', linkId: 'flareLink', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
-                { id: 'bottoms_pump', linkId: 'bottomsPumpLink', subtaskIds: ['motor', 'pressure', 'valve'] },
-                { id: 'air_compressor', linkId: 'airCompressorLink', subtaskIds: ['belt', 'pressureGauge', 'oilLevel'] },
-                { id: 'salt_water_pump', linkId: 'saltWaterPumpLink', subtaskIds: ['seal', 'inlet', 'motor'] },
-                { id: 'burner_management', linkId: 'burnerManagementLink', subtaskIds: ['sensor', 'controlUnit', 'ignition'] },
-                { id: 'battery_charger', linkId: 'batteryChargerLink', subtaskIds: ['voltage', 'cables', 'indicator'] },
-                { id: 'light_poles', linkId: 'lightPolesLink', subtaskIds: ['wiring', 'bulb', 'grounding'] },
-                { id: 'fuel_skid', linkId: 'fuelSkidLink', subtaskIds: ['pump', 'filter', 'valve'] }
+                { id: 'flare', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
+                { id: 'bottoms_pump', subtaskIds: ['motor', 'pressure', 'valve'] },
+                { id: 'air_compressor', subtaskIds: ['belt', 'pressureGauge', 'oilLevel'] },
+                { id: 'salt_water_pump', subtaskIds: ['seal', 'inlet', 'motor'] },
+                { id: 'burner_management', subtaskIds: ['sensor', 'controlUnit', 'ignition'] },
+                { id: 'battery_charger', subtaskIds: ['voltage', 'cables', 'indicator'] },
+                { id: 'light_poles', subtaskIds: ['wiring', 'bulb', 'grounding'] },
+                { id: 'fuel_skid', subtaskIds: ['pump', 'filter', 'valve'] }
             ];
 
             tasks.forEach(task => {
                 db.collection('subtasks').doc(task.id).get()
                     .then(doc => {
-                        const link = document.getElementById(task.linkId);
                         const checkbox = document.getElementById(task.id);
                         if (doc.exists) {
                             const subtasks = doc.data();
                             const allCompleted = task.subtaskIds.every(subtaskId => 
                                 subtasks[subtaskId] === 'completed' || subtasks[subtaskId] === 'na'
                             );
-                            if (allCompleted) {
-                                link.classList.remove('disabled');
-                                checkbox.disabled = false;
-                            } else {
-                                link.classList.add('disabled');
-                                checkbox.disabled = true;
-                            }
+                            checkbox.disabled = !allCompleted;
+                        } else {
+                            checkbox.disabled = true; // Disable by default until subtasks are saved
                         }
-                        // Links remain enabled if no subtask data exists yet
                     })
                     .catch(error => console.error('Error checking subtasks:', error));
             });
