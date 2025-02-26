@@ -42,7 +42,7 @@
     <!-- Buttons -->
     <button onclick="newJob()">New Job</button>
     <button onclick="saveJob()">Save Job Progress</button>
-    <button onclick="window.location.href='saved-jobs.html'">View Saved Jobs</button>
+    <button onclick="saveCurrentState(); window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
     <!-- Firebase SDKs (global namespace, v7.24.0) -->
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
@@ -70,7 +70,7 @@
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
                     console.log('Service Worker registered with scope:', registration.scope);
-                }, function(error) {
+                }).catch(function(error) {
                     console.log('Service Worker registration failed:', error);
                 });
             }
@@ -140,10 +140,7 @@
                 .then(() => {
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
-                    // Clear localStorage after saving to Firestore
-                    localStorage.removeItem('currentJobName');
-                    localStorage.removeItem('currentTasks');
-                    newJob(); // Reset to a new blank job
+                    // Do NOT clear localStorage here—keep current job state
                 })
                 .catch(error => {
                     console.error('Error saving job:', error);
@@ -190,9 +187,10 @@
             document.getElementById('fuel_skid').checked = false;
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-            // Clear localStorage for new job
+            // Clear localStorage only when starting a new job
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
+            saveCurrentState(); // Save the new blank job state
         }
     </script>
 </body>
