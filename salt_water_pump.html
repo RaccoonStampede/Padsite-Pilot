@@ -7,47 +7,49 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
         ul { list-style: none; padding: 0; }
-        li { margin: 15px 0; }
+        li { margin: 20px 0; }
         .step { font-size: 0.9em; color: #666; }
-        button { margin-left: 10px; padding: 2px 5px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; }
+        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; } /* Smaller N/A buttons */
         button.active { background-color: #00cc00; }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
+        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
+        .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
     </style>
 </head>
 <body>
     <h1>Salt Water Pump Subtasks (SWP)</h1>
     <ul>
-        <li><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)
-            <button class="na-button" onclick="toggleSubtaskNA('swpLocation', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)</span> <button class="na-button" onclick="toggleSubtaskNA('swpLocation', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Identify and verify the location of the salt water pump (SWP).</div>
         </li>
-        <li><input type="checkbox" id="conduitInstall"> Install 1” Conduit from Saltwater Pump Disconnect to Location of SWP VFD
-            <button class="na-button" onclick="toggleSubtaskNA('conduitInstall', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 1” Conduit from Saltwater Pump Disconnect to Location of SWP VFD</span> <button class="na-button" onclick="toggleSubtaskNA('conduitInstall', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Measure and install 1” conduit from saltwater pump disconnect to SWP VFD location.</div>
         </li>
-        <li><input type="checkbox" id="flexToVFD"> Install 1” Flex from Conduit to VFD Panel
-            <button class="na-button" onclick="toggleSubtaskNA('flexToVFD', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToVFD"> Install 1” Flex from Conduit to VFD Panel</span> <button class="na-button" onclick="toggleSubtaskNA('flexToVFD', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Install 1” flex from the conduit to the VFD panel.</div>
         </li>
-        <li><input type="checkbox" id="wirePull"> Pull Wire from Disconnect on Power Panel Rack to VFD Panel
-            <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull"> Pull Wire from Disconnect on Power Panel Rack to VFD Panel</span> <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Pull wire from disconnect on power panel rack to VFD panel.</div>
             <div class="step">2. Terminate wires on top side of disconnect breaker in panel.</div>
         </li>
-        <li><input type="checkbox" id="flexToMotor"> Install 1” Flex from VFD to SWP Motor
-            <button class="na-button" onclick="toggleSubtaskNA('flexToMotor', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor"> Install 1” Flex from VFD to SWP Motor</span> <button class="na-button" onclick="toggleSubtaskNA('flexToMotor', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Install 1” flex from VFD to SWP motor.</div>
         </li>
-        <li><input type="checkbox" id="motorWire"> Pull Wire from VFD to Pump Motor
-            <button class="na-button" onclick="toggleSubtaskNA('motorWire', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="motorWire"> Pull Wire from VFD to Pump Motor</span> <button class="na-button" onclick="toggleSubtaskNA('motorWire', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Pull wire from VFD to pump motor.</div>
             <div class="step">2. Terminate in accordance with nameplate on motor.</div>
         </li>
-        <li><input type="checkbox" id="vfdPanelWire"> Terminate Wires on VFD Pump Panel on the Bottom of VFD (Remove Cover)
-            <button class="na-button" onclick="toggleSubtaskNA('vfdPanelWire', 'salt_water_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="vfdPanelWire"> Terminate Wires on VFD Pump Panel on the Bottom of VFD (Remove Cover)</span> <button class="na-button" onclick="toggleSubtaskNA('vfdPanelWire', 'salt_water_pump')">N/A</button></span></label>
             <div class="step">1. Remove cover from the bottom of the VFD pump panel.</div>
             <div class="step">2. Terminate wires on the VFD pump panel according to specifications.</div>
         </li>
     </ul>
+    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
     <a href="index.html">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
@@ -68,6 +70,7 @@
 
         window.addEventListener('load', function() {
             loadSubtasks('salt_water_pump');
+            updateSubtaskTracker();
         });
 
         function toggleSubtaskNA(subtaskId, taskId) {
@@ -81,6 +84,7 @@
                 checkbox.disabled = false;
             }
             saveSubtasks(taskId);
+            updateSubtaskTracker();
         }
 
         function saveSubtasks(taskId) {
@@ -146,6 +150,27 @@
                     checkbox.disabled = false;
                 }
             });
+        }
+
+        function updateSubtaskTracker() {
+            db.collection('subtasks').doc('salt_water_pump').get()
+                .then(doc => {
+                    const tracker = document.getElementById('subtask-tracker');
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        let completed = 0, pending = 0, na = 0;
+                        for (let subtask in subtasks) {
+                            if (subtask === 'na') continue;
+                            if (subtasks.na && subtasks.na[subtask]) na++;
+                            else if (subtasks[subtask]) completed++;
+                            else pending++;
+                        }
+                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+                    } else {
+                        tracker.textContent = "No subtasks saved yet.";
+                    }
+                })
+                .catch(error => console.error('Error updating subtask tracker:', error));
         }
     </script>
 </body>
