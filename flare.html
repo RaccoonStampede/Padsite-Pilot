@@ -9,39 +9,147 @@
         ul { list-style: none; padding: 0; }
         li { margin: 15px 0; }
         .step { font-size: 0.9em; color: #666; }
+        button { margin-left: 10px; padding: 2px 5px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; }
+        button.active { background-color: #00cc00; }
     </style>
 </head>
 <body>
     <h1>Flare Subtasks (Igniter)</h1>
     <ul>
-        <li><input type="checkbox"> Check Igniter Control Box (Red Plastic Box)
+        <li><input type="checkbox" id="ignition"> Check Igniter Control Box (Red Plastic Box)
+            <button class="na-button" onclick="toggleSubtaskNA('ignition', 'flare')">N/A</button>
             <div class="step">1. Verify igniter control box is mounted on or near the flare (usually on VFD panel).</div>
         </li>
-        <li><input type="checkbox"> Install 3/4" Flex from VFD Panel to Igniter Panel
+        <li><input type="checkbox" id="fuelLine"> Install 3/4" Flex from VFD Panel to Igniter Panel
+            <button class="na-button" onclick="toggleSubtaskNA('fuelLine', 'flare')">N/A</button>
             <div class="step">1. Measure and cut 3/4" flex conduit from VFD panel to igniter panel.</div>
             <div class="step">2. Pull THHN wires (Black/White/Green) through the flex conduit.</div>
         </li>
-        <li><input type="checkbox"> Pull Wire from VFD Panel to Igniter Panel
+        <li><input type="checkbox" id="wirePull"> Pull Wire from VFD Panel to Igniter Panel
+            <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'flare')">N/A</button>
             <div class="step">1. Pull THHN wires (Black/White/Green) from VFD panel to igniter panel.</div>
             <div class="step">2. Terminate VFD panel wires on low voltage control transformer terminals marked L1, N, =Ground.</div>
             <div class="step">3. Terminate igniter panel wires on power supply terminals marked L1, N, =Ground.</div>
         </li>
-        <li><input type="checkbox"> Igniter on New Flare Stack
+        <li><input type="checkbox" id="flareStack"> Igniter on New Flare Stack
+            <button class="na-button" onclick="toggleSubtaskNA('flareStack', 'flare')">N/A</button>
             <div class="step">1. Rewire igniter wiring on flare stack (24V).</div>
             <div class="step">2. Open round J-box and check wiring colors (Red/Yellow tied to L1, Black/White tied to N).</div>
             <div class="step">3. Run cable down conduit back to igniter control panel and install into panel.</div>
         </li>
-        <li><input type="checkbox"> Terminate Wires to Green Blocks on Door Panel
+        <li><input type="checkbox" id="greenBlocks"> Terminate Wires to Green Blocks on Door Panel
+            <button class="na-button" onclick="toggleSubtaskNA('greenBlocks', 'flare')">N/A</button>
             <div class="step">1. Terminate wires to green blocks on the inside of the door panel labeled XF Igniter (L+/R).</div>
             <div class="step">2. Match cable terminations on J-box with colors in J-box on flare stack.</div>
         </li>
-        <li><input type="checkbox"> Terminate Last Two Wires on Terminals Marked TEMP
+        <li><input type="checkbox" id="tempTerminals"> Terminate Last Two Wires on Terminals Marked TEMP
+            <button class="na-button" onclick="toggleSubtaskNA('tempTerminals', 'flare')">N/A</button>
             <div class="step">1. Terminate the last two wires on terminals marked TEMP on the flare stack.</div>
         </li>
-        <li><input type="checkbox"> Check Wire Blocks
+        <li><input type="checkbox" id="wireBlocks"> Check Wire Blocks
+            <button class="na-button" onclick="toggleSubtaskNA('wireBlocks', 'flare')">N/A</button>
             <div class="step">1. Verify all wire terminations in green blocks are secure and match color codes.</div>
         </li>
     </ul>
     <a href="index.html">Back to Checklist</a>
+
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            loadSubtasks('flare');
+        });
+
+        function toggleSubtaskNA(subtaskId, taskId) {
+            const checkbox = document.getElementById(subtaskId);
+            const naButton = document.querySelector(`#${subtaskId} + .na-button`);
+            naButton.classList.toggle('active');
+            if (naButton.classList.contains('active')) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            } else {
+                checkbox.disabled = false;
+            }
+            saveSubtasks(taskId);
+        }
+
+        function saveSubtasks(taskId) {
+            const subtasks = {
+                ignition: document.getElementById('ignition')?.checked || false,
+                fuelLine: document.getElementById('fuelLine')?.checked || false,
+                wirePull: document.getElementById('wirePull')?.checked || false,
+                flareStack: document.getElementById('flareStack')?.checked || false,
+                greenBlocks: document.getElementById('greenBlocks')?.checked || false,
+                tempTerminals: document.getElementById('tempTerminals')?.checked || false,
+                wireBlocks: document.getElementById('wireBlocks')?.checked || false,
+                na: {
+                    ignition: document.querySelector('#ignition + .na-button')?.classList.contains('active') || false,
+                    fuelLine: document.querySelector('#fuelLine + .na-button')?.classList.contains('active') || false,
+                    wirePull: document.querySelector('#wirePull + .na-button')?.classList.contains('active') || false,
+                    flareStack: document.querySelector('#flareStack + .na-button')?.classList.contains('active') || false,
+                    greenBlocks: document.querySelector('#greenBlocks + .na-button')?.classList.contains('active') || false,
+                    tempTerminals: document.querySelector('#tempTerminals + .na-button')?.classList.contains('active') || false,
+                    wireBlocks: document.querySelector('#wireBlocks + .na-button')?.classList.contains('active') || false
+                }
+            };
+            db.collection('subtasks').doc(taskId).set(subtasks)
+                .then(() => console.log('Subtasks saved for', taskId))
+                .catch(error => console.error('Error saving subtasks:', error));
+        }
+
+        function loadSubtasks(taskId) {
+            db.collection('subtasks').doc(taskId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        document.getElementById('ignition')?.checked = subtasks.ignition || false;
+                        document.getElementById('fuelLine')?.checked = subtasks.fuelLine || false;
+                        document.getElementById('wirePull')?.checked = subtasks.wirePull || false;
+                        document.getElementById('flareStack')?.checked = subtasks.flareStack || false;
+                        document.getElementById('greenBlocks')?.checked = subtasks.greenBlocks || false;
+                        document.getElementById('tempTerminals')?.checked = subtasks.tempTerminals || false;
+                        document.getElementById('wireBlocks')?.checked = subtasks.wireBlocks || false;
+                        if (subtasks.na) {
+                            if (subtasks.na.ignition) document.querySelector('#ignition + .na-button')?.classList.add('active');
+                            if (subtasks.na.fuelLine) document.querySelector('#fuelLine + .na-button')?.classList.add('active');
+                            if (subtasks.na.wirePull) document.querySelector('#wirePull + .na-button')?.classList.add('active');
+                            if (subtasks.na.flareStack) document.querySelector('#flareStack + .na-button')?.classList.add('active');
+                            if (subtasks.na.greenBlocks) document.querySelector('#greenBlocks + .na-button')?.classList.add('active');
+                            if (subtasks.na.tempTerminals) document.querySelector('#tempTerminals + .na-button')?.classList.add('active');
+                            if (subtasks.na.wireBlocks) document.querySelector('#wireBlocks + .na-button')?.classList.add('active');
+                            updateSubtaskDisables();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
+
+        function updateSubtaskDisables() {
+            const subtasks = ['ignition', 'fuelLine', 'wirePull', 'flareStack', 'greenBlocks', 'tempTerminals', 'wireBlocks'];
+            subtasks.forEach(subtask => {
+                const checkbox = document.getElementById(subtask);
+                const naButton = document.querySelector(`#${subtask} + .na-button`);
+                if (naButton && naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
