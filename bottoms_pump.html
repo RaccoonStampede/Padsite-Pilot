@@ -7,60 +7,59 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
         ul { list-style: none; padding: 0; }
-        li { margin: 15px 0; }
+        li { margin: 20px 0; }
         .step { font-size: 0.9em; color: #666; }
-        button { margin-left: 10px; padding: 2px 5px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; }
+        button { padding: 8px 12px; font-size: 1.2em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 5px; }
         button.active { background-color: #00cc00; }
+        input[type="checkbox"], button.na-button { 
+            transform: scale(1.5); 
+            margin: 0; 
+            vertical-align: middle;
+        }
+        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
+        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
+        .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
     </style>
 </head>
 <body>
     <h1>Bottoms Pump Subtasks</h1>
     <ul>
-        <li><input type="checkbox" id="pumpLocation"> Bottoms Pump (Circulation Pump) – Location Varies
-            <button class="na-button" onclick="toggleSubtaskNA('pumpLocation', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpLocation"> Bottoms Pump (Circulation Pump) – Location Varies</span> <button class="na-button" onclick="toggleSubtaskNA('pumpLocation', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Identify location of bottoms pump (circulation pump—varies by site).</div>
         </li>
-        <li><input type="checkbox" id="rigidConduit"> Get Needed – 5’ of 2” Rigid Conduit
-            <button class="na-button" onclick="toggleSubtaskNA('rigidConduit', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="rigidConduit"> Get Needed – 5’ of 2” Rigid Conduit</span> <button class="na-button" onclick="toggleSubtaskNA('rigidConduit', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Obtain 5 feet of 2” rigid conduit for installation.</div>
         </li>
-        <li><input type="checkbox" id="conduitInstall"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump
-            <button class="na-button" onclick="toggleSubtaskNA('conduitInstall', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump</span> <button class="na-button" onclick="toggleSubtaskNA('conduitInstall', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Measure and install 3/4” conduit from power panel rack to bottoms pump location.</div>
         </li>
-        <li><input type="checkbox" id="flexInstall"> Install 3/4” Flex from Conduit to Pump
-            <button class="na-button" onclick="toggleSubtaskNA('flexInstall', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexInstall"> Install 3/4” Flex from Conduit to Pump</span> <button class="na-button" onclick="toggleSubtaskNA('flexInstall', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Cut 2 pieces of Unistrut at 5”.</div>
             <div class="step">2. Use 2 exhaust clamps to mount Unistrut to leg of bottoms pump stand.</div>
         </li>
-        <li><input type="checkbox" id="conduitCut"> Cut 5’ of 2” Rigid Conduit
-            <button class="na-button" onclick="toggleSubtaskNA('conduitCut', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitCut"> Cut 5’ of 2” Rigid Conduit</span> <button class="na-button" onclick="toggleSubtaskNA('conduitCut', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Cut 5 feet of 2” rigid conduit.</div>
             <div class="step">2. Mount conduit on Unistrut with 2” Unistrut straps (ensure it’s secure).</div>
         </li>
-        <li><input type="checkbox" id="pumpPanelHoles"> Use Bottoms Pump Panel – Needs Holes
-            <button class="na-button" onclick="toggleSubtaskNA('pumpPanelHoles', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpPanelHoles"> Use Bottoms Pump Panel – Needs Holes</span> <button class="na-button" onclick="toggleSubtaskNA('pumpPanelHoles', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Drill 4 holes in mounting brackets of bottoms pump panel.</div>
             <div class="step">2. Use exhaust clamps for hole reference (2 holes on top and 2 on bottom).</div>
         </li>
-        <li><input type="checkbox" id="mountPanel"> Mount Pump Panel to Pole Using Exhaust Clamps
-            <button class="na-button" onclick="toggleSubtaskNA('mountPanel', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="mountPanel"> Mount Pump Panel to Pole Using Exhaust Clamps</span> <button class="na-button" onclick="toggleSubtaskNA('mountPanel', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Secure pump panel to pole using exhaust clamps through drilled holes.</div>
         </li>
-        <li><input type="checkbox" id="flexToPanel"> Install 3/4” Flex from End of Conduit Run to Bottom of Pump Panel
-            <button class="na-button" onclick="toggleSubtaskNA('flexToPanel', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToPanel"> Install 3/4” Flex from End of Conduit Run to Bottom of Pump Panel</span> <button class="na-button" onclick="toggleSubtaskNA('flexToPanel', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Install 3/4” flex from the end of the conduit run to the bottom of the pump panel.</div>
         </li>
-        <li><input type="checkbox" id="wirePull"> Pull Wire (Red, Black, Brown, Yellow, Blue, Gray) from Flare Disconnect to Pump Panel Rack
-            <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull"> Pull Wire (Red, Black, Brown, Yellow, Blue, Gray) from Flare Disconnect to Pump Panel Rack</span> <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Pull wires (Red, Black, Brown, Yellow, Blue, Gray) from flare disconnect to pump panel rack.</div>
             <div class="step">2. Terminate at the top of disconnect inside panel.</div>
         </li>
-        <li><input type="checkbox" id="flexToMotor"> Install 3/4” Flex from Panel to Pump Motor on Stand
-            <button class="na-button" onclick="toggleSubtaskNA('flexToMotor', 'bottoms_pump')">N/A</button>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor"> Install 3/4” Flex from Panel to Pump Motor on Stand</span> <button class="na-button" onclick="toggleSubtaskNA('flexToMotor', 'bottoms_pump')">N/A</button></span></label>
             <div class="step">1. Install 3/4” flex from the panel to the pump motor on the stand.</div>
         </li>
     </ul>
+    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
     <a href="index.html">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
@@ -81,6 +80,7 @@
 
         window.addEventListener('load', function() {
             loadSubtasks('bottoms_pump');
+            updateSubtaskTracker();
         });
 
         function toggleSubtaskNA(subtaskId, taskId) {
@@ -94,6 +94,7 @@
                 checkbox.disabled = false;
             }
             saveSubtasks(taskId);
+            updateSubtaskTracker();
         }
 
         function saveSubtasks(taskId) {
@@ -171,6 +172,27 @@
                     checkbox.disabled = false;
                 }
             });
+        }
+
+        function updateSubtaskTracker() {
+            db.collection('subtasks').doc('bottoms_pump').get()
+                .then(doc => {
+                    const tracker = document.getElementById('subtask-tracker');
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        let completed = 0, pending = 0, na = 0;
+                        for (let subtask in subtasks) {
+                            if (subtask === 'na') continue;
+                            if (subtasks.na && subtasks.na[subtask]) na++;
+                            else if (subtasks[subtask]) completed++;
+                            else pending++;
+                        }
+                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+                    } else {
+                        tracker.textContent = "No subtasks saved yet.";
+                    }
+                })
+                .catch(error => console.error('Error updating subtask tracker:', error));
         }
     </script>
 </body>
