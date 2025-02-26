@@ -20,12 +20,13 @@
         a:hover { text-decoration: underline; }
         button { padding: 8px 12px; font-size: 1.2em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 5px; }
         button.active { background-color: #00cc00; }
-        input[type="checkbox"] { 
+        input[type="checkbox"], button.na-button { 
             transform: scale(1.5); 
-            margin-right: 10px; 
+            margin: 0; 
             vertical-align: middle;
         }
-        .task-controls { display: inline-flex; align-items: center; gap: 10px; } /* Side-by-side checkbox and N/A button with space */
+        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
+        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
         #currentJobName { margin: 10px 0; font-weight: bold; }
         .task-tracker, .subtask-tracker { margin-top: 10px; padding: 10px; background-color: rgba(0, 0, 0, 0.5); border-radius: 5px; font-size: 1em; }
     </style>
@@ -35,33 +36,33 @@
     <p>Welcome! Complete the tasks below:</p>
     <div id="currentJobName">Current Job: None</div>
     
-    <!-- Checklist with labels, side-by-side checkboxes/N/A buttons, subtask trackers under each task -->
+    <!-- Checklist with labels, checkbox/task name on left, N/A on right, subtask trackers under each task -->
     <ul class="checklist" id="taskList">
-        <li><label><span class="task-controls"><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a> <button class="na-button" onclick="toggleNA('flare')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a></span> <button class="na-button" onclick="toggleNA('flare')">N/A</button></span></label>
             <div class="subtask-tracker" id="flare-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a></span> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></span></label>
             <div class="subtask-tracker" id="bottoms_pump-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a></span> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></span></label>
             <div class="subtask-tracker" id="air_compressor-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></span> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></span></label>
             <div class="subtask-tracker" id="salt_water_pump-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></span> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></span></label>
             <div class="subtask-tracker" id="burner_management-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></span> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></span></label>
             <div class="subtask-tracker" id="battery_charger-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a></span> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></span></label>
             <div class="subtask-tracker" id="light_poles-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></span> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></span></label>
             <div class="subtask-tracker" id="fuel_skid-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a></span> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></span></label>
             <div class="subtask-tracker" id="120v_system-subtask-tracker">Loading subtasks...</div>
         </li>
     </ul>
