@@ -96,6 +96,8 @@
         let taskStates = {};
 
         window.addEventListener('load', function() {
+            // Optional: Comment out or remove Service Worker if not needed
+            /*
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
                     console.log('Service Worker registered with scope:', registration.scope);
@@ -103,6 +105,7 @@
                     console.log('Service Worker registration failed:', error);
                 });
             }
+            */
             const savedJobName = localStorage.getItem('currentJobName');
             if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
                 currentJobName = savedJobName;
@@ -134,7 +137,13 @@
             };
             const naStates = {};
             for (let task in tasks) {
-                naStates[task] = document.querySelector(`#${task} + .na-button`).classList.contains('active');
+                const naButton = document.querySelector(`#${task}`).closest('.task-controls').querySelector('.na-button');
+                if (naButton) {
+                    naStates[task] = naButton.classList.contains('active');
+                } else {
+                    console.warn(`N/A button not found for task: ${task}`);
+                    naStates[task] = false; // Default to false if not found
+                }
             }
             if (currentJobName) {
                 localStorage.setItem('currentJobName', currentJobName);
@@ -145,33 +154,41 @@
         }
 
         function toggleNA(taskId) {
-            const naButton = document.querySelector(`#${taskId} + .na-button`);
+            const naButton = document.querySelector(`#${taskId}`).closest('.task-controls').querySelector('.na-button');
             const checkbox = document.getElementById(taskId);
-            naButton.classList.toggle('active');
-            if (naButton.classList.contains('active')) {
-                checkbox.disabled = true;
-                checkbox.checked = false;
+            if (naButton) {
+                naButton.classList.toggle('active');
+                if (naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+                taskStates[taskId] = checkbox.checked;
+                taskStates.na = { ...taskStates.na, [taskId]: naButton.classList.contains('active') };
+                saveCurrentState();
             } else {
-                checkbox.disabled = false;
+                console.error(`N/A button not found for task: ${taskId}`);
             }
-            taskStates[taskId] = checkbox.checked;
-            taskStates.na = { ...taskStates.na, [taskId]: naButton.classList.contains('active') };
-            saveCurrentState();
         }
 
         function updateTaskStates() {
             const tasks = ['flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid', '120v_system'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
-                const naButton = document.querySelector(`#${task} + .na-button`);
-                if (taskStates.na && taskStates.na[task]) {
-                    naButton.classList.add('active');
-                    checkbox.disabled = true;
-                    checkbox.checked = false;
+                const naButton = document.querySelector(`#${task}`).closest('.task-controls').querySelector('.na-button');
+                if (naButton) {
+                    if (taskStates.na && taskStates.na[task]) {
+                        naButton.classList.add('active');
+                        checkbox.disabled = true;
+                        checkbox.checked = false;
+                    } else {
+                        naButton.classList.remove('active');
+                        checkbox.disabled = false;
+                        checkbox.checked = taskStates[task] || false;
+                    }
                 } else {
-                    naButton.classList.remove('active');
-                    checkbox.disabled = false;
-                    checkbox.checked = taskStates[task] || false;
+                    console.warn(`N/A button not found for task: ${task}`);
                 }
             });
         }
@@ -182,8 +199,8 @@
 
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
-                const naButton = document.querySelector(`#${task} + .na-button`);
-                if (naButton.classList.contains('active')) na++;
+                const naButton = document.querySelector(`#${task}`).closest('.task-controls').querySelector('.na-button');
+                if (naButton && naButton.classList.contains('active')) na++;
                 else if (checkbox.checked) completed++;
                 else pending++;
 
@@ -235,7 +252,13 @@
             };
             const naStates = {};
             for (let task in tasks) {
-                naStates[task] = document.querySelector(`#${task} + .na-button`).classList.contains('active');
+                const naButton = document.querySelector(`#${task}`).closest('.task-controls').querySelector('.na-button');
+                if (naButton) {
+                    naStates[task] = naButton.classList.contains('active');
+                } else {
+                    console.warn(`N/A button not found for task: ${task}`);
+                    naStates[task] = false; // Default to false if not found
+                }
             }
 
             const job = {
@@ -245,14 +268,15 @@
                 timestamp: new Date().toISOString()
             };
 
+            console.log('Attempting to save job:', job);
             db.collection('jobs').add(job)
                 .then(() => {
-                    console.log('Job saved to Firestore');
+                    console.log('Job saved successfully to Firestore');
                     alert('Job saved successfully!');
                     saveCurrentState();
                 })
                 .catch(error => {
-                    console.error('Error saving job:', error);
+                    console.error('Failed to save job:', error);
                     alert('Failed to save job: ' + error.message);
                 });
         }
