@@ -1,28 +1,30 @@
+// service-worker.js
 self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open('job-walkthrough-cache').then(function(cache) {
-      return cache.addAll([
-        '/index.html',
-        '/flare.html',
-        '/bottoms_pump.html',
-        '/air_compressor.html',
-        '/salt_water_pump.html',
-        '/burner_management.html',
-        '/battery_charger.html',
-        '/light_poles.html',
-        '/fuel_skid.html',
-        '/manifest.json',
-        '/service-worker.js',
-        '/styles.css' // Add any CSS/JS files your app uses
-      ]);
-    })
-  );
+    event.waitUntil(
+        caches.open('padsite-pilot-cache').then(function(cache) {
+            return cache.addAll([
+                '/',
+                '/index.html',
+                '/saved-jobs.html',
+                'https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js',
+                'https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js'
+            ]);
+        })
+    );
 });
 
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
-    })
-  );
+    event.respondWith(
+        caches.match(event.request).then(function(response) {
+            // Return cached response or fetch from network
+            return response || fetch(event.request).then(function(networkResponse) {
+                // Cache the network response but set Cache-Control
+                const clonedResponse = networkResponse.clone();
+                caches.open('padsite-pilot-cache').then(function(cache) {
+                    cache.put(event.request, clonedResponse);
+                });
+                return networkResponse;
+            });
+        })
+    );
 });
