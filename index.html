@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oilfield Electrician Job Walkthrough</title>
+    <title>Padsite Pilot</title> <!-- Updated title -->
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .checklist { list-style: none; padding: 0; }
@@ -11,11 +11,12 @@
         a { text-decoration: none; color: #0066cc; }
         a:hover { text-decoration: underline; }
         #savedJobsList { margin-top: 20px; }
+        button { margin-right: 10px; } /* Optional: Space between buttons */
     </style>
 </head>
 <link rel="manifest" href="/manifest.json">
 <body>
-    <h1>Job Walkthrough Checklist</h1>
+    <h1>Padsite Pilot</h1> <!-- Updated heading -->
     <p>Welcome! Complete the tasks below:</p>
     
     <!-- Checklist -->
@@ -30,7 +31,8 @@
         <li><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html">8. Fuel Skid</a></li>
     </ul>
 
-    <!-- Save Button -->
+    <!-- Buttons -->
+    <button onclick="newJob()">New Job</button> <!-- New Job button -->
     <button onclick="saveJob()">Save Job Progress</button>
 
     <!-- Saved Jobs Section -->
@@ -115,6 +117,18 @@
             document.getElementById('battery_charger').checked = job.tasks.battery_charger;
             document.getElementById('light_poles').checked = job.tasks.light_poles;
             document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
+        }
+
+        function newJob() {
+            // Reset all checkboxes to unchecked for a new job
+            document.getElementById('flare').checked = false;
+            document.getElementById('bottoms_pump').checked = false;
+            document.getElementById('air_compressor').checked = false;
+            document.getElementById('salt_water_pump').checked = false;
+            document.getElementById('burner_management').checked = false;
+            document.getElementById('battery_charger').checked = false;
+            document.getElementById('light_poles').checked = false;
+            document.getElementById('fuel_skid').checked = false;
         }
     </script>
 </body>
