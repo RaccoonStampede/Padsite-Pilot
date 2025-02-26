@@ -15,13 +15,19 @@
             color: #ffffff;
         }
         .checklist { list-style: none; padding: 0; }
-        .checklist li { margin: 10px 0; }
+        .checklist li { margin: 20px 0; position: relative; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
-        button { margin-right: 5px; padding: 2px 5px; font-size: 0.8em; }
+        button { margin-right: 5px; padding: 8px 12px; font-size: 1.2em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        button.active { background-color: #00cc00; }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
         #currentJobName { margin: 10px 0; font-weight: bold; }
-        .na-button { background-color: #ff4444; color: white; border: none; cursor: pointer; }
-        .na-button.active { background-color: #00cc00; }
+        .task-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.5); border-radius: 5px; }
+        .subtask-tracker { margin-top: 5px; padding: 5px; background-color: rgba(0, 0, 0, 0.3); border-radius: 3px; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -29,18 +35,39 @@
     <p>Welcome! Complete the tasks below:</p>
     <div id="currentJobName">Current Job: None</div>
     
-    <!-- Checklist with labels, checkboxes, and N/A buttons -->
+    <!-- Checklist with labels, larger checkboxes, N/A buttons, and subtask trackers -->
     <ul class="checklist" id="taskList">
-        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a> <button class="na-button" onclick="toggleNA('flare')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></label></li>
-        <li><label><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a> <button class="na-button" onclick="toggleNA('flare')">N/A</button></label>
+            <div class="subtask-tracker" id="flare-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></label>
+            <div class="subtask-tracker" id="bottoms_pump-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></label>
+            <div class="subtask-tracker" id="air_compressor-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></label>
+            <div class="subtask-tracker" id="salt_water_pump-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></label>
+            <div class="subtask-tracker" id="burner_management-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></label>
+            <div class="subtask-tracker" id="battery_charger-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></label>
+            <div class="subtask-tracker" id="light_poles-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></label>
+            <div class="subtask-tracker" id="fuel_skid-subtask-tracker">Loading subtasks...</div>
+        </li>
+        <li><label><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></label>
+            <div class="subtask-tracker" id="120v_system-subtask-tracker">Loading subtasks...</div>
+        </li>
     </ul>
+
+    <!-- Main Task Tracker -->
+    <div class="task-tracker" id="main-task-tracker">Loading main tasks...</div>
 
     <!-- Buttons -->
     <button onclick="newJob()">New Job</button>
@@ -89,6 +116,7 @@
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
+            updateTrackers();
         });
 
         function saveCurrentState() {
@@ -112,6 +140,7 @@
                 localStorage.setItem('currentTasks', JSON.stringify(tasks));
                 localStorage.setItem('taskNA', JSON.stringify(naStates));
             }
+            updateTrackers();
         }
 
         function toggleNA(taskId) {
@@ -144,6 +173,46 @@
                     checkbox.checked = taskStates[task] || false;
                 }
             });
+        }
+
+        function updateTrackers() {
+            const tasks = ['flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid', '120v_system'];
+            let completed = 0, pending = 0, na = 0;
+
+            tasks.forEach(task => {
+                const checkbox = document.getElementById(task);
+                const naButton = document.querySelector(`#${task} + .na-button`);
+                if (naButton.classList.contains('active')) na++;
+                else if (checkbox.checked) completed++;
+                else pending++;
+
+                // Update subtask tracker for this task
+                updateSubtaskTracker(task);
+            });
+
+            const mainTracker = document.getElementById('main-task-tracker');
+            mainTracker.textContent = `Main Tasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+        }
+
+        function updateSubtaskTracker(taskId) {
+            db.collection('subtasks').doc(taskId).get()
+                .then(doc => {
+                    const tracker = document.getElementById(`${taskId}-subtask-tracker`);
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        let completed = 0, pending = 0, na = 0;
+                        for (let subtask in subtasks) {
+                            if (subtask === 'na') continue;
+                            if (subtasks.na && subtasks.na[subtask]) na++;
+                            else if (subtasks[subtask]) completed++;
+                            else pending++;
+                        }
+                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+                    } else {
+                        tracker.textContent = "No subtasks saved yet.";
+                    }
+                })
+                .catch(error => console.error('Error updating subtask tracker:', error));
         }
 
         function saveJob() {
@@ -205,6 +274,7 @@
                         document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
                         taskStates = { ...job.tasks, na: job.na };
                         updateTaskStates();
+                        updateTrackers();
                         saveCurrentState();
                     }
                 })
@@ -236,6 +306,7 @@
             localStorage.removeItem('currentTasks');
             localStorage.removeItem('taskNA');
             saveCurrentState();
+            updateTrackers();
         }
     </script>
 </body>
