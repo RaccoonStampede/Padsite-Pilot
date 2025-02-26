@@ -18,6 +18,7 @@
         .checklist li { margin: 10px 0; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
+        a.disabled { color: #666; pointer-events: none; text-decoration: none; }
         button { margin-right: 10px; }
         #currentJobName { margin: 10px 0; font-weight: bold; }
     </style>
@@ -29,14 +30,14 @@
     
     <!-- Checklist with labels for accessibility -->
     <ul class="checklist" id="taskList">
-        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a></label></li>
-        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
-        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
-        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
-        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></label></li>
-        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
-        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a></label></li>
-        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html" id="flareLink" onclick="saveCurrentState()">1. Flare</a></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" id="bottomsPumpLink" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" id="airCompressorLink" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" id="saltWaterPumpLink" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" id="burnerManagementLink" onclick="saveCurrentState()">5. Burner Management</a></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" id="batteryChargerLink" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" id="lightPolesLink" onclick="saveCurrentState()">7. Light Poles</a></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" id="fuelSkidLink" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
     </ul>
 
     <!-- Buttons -->
@@ -48,7 +49,6 @@
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
-        // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
             authDomain: "padsitepilot.firebaseapp.com",
@@ -59,11 +59,9 @@
             measurementId: "G-3H5TH08X46"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Global variable
         let currentJobName = null;
 
         window.addEventListener('load', function() {
@@ -95,10 +93,11 @@
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
+            // Load subtask states and update link states
+            checkSubtaskCompletion();
         });
 
         function saveCurrentState() {
-            // Save current job state to localStorage before navigating away
             const tasks = {
                 flare: document.getElementById('flare').checked,
                 bottoms_pump: document.getElementById('bottoms_pump').checked,
@@ -142,7 +141,6 @@
                 .then(() => {
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
-                    // Keep current job state after saving
                     saveCurrentState();
                 })
                 .catch(error => {
@@ -166,8 +164,8 @@
                         document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
                         currentJobName = job.name;
                         document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-                        // Save revisited job state
                         saveCurrentState();
+                        checkSubtaskCompletion();
                     }
                 })
                 .catch(error => console.error('Error loading job:', error));
@@ -190,10 +188,47 @@
             document.getElementById('fuel_skid').checked = false;
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-            // Clear localStorage only when starting a new job
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
-            saveCurrentState(); // Save the new job state
+            saveCurrentState();
+            checkSubtaskCompletion(); // Reset link states for new job
+        }
+
+        function checkSubtaskCompletion() {
+            const tasks = [
+                { id: 'flare', linkId: 'flareLink', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
+                { id: 'bottoms_pump', linkId: 'bottomsPumpLink', subtaskIds: ['example1', 'example2'] }, // Adjust these
+                { id: 'air_compressor', linkId: 'airCompressorLink', subtaskIds: ['example3', 'example4'] },
+                { id: 'salt_water_pump', linkId: 'saltWaterPumpLink', subtaskIds: ['example5', 'example6'] },
+                { id: 'burner_management', linkId: 'burnerManagementLink', subtaskIds: ['example7', 'example8'] },
+                { id: 'battery_charger', linkId: 'batteryChargerLink', subtaskIds: ['example9', 'example10'] },
+                { id: 'light_poles', linkId: 'lightPolesLink', subtaskIds: ['example11', 'example12'] },
+                { id: 'fuel_skid', linkId: 'fuelSkidLink', subtaskIds: ['example13', 'example14'] }
+            ];
+
+            tasks.forEach(task => {
+                db.collection('subtasks').doc(task.id).get()
+                    .then(doc => {
+                        const link = document.getElementById(task.linkId);
+                        if (doc.exists) {
+                            const subtasks = doc.data();
+                            const allCompleted = task.subtaskIds.every(subtaskId => 
+                                subtasks[subtaskId] === 'completed' || subtasks[subtaskId] === 'na'
+                            );
+                            if (allCompleted) {
+                                link.classList.remove('disabled');
+                                document.getElementById(task.id).disabled = false; // Enable checkbox
+                            } else {
+                                link.classList.add('disabled');
+                                document.getElementById(task.id).disabled = true; // Disable checkbox
+                            }
+                        } else {
+                            link.classList.add('disabled');
+                            document.getElementById(task.id).disabled = true; // Disable if no subtasks saved
+                        }
+                    })
+                    .catch(error => console.error('Error checking subtasks:', error));
+            });
         }
     </script>
 </body>
