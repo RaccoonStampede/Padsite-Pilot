@@ -9,36 +9,144 @@
         ul { list-style: none; padding: 0; }
         li { margin: 15px 0; }
         .step { font-size: 0.9em; color: #666; }
+        button { margin-left: 10px; padding: 2px 5px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; }
+        button.active { background-color: #00cc00; }
     </style>
 </head>
 <body>
     <h1>Salt Water Pump Subtasks (SWP)</h1>
     <ul>
-        <li><input type="checkbox"> Salt Water Pump (SWP)
+        <li><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)
+            <button class="na-button" onclick="toggleSubtaskNA('swpLocation', 'salt_water_pump')">N/A</button>
             <div class="step">1. Identify and verify the location of the salt water pump (SWP).</div>
         </li>
-        <li><input type="checkbox"> Install 1” Conduit from Saltwater Pump Disconnect to Location of SWP VFD
+        <li><input type="checkbox" id="conduitInstall"> Install 1” Conduit from Saltwater Pump Disconnect to Location of SWP VFD
+            <button class="na-button" onclick="toggleSubtaskNA('conduitInstall', 'salt_water_pump')">N/A</button>
             <div class="step">1. Measure and install 1” conduit from saltwater pump disconnect to SWP VFD location.</div>
         </li>
-        <li><input type="checkbox"> Install 1” Flex from Conduit to VFD Panel
+        <li><input type="checkbox" id="flexToVFD"> Install 1” Flex from Conduit to VFD Panel
+            <button class="na-button" onclick="toggleSubtaskNA('flexToVFD', 'salt_water_pump')">N/A</button>
             <div class="step">1. Install 1” flex from the conduit to the VFD panel.</div>
         </li>
-        <li><input type="checkbox"> Pull Wire from Disconnect on Power Panel Rack to VFD Panel
+        <li><input type="checkbox" id="wirePull"> Pull Wire from Disconnect on Power Panel Rack to VFD Panel
+            <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'salt_water_pump')">N/A</button>
             <div class="step">1. Pull wire from disconnect on power panel rack to VFD panel.</div>
             <div class="step">2. Terminate wires on top side of disconnect breaker in panel.</div>
         </li>
-        <li><input type="checkbox"> Install 1” Flex from VFD to SWP Motor
+        <li><input type="checkbox" id="flexToMotor"> Install 1” Flex from VFD to SWP Motor
+            <button class="na-button" onclick="toggleSubtaskNA('flexToMotor', 'salt_water_pump')">N/A</button>
             <div class="step">1. Install 1” flex from VFD to SWP motor.</div>
         </li>
-        <li><input type="checkbox"> Pull Wire from VFD to Pump Motor
+        <li><input type="checkbox" id="motorWire"> Pull Wire from VFD to Pump Motor
+            <button class="na-button" onclick="toggleSubtaskNA('motorWire', 'salt_water_pump')">N/A</button>
             <div class="step">1. Pull wire from VFD to pump motor.</div>
             <div class="step">2. Terminate in accordance with nameplate on motor.</div>
         </li>
-        <li><input type="checkbox"> Terminate Wires on VFD Pump Panel on the Bottom of VFD (Remove Cover)
+        <li><input type="checkbox" id="vfdPanelWire"> Terminate Wires on VFD Pump Panel on the Bottom of VFD (Remove Cover)
+            <button class="na-button" onclick="toggleSubtaskNA('vfdPanelWire', 'salt_water_pump')">N/A</button>
             <div class="step">1. Remove cover from the bottom of the VFD pump panel.</div>
             <div class="step">2. Terminate wires on the VFD pump panel according to specifications.</div>
         </li>
     </ul>
     <a href="index.html">Back to Checklist</a>
+
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            loadSubtasks('salt_water_pump');
+        });
+
+        function toggleSubtaskNA(subtaskId, taskId) {
+            const checkbox = document.getElementById(subtaskId);
+            const naButton = document.querySelector(`#${subtaskId} + .na-button`);
+            naButton.classList.toggle('active');
+            if (naButton.classList.contains('active')) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            } else {
+                checkbox.disabled = false;
+            }
+            saveSubtasks(taskId);
+        }
+
+        function saveSubtasks(taskId) {
+            const subtasks = {
+                swpLocation: document.getElementById('swpLocation')?.checked || false,
+                conduitInstall: document.getElementById('conduitInstall')?.checked || false,
+                flexToVFD: document.getElementById('flexToVFD')?.checked || false,
+                wirePull: document.getElementById('wirePull')?.checked || false,
+                flexToMotor: document.getElementById('flexToMotor')?.checked || false,
+                motorWire: document.getElementById('motorWire')?.checked || false,
+                vfdPanelWire: document.getElementById('vfdPanelWire')?.checked || false,
+                na: {
+                    swpLocation: document.querySelector('#swpLocation + .na-button')?.classList.contains('active') || false,
+                    conduitInstall: document.querySelector('#conduitInstall + .na-button')?.classList.contains('active') || false,
+                    flexToVFD: document.querySelector('#flexToVFD + .na-button')?.classList.contains('active') || false,
+                    wirePull: document.querySelector('#wirePull + .na-button')?.classList.contains('active') || false,
+                    flexToMotor: document.querySelector('#flexToMotor + .na-button')?.classList.contains('active') || false,
+                    motorWire: document.querySelector('#motorWire + .na-button')?.classList.contains('active') || false,
+                    vfdPanelWire: document.querySelector('#vfdPanelWire + .na-button')?.classList.contains('active') || false
+                }
+            };
+            db.collection('subtasks').doc(taskId).set(subtasks)
+                .then(() => console.log('Subtasks saved for', taskId))
+                .catch(error => console.error('Error saving subtasks:', error));
+        }
+
+        function loadSubtasks(taskId) {
+            db.collection('subtasks').doc(taskId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        document.getElementById('swpLocation')?.checked = subtasks.swpLocation || false;
+                        document.getElementById('conduitInstall')?.checked = subtasks.conduitInstall || false;
+                        document.getElementById('flexToVFD')?.checked = subtasks.flexToVFD || false;
+                        document.getElementById('wirePull')?.checked = subtasks.wirePull || false;
+                        document.getElementById('flexToMotor')?.checked = subtasks.flexToMotor || false;
+                        document.getElementById('motorWire')?.checked = subtasks.motorWire || false;
+                        document.getElementById('vfdPanelWire')?.checked = subtasks.vfdPanelWire || false;
+                        if (subtasks.na) {
+                            if (subtasks.na.swpLocation) document.querySelector('#swpLocation + .na-button')?.classList.add('active');
+                            if (subtasks.na.conduitInstall) document.querySelector('#conduitInstall + .na-button')?.classList.add('active');
+                            if (subtasks.na.flexToVFD) document.querySelector('#flexToVFD + .na-button')?.classList.add('active');
+                            if (subtasks.na.wirePull) document.querySelector('#wirePull + .na-button')?.classList.add('active');
+                            if (subtasks.na.flexToMotor) document.querySelector('#flexToMotor + .na-button')?.classList.add('active');
+                            if (subtasks.na.motorWire) document.querySelector('#motorWire + .na-button')?.classList.add('active');
+                            if (subtasks.na.vfdPanelWire) document.querySelector('#vfdPanelWire + .na-button')?.classList.add('active');
+                            updateSubtaskDisables();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
+
+        function updateSubtaskDisables() {
+            const subtasks = ['swpLocation', 'conduitInstall', 'flexToVFD', 'wirePull', 'flexToMotor', 'motorWire', 'vfdPanelWire'];
+            subtasks.forEach(subtask => {
+                const checkbox = document.getElementById(subtask);
+                const naButton = document.querySelector(`#${subtask} + .na-button`);
+                if (naButton && naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
