@@ -51,7 +51,7 @@
             <div class="subtask-tracker" id="salt_water_pump-subtask-tracker">Loading subtasks...</div>
         </li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></span> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></span></label>
-            <div class="subtask-tracker" id="burnner_management-subtask-tracker">Loading subtasks...</div>
+            <div class="subtask-tracker" id="burner_management-subtask-tracker">Loading subtasks...</div>
         </li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></span> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></span></label>
             <div class="subtask-tracker" id="battery_charger-subtask-tracker">Loading subtasks...</div>
@@ -62,7 +62,7 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></span> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></span></label>
             <div class="subtask-tracker" id="fuel_skid-subtask-tracker">Loading subtasks...</div>
         </li>
-        <li><label><span class="task-controls"><span class="class-left"><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a></span> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a></span> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></span></label>
             <div class="subtask-tracker" id="120v_system-subtask-tracker">Loading subtasks...</div>
         </li>
     </ul>
@@ -213,9 +213,13 @@
         }
 
         function updateSubtaskTracker(taskId) {
+            const tracker = document.getElementById(`${taskId}-subtask-tracker`);
+            if (!tracker) {
+                console.error(`Subtask tracker not found for task: ${taskId}`);
+                return;
+            }
             db.collection('subtasks').doc(taskId).get()
                 .then(doc => {
-                    const tracker = document.getElementById(`${taskId}-subtask-tracker`);
                     if (doc.exists) {
                         const subtasks = doc.data();
                         let completed = 0, pending = 0, na = 0;
