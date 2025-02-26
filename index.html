@@ -74,9 +74,9 @@
                     console.log('Service Worker registration failed:', error);
                 });
             }
-            // Restore state from localStorage if available
+            // Restore state from localStorage if available, unless revisiting a saved job
             const savedJobName = localStorage.getItem('currentJobName');
-            if (savedJobName) {
+            if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
                 currentJobName = savedJobName;
                 document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
                 const savedTasks = JSON.parse(localStorage.getItem('currentTasks')) || {};
@@ -109,8 +109,10 @@
                 light_poles: document.getElementById('light_poles').checked,
                 fuel_skid: document.getElementById('fuel_skid').checked
             };
-            localStorage.setItem('currentJobName', currentJobName);
-            localStorage.setItem('currentTasks', JSON.stringify(tasks));
+            if (currentJobName) {
+                localStorage.setItem('currentJobName', currentJobName);
+                localStorage.setItem('currentTasks', JSON.stringify(tasks));
+            }
         }
 
         function saveJob() {
@@ -140,7 +142,8 @@
                 .then(() => {
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
-                    // Do NOT clear localStorage here—keep current job state
+                    // Keep current job state after saving
+                    saveCurrentState();
                 })
                 .catch(error => {
                     console.error('Error saving job:', error);
@@ -190,7 +193,7 @@
             // Clear localStorage only when starting a new job
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
-            saveCurrentState(); // Save the new blank job state
+            saveCurrentState(); // Save the new job state
         }
     </script>
 </body>
