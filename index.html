@@ -45,7 +45,25 @@
     <button onclick="saveJob()">Save Job Progress</button>
     <button onclick="window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
+    <!-- Firebase SDKs (Global) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         let currentJobName = null;
 
         window.addEventListener('load', function() {
@@ -56,10 +74,9 @@
                     console.log('Service Worker registration failed:', error);
                 });
             }
-            // Load job from sessionStorage if redirected from saved-jobs.html
             const jobIndex = sessionStorage.getItem('loadJobIndex');
             if (jobIndex !== null) {
-                loadJob(parseInt(jobIndex));
+                loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
         });
@@ -87,24 +104,29 @@
                 timestamp: new Date().toISOString()
             };
 
-            let savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-            savedJobs.push(job);
-            localStorage.setItem('jobs', JSON.stringify(savedJobs));
+            db.collection('jobs').add(job)
+                .then(() => console.log('Job saved to Firestore'))
+                .catch(error => console.error('Error saving job:', error));
         }
 
-        function loadJob(index) {
-            const savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-            const job = savedJobs[index];
-            document.getElementById('flare').checked = job.tasks.flare;
-            document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
-            document.getElementById('air_compressor').checked = job.tasks.air_compressor;
-            document.getElementById('salt_water_pump').checked = job.tasks.salt_water_pump;
-            document.getElementById('burner_management').checked = job.tasks.burner_management;
-            document.getElementById('battery_charger').checked = job.tasks.battery_charger;
-            document.getElementById('light_poles').checked = job.tasks.light_poles;
-            document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
-            currentJobName = job.name;
-            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+        function loadJob(docId) {
+            db.collection('jobs').doc(docId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const job = doc.data();
+                        document.getElementById('flare').checked = job.tasks.flare;
+                        document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
+                        document.getElementById('air_compressor').checked = job.tasks.air_compressor;
+                        document.getElementById('salt_water_pump').checked = job.tasks.salt_water_pump;
+                        document.getElementById('burner_management').checked = job.tasks.burner_management;
+                        document.getElementById('battery_charger').checked = job.tasks.battery_charger;
+                        document.getElementById('light_poles').checked = job.tasks.light_poles;
+                        document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
+                        currentJobName = job.name;
+                        document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                    }
+                })
+                .catch(error => console.error('Error loading job:', error));
         }
 
         function newJob() {
