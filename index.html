@@ -89,8 +89,6 @@
             if (jobIndex !== null) {
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
-            } else {
-                checkSubtaskCompletion();
             }
         });
 
@@ -139,7 +137,6 @@
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
                     saveCurrentState();
-                    checkSubtaskCompletion();
                 })
                 .catch(error => {
                     console.error('Error saving job:', error);
@@ -163,7 +160,6 @@
                         currentJobName = job.name;
                         document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
                         saveCurrentState();
-                        checkSubtaskCompletion();
                     }
                 })
                 .catch(error => console.error('Error loading job:', error));
@@ -189,37 +185,6 @@
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
             saveCurrentState();
-            checkSubtaskCompletion();
-        }
-
-        function checkSubtaskCompletion() {
-            const tasks = [
-                { id: 'flare', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
-                { id: 'bottoms_pump', subtaskIds: ['motor', 'pressure', 'valve'] },
-                { id: 'air_compressor', subtaskIds: ['belt', 'pressureGauge', 'oilLevel'] },
-                { id: 'salt_water_pump', subtaskIds: ['seal', 'inlet', 'motor'] },
-                { id: 'burner_management', subtaskIds: ['sensor', 'controlUnit', 'ignition'] },
-                { id: 'battery_charger', subtaskIds: ['voltage', 'cables', 'indicator'] },
-                { id: 'light_poles', subtaskIds: ['wiring', 'bulb', 'grounding'] },
-                { id: 'fuel_skid', subtaskIds: ['pump', 'filter', 'valve'] }
-            ];
-
-            tasks.forEach(task => {
-                db.collection('subtasks').doc(task.id).get()
-                    .then(doc => {
-                        const checkbox = document.getElementById(task.id);
-                        if (doc.exists) {
-                            const subtasks = doc.data();
-                            const allCompleted = task.subtaskIds.every(subtaskId => 
-                                subtasks[subtaskId] === 'completed' || subtasks[subtaskId] === 'na'
-                            );
-                            checkbox.disabled = !allCompleted;
-                        } else {
-                            checkbox.disabled = true; // Disable by default if no subtask data
-                        }
-                    })
-                    .catch(error => console.error('Error checking subtasks:', error));
-            });
         }
     </script>
 </body>
