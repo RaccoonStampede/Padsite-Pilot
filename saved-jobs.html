@@ -59,11 +59,16 @@
                         querySnapshot.forEach(doc => {
                             console.log('Job document:', doc.data());
                             const job = doc.data();
+                            // Handle missing 'na' field with default empty object
+                            const naStates = job.na || {};
                             const completedCount = Object.values(job.tasks).filter(completed => completed).length;
+                            const naCount = Object.values(naStates).filter(na => na).length;
+                            const totalTasks = 9; // Number of tasks
+                            const pendingCount = totalTasks - completedCount - naCount;
                             const li = document.createElement('li');
                             li.innerHTML = `
                                 ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
-                                ${completedCount}/9 tasks completed)
+                                Completed: ${completedCount}, Pending: ${pendingCount}, N/A: ${naCount})
                                 <button onclick="revisitJob('${doc.id}')">Revisit Job</button>
                             `;
                             savedJobsList.appendChild(li);
