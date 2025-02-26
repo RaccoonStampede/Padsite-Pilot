@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +23,6 @@
         #currentJobName { margin: 10px 0; font-weight: bold; }
     </style>
 </head>
-<!-- Removed manifest link until you add manifest.json -->
 <body>
     <h1>Padsite Pilot</h1>
     <p>Welcome! Complete the tasks below:</p>
@@ -45,11 +45,11 @@
     <button onclick="saveJob()">Save Job Progress</button>
     <button onclick="window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
-    <!-- Firebase SDKs (global, correct version) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <!-- Firebase SDKs (global namespace, v8.10.1) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script>
-        // Ensure Firebase loads first
+        // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
             authDomain: "padsitepilot.firebaseapp.com",
