@@ -46,13 +46,18 @@
 
         function loadSavedJobs() {
             const savedJobsList = document.getElementById('savedJobsList');
-            savedJobsList.innerHTML = '';
+            savedJobsList.innerHTML = '<li>Loading...</li>';
+            console.log('Attempting to load saved jobs from Firestore');
             db.collection('jobs').get()
                 .then(querySnapshot => {
+                    console.log('Query snapshot:', querySnapshot);
                     if (querySnapshot.empty) {
+                        console.log('No jobs found');
                         savedJobsList.innerHTML = '<li>No saved jobs yet.</li>';
                     } else {
+                        savedJobsList.innerHTML = '';
                         querySnapshot.forEach(doc => {
+                            console.log('Job document:', doc.data());
                             const job = doc.data();
                             const completedCount = Object.values(job.tasks).filter(completed => completed).length;
                             const li = document.createElement('li');
@@ -65,10 +70,14 @@
                         });
                     }
                 })
-                .catch(error => console.error('Error loading jobs:', error));
+                .catch(error => {
+                    console.error('Error loading jobs:', error);
+                    savedJobsList.innerHTML = `<li>Error loading jobs: ${error.message}</li>`;
+                });
         }
 
         function revisitJob(docId) {
+            console.log('Revisiting job with ID:', docId);
             sessionStorage.setItem('loadJobIndex', docId);
             window.location.href = 'index.html';
         }
