@@ -8,38 +8,26 @@
         body { 
             font-family: Arial, sans-serif; 
             margin: 20px; 
-            background-image: url('./padsite picture main.jfif'); /* Updated image name */
+            background-image: url('./padsite picture main.jfif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            color: #ffffff; /* White text for readability */
+            color: #ffffff;
         }
-        .checklist { 
-            list-style: none; 
-            padding: 0; 
-        }
-        .checklist li { 
-            margin: 10px 0; 
-        }
-        a { 
-            text-decoration: none; 
-            color: #00ccff; /* Lighter blue links */
-        }
-        a:hover { 
-            text-decoration: underline; 
-        }
-        #savedJobsList { 
-            margin-top: 20px; 
-        }
-        button { 
-            margin-right: 10px; 
-        }
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { margin: 10px 0; }
+        a { text-decoration: none; color: #00ccff; }
+        a:hover { text-decoration: underline; }
+        #savedJobsList { margin-top: 20px; }
+        button { margin-right: 10px; }
+        #currentJobName { margin: 10px 0; font-weight: bold; } /* Display current job name */
     </style>
 </head>
 <link rel="manifest" href="/manifest.json">
 <body>
     <h1>Padsite Pilot</h1>
     <p>Welcome! Complete the tasks below:</p>
+    <div id="currentJobName">Current Job: None</div> <!-- Show current job name -->
     
     <!-- Checklist -->
     <ul class="checklist" id="taskList">
@@ -62,7 +50,8 @@
     <ul id="savedJobsList"></ul>
 
     <script>
-        // Load saved jobs when page loads
+        let currentJobName = null; // Track the current job name
+
         window.addEventListener('load', function() {
             loadSavedJobs();
             if ('serviceWorker' in navigator) {
@@ -75,6 +64,11 @@
         });
 
         function saveJob() {
+            if (!currentJobName) {
+                alert('Please start a new job first!');
+                return;
+            }
+
             const tasks = {
                 flare: document.getElementById('flare').checked,
                 bottoms_pump: document.getElementById('bottoms_pump').checked,
@@ -87,6 +81,7 @@
             };
 
             const job = {
+                name: currentJobName, // Use the name set at start
                 tasks: tasks,
                 timestamp: new Date().toISOString()
             };
@@ -105,8 +100,8 @@
                 const completedCount = Object.values(job.tasks).filter(completed => completed).length;
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    Job from ${new Date(job.timestamp).toLocaleString()} 
-                    (${completedCount}/8 tasks completed)
+                    ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
+                    ${completedCount}/8 tasks completed)
                     <button onclick="loadJob(${index})">Revisit Job</button>
                 `;
                 savedJobsList.appendChild(li);
@@ -124,9 +119,17 @@
             document.getElementById('battery_charger').checked = job.tasks.battery_charger;
             document.getElementById('light_poles').checked = job.tasks.light_poles;
             document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
+            currentJobName = job.name; // Set current job name when revisiting
+            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
         }
 
         function newJob() {
+            const jobName = prompt('Enter job name:');
+            if (!jobName || jobName.trim() === '') {
+                alert('Job name cannot be empty!');
+                return;
+            }
+
             document.getElementById('flare').checked = false;
             document.getElementById('bottoms_pump').checked = false;
             document.getElementById('air_compressor').checked = false;
@@ -135,6 +138,8 @@
             document.getElementById('battery_charger').checked = false;
             document.getElementById('light_poles').checked = false;
             document.getElementById('fuel_skid').checked = false;
+            currentJobName = jobName.trim(); // Set the new job name
+            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
         }
     </script>
 </body>
