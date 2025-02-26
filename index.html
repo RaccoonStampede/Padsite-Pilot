@@ -29,14 +29,14 @@
     
     <!-- Checklist with labels for accessibility -->
     <ul class="checklist" id="taskList">
-        <li><label><input type="checkbox" id="flare"> <a href="flare.html">1. Flare</a></label></li>
-        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html">2. Bottoms Pump</a></label></li>
-        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html">3. Air Compressor</a></label></li>
-        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html">4. Salt Water Pump (SWP)</a></label></li>
-        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html">5. Burner Management</a></label></li>
-        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html">6. Battery Charger</a></label></li>
-        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html">7. Light Poles</a></label></li>
-        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html">8. Fuel Skid</a></label></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
     </ul>
 
     <!-- Buttons -->
@@ -74,12 +74,44 @@
                     console.log('Service Worker registration failed:', error);
                 });
             }
+            // Restore state from localStorage if available
+            const savedJobName = localStorage.getItem('currentJobName');
+            if (savedJobName) {
+                currentJobName = savedJobName;
+                document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                const savedTasks = JSON.parse(localStorage.getItem('currentTasks')) || {};
+                document.getElementById('flare').checked = savedTasks.flare || false;
+                document.getElementById('bottoms_pump').checked = savedTasks.bottoms_pump || false;
+                document.getElementById('air_compressor').checked = savedTasks.air_compressor || false;
+                document.getElementById('salt_water_pump').checked = savedTasks.salt_water_pump || false;
+                document.getElementById('burner_management').checked = savedTasks.burner_management || false;
+                document.getElementById('battery_charger').checked = savedTasks.battery_charger || false;
+                document.getElementById('light_poles').checked = savedTasks.light_poles || false;
+                document.getElementById('fuel_skid').checked = savedTasks.fuel_skid || false;
+            }
+            // Check for revisited job from saved-jobs.html
             const jobIndex = sessionStorage.getItem('loadJobIndex');
             if (jobIndex !== null) {
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
         });
+
+        function saveCurrentState() {
+            // Save current job state to localStorage before navigating away
+            const tasks = {
+                flare: document.getElementById('flare').checked,
+                bottoms_pump: document.getElementById('bottoms_pump').checked,
+                air_compressor: document.getElementById('air_compressor').checked,
+                salt_water_pump: document.getElementById('salt_water_pump').checked,
+                burner_management: document.getElementById('burner_management').checked,
+                battery_charger: document.getElementById('battery_charger').checked,
+                light_poles: document.getElementById('light_poles').checked,
+                fuel_skid: document.getElementById('fuel_skid').checked
+            };
+            localStorage.setItem('currentJobName', currentJobName);
+            localStorage.setItem('currentTasks', JSON.stringify(tasks));
+        }
 
         function saveJob() {
             if (!currentJobName) {
@@ -108,6 +140,10 @@
                 .then(() => {
                     console.log('Job saved to Firestore');
                     alert('Job saved successfully!');
+                    // Clear localStorage after saving to Firestore
+                    localStorage.removeItem('currentJobName');
+                    localStorage.removeItem('currentTasks');
+                    newJob(); // Reset to a new blank job
                 })
                 .catch(error => {
                     console.error('Error saving job:', error);
@@ -130,6 +166,8 @@
                         document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
                         currentJobName = job.name;
                         document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                        // Save revisited job state
+                        saveCurrentState();
                     }
                 })
                 .catch(error => console.error('Error loading job:', error));
@@ -152,6 +190,9 @@
             document.getElementById('fuel_skid').checked = false;
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+            // Clear localStorage for new job
+            localStorage.removeItem('currentJobName');
+            localStorage.removeItem('currentTasks');
         }
     </script>
 </body>
