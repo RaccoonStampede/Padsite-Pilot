@@ -6,32 +6,42 @@
     <title>Burner Management Subtasks</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        .subtask-list { list-style: none; padding: 0; }
-        .subtask-list li { margin: 10px 0; }
-        button { margin-right: 10px; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 20px 0; }
+        .step { font-size: 0.9em; color: #666; }
+        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; } /* Smaller N/A buttons */
+        button.active { background-color: #00cc00; }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
+        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
+        .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
     </style>
 </head>
 <body>
     <h1>Burner Management Subtasks</h1>
-    <ul class="subtask-list" id="subtaskList">
-        <li>Check Sensor: <select id="sensor">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-        <li>Test Control Unit: <select id="controlUnit">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-        <li>Verify Ignition: <select id="ignition">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
+    <ul>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="sensorCalibration"> Verify Sensor Calibration</span> <button class="na-button" onclick="toggleSubtaskNA('sensorCalibration', 'burner_management')">N/A</button></span></label>
+            <div class="step">1. Power off BMS panel.</div>
+            <div class="step">2. Test flame sensor with UV source—should detect within 2 seconds.</div>
+            <div class="step">3. Adjust sensitivity if needed per manual.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="controlUnit"> Test Control Unit Response</span> <button class="na-button" onclick="toggleSubtaskNA('controlUnit', 'burner_management')">N/A</button></span></label>
+            <div class="step">1. Simulate flame failure via test switch.</div>
+            <div class="step">2. Confirm shutdown within 4 seconds.</div>
+            <div class="step">3. Reset and verify restart sequence.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="ignitionCheck"> Check Ignition System</span> <button class="na-button" onclick="toggleSubtaskNA('ignitionCheck', 'burner_management')">N/A</button></span></label>
+            <div class="step">1. Inspect igniter for carbon buildup—clean if dirty.</div>
+            <div class="step">2. Test spark with igniter tester (should arc consistently).</div>
+            <div class="step">3. Ensure proper grounding to prevent misfires.</div>
+        </li>
     </ul>
-    <button onclick="saveSubtasks('burner_management')">Save Subtasks</button>
-    <button onclick="window.location.href='index.html'">Back to Checklist</button>
+    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
+    <a href="index.html">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -51,19 +61,36 @@
 
         window.addEventListener('load', function() {
             loadSubtasks('burner_management');
+            updateSubtaskTracker();
         });
+
+        function toggleSubtaskNA(subtaskId, taskId) {
+            const checkbox = document.getElementById(subtaskId);
+            const naButton = document.querySelector(`#${subtaskId} + .na-button`);
+            naButton.classList.toggle('active');
+            if (naButton.classList.contains('active')) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            } else {
+                checkbox.disabled = false;
+            }
+            saveSubtasks(taskId);
+            updateSubtaskTracker();
+        }
 
         function saveSubtasks(taskId) {
             const subtasks = {
-                sensor: document.getElementById('sensor').value,
-                controlUnit: document.getElementById('controlUnit').value,
-                ignition: document.getElementById('ignition').value
+                sensorCalibration: document.getElementById('sensorCalibration')?.checked || false,
+                controlUnit: document.getElementById('controlUnit')?.checked || false,
+                ignitionCheck: document.getElementById('ignitionCheck')?.checked || false,
+                na: {
+                    sensorCalibration: document.querySelector('#sensorCalibration + .na-button')?.classList.contains('active') || false,
+                    controlUnit: document.querySelector('#controlUnit + .na-button')?.classList.contains('active') || false,
+                    ignitionCheck: document.querySelector('#ignitionCheck + .na-button')?.classList.contains('active') || false
+                }
             };
             db.collection('subtasks').doc(taskId).set(subtasks)
-                .then(() => {
-                    console.log('Subtasks saved for', taskId);
-                    alert('Subtasks saved!');
-                })
+                .then(() => console.log('Subtasks saved for', taskId))
                 .catch(error => console.error('Error saving subtasks:', error));
         }
 
@@ -72,13 +99,10 @@
                 .then(doc => {
                     if (doc.exists) {
                         const subtasks = doc.data();
-                        document.getElementById('sensor').value = subtasks.sensor || 'pending';
-                        document.getElementById('controlUnit').value = subtasks.controlUnit || 'pending';
-                        document.getElementById('ignition').value = subtasks.ignition || 'pending';
-                    }
-                })
-                .catch(error => console.error('Error loading subtasks:', error));
-        }
-    </script>
-</body>
-</html>
+                        document.getElementById('sensorCalibration')?.checked = subtasks.sensorCalibration || false;
+                        document.getElementById('controlUnit')?.checked = subtasks.controlUnit || false;
+                        document.getElementById('ignitionCheck')?.checked = subtasks.ignitionCheck || false;
+                        if (subtasks.na) {
+                            if (subtasks.na.sensorCalibration) document.querySelector('#sensorCalibration + .na-button')?.classList.add('active');
+                            if (subtasks.na.controlUnit) document.querySelector('#controlUnit + .na-button')?.classList.add('active');
+                            if
