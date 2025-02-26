@@ -116,6 +116,7 @@
             };
             const naStates = {};
             for (let task in tasks) {
+                console.log(`Processing task: ${task}`); // Debugging log
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
                 if (naButton) {
                     naStates[task] = naButton.classList.contains('active');
