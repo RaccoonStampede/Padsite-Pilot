@@ -3,70 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salt Water Pump (SWP)</title>
+    <title>Salt Water Pump Subtasks</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .task { margin-bottom: 15px; }
-        .nav-buttons { margin-top: 20px; }
-        button { padding: 10px 20px; margin: 0 5px; }
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        .subtask-list { list-style: none; padding: 0; }
+        .subtask-list li { margin: 10px 0; }
+        button { margin-right: 10px; }
     </style>
 </head>
 <body>
-    <h1>Salt Water Pump (SWP)</h1>
-    <p>Follow these steps for the Salt Water Pump setup:</p>
-    
-    <div class="task">
-        <p>1. Salt Water Pump (SWP).</p>
-        <label><input type="checkbox" class="completed" data-task="swp-1"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-1-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>2. Install 1" conduit from saltwater pump disconnect to location of SWP VFD.</p>
-        <label><input type="checkbox" class="completed" data-task="swp-2"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-2-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>3. Install 1" flex from conduit to VFD panel.</p>
-        <label><input type="checkbox" class="completed" data-task="swp-3"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-3-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>4. Pull wire from disconnect on power panel rack to VFD panel and terminate wires on top side of disconnect breaker in panel.</p>
-        <label><input type="checkbox" class="completed" data-task="swp-4"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-4-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>5. Install 1" flex from VFD to SWP motor.</p>
-        <label><input type="checkbox" class="completed" data-task="swp-5"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-5-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>6. Pull wire from VFD to pump motor and terminate in accordance with nameplate on motor.</p>
-        <label><input type="checkbox" class="completed" data-task="swp-6"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-6-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>7. Terminate wires on the bottom of VFD (remove cover).</p>
-        <label><input type="checkbox" class="completed" data-task="swp-7"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="swp-7-na"> N/A</label>
-    </div>
+    <h1>Salt Water Pump Subtasks</h1>
+    <ul class="subtask-list" id="subtaskList">
+        <li>Check Seal: <select id="seal">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="na">N/A</option>
+        </select></li>
+        <li>Inspect Inlet: <select id="inlet">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="na">N/A</option>
+        </select></li>
+        <li>Test Motor: <select id="motor">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="na">N/A</option>
+        </select></li>
+    </ul>
+    <button onclick="saveSubtasks('salt_water_pump')">Save Subtasks</button>
+    <button onclick="window.location.href='index.html'">Back to Checklist</button>
 
-    <div class="nav-buttons">
-        <button onclick="window.location.href='air_compressor.html'">Back</button>
-        <button onclick="window.location.href='burner_management.html'">Next Task</button>
-    </div>
-
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
-            checkbox.addEventListener('change', () => {
-                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
-                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
-                const other = checkbox.parentElement.parentElement.querySelector(pair);
-                if (checkbox.checked && other.checked) other.checked = false;
-                localStorage.setItem(other.dataset.task, other.checked);
-            });
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            loadSubtasks('salt_water_pump');
         });
+
+        function saveSubtasks(taskId) {
+            const subtasks = {
+                seal: document.getElementById('seal').value,
+                inlet: document.getElementById('inlet').value,
+                motor: document.getElementById('motor').value
+            };
+            db.collection('subtasks').doc(taskId).set(subtasks)
+                .then(() => {
+                    console.log('Subtasks saved for', taskId);
+                    alert('Subtasks saved!');
+                })
+                .catch(error => console.error('Error saving subtasks:', error));
+        }
+
+        function loadSubtasks(taskId) {
+            db.collection('subtasks').doc(taskId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        document.getElementById('seal').value = subtasks.seal || 'pending';
+                        document.getElementById('inlet').value = subtasks.inlet || 'pending';
+                        document.getElementById('motor').value = subtasks.motor || 'pending';
+                    }
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
     </script>
 </body>
 </html>
