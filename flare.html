@@ -6,79 +6,11 @@
     <title>Flare Subtasks</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        .subtask-list { list-style: none; padding: 0; }
-        .subtask-list li { margin: 10px 0; }
-        button { margin-right: 10px; }
     </style>
 </head>
 <body>
     <h1>Flare Subtasks</h1>
-    <ul class="subtask-list" id="subtaskList">
-        <li>Check Ignition: <select id="ignition">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-        <li>Inspect Fuel Line: <select id="fuelLine">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-        <li>Test Burner: <select id="burner">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-    </ul>
-    <button onclick="saveSubtasks('flare')">Save Subtasks</button>
-    <button onclick="window.location.href='index.html'">Back to Checklist</button>
-
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
-            authDomain: "padsitepilot.firebaseapp.com",
-            projectId: "padsitepilot",
-            storageBucket: "padsitepilot.firebasestorage.app",
-            messagingSenderId: "380246060537",
-            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
-            measurementId: "G-3H5TH08X46"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        window.addEventListener('load', function() {
-            loadSubtasks('flare');
-        });
-
-        function saveSubtasks(taskId) {
-            const subtasks = {
-                ignition: document.getElementById('ignition').value,
-                fuelLine: document.getElementById('fuelLine').value,
-                burner: document.getElementById('burner').value
-            };
-            db.collection('subtasks').doc(taskId).set(subtasks)
-                .then(() => {
-                    console.log('Subtasks saved for', taskId);
-                    alert('Subtasks saved!');
-                })
-                .catch(error => console.error('Error saving subtasks:', error));
-        }
-
-        function loadSubtasks(taskId) {
-            db.collection('subtasks').doc(taskId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        document.getElementById('ignition').value = subtasks.ignition || 'pending';
-                        document.getElementById('fuelLine').value = subtasks.fuelLine || 'pending';
-                        document.getElementById('burner').value = subtasks.burner || 'pending';
-                    }
-                })
-                .catch(error => console.error('Error loading subtasks:', error));
-        }
-    </script>
+    <p>This is the Flare subtask page. Add your checklist here.</p>
+    <a href="index.html">Back to Checklist</a>
 </body>
 </html>
