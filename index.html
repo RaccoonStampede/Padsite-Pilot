@@ -18,8 +18,10 @@
         .checklist li { margin: 10px 0; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
-        button { margin-right: 10px; }
+        button { margin-right: 5px; padding: 2px 5px; font-size: 0.8em; }
         #currentJobName { margin: 10px 0; font-weight: bold; }
+        .na-button { background-color: #ff4444; color: white; border: none; cursor: pointer; }
+        .na-button.active { background-color: #00cc00; }
     </style>
 </head>
 <body>
@@ -27,17 +29,17 @@
     <p>Welcome! Complete the tasks below:</p>
     <div id="currentJobName">Current Job: None</div>
     
-    <!-- Checklist with labels for accessibility -->
+    <!-- Checklist with labels, checkboxes, and N/A buttons -->
     <ul class="checklist" id="taskList">
-        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a></label></li>
-        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
-        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
-        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
-        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></label></li>
-        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
-        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a></label></li>
-        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
-        <li><label><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a></label></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a> <button class="na-button" onclick="toggleNA('flare')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></label></li>
+        <li><label><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">9. 120V System</a> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></label></li>
     </ul>
 
     <!-- Buttons -->
@@ -63,6 +65,7 @@
         const db = firebase.firestore();
 
         let currentJobName = null;
+        let taskStates = {};
 
         window.addEventListener('load', function() {
             if ('serviceWorker' in navigator) {
@@ -77,15 +80,9 @@
                 currentJobName = savedJobName;
                 document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
                 const savedTasks = JSON.parse(localStorage.getItem('currentTasks')) || {};
-                document.getElementById('flare').checked = savedTasks.flare || false;
-                document.getElementById('bottoms_pump').checked = savedTasks.bottoms_pump || false;
-                document.getElementById('air_compressor').checked = savedTasks.air_compressor || false;
-                document.getElementById('salt_water_pump').checked = savedTasks.salt_water_pump || false;
-                document.getElementById('burner_management').checked = savedTasks.burner_management || false;
-                document.getElementById('battery_charger').checked = savedTasks.battery_charger || false;
-                document.getElementById('light_poles').checked = savedTasks.light_poles || false;
-                document.getElementById('fuel_skid').checked = savedTasks.fuel_skid || false;
-                document.getElementById('120v_system').checked = savedTasks['120v_system'] || false;
+                const savedNA = JSON.parse(localStorage.getItem('taskNA')) || {};
+                taskStates = { ...savedTasks, na: savedNA };
+                updateTaskStates();
             }
             const jobIndex = sessionStorage.getItem('loadJobIndex');
             if (jobIndex !== null) {
@@ -106,10 +103,47 @@
                 fuel_skid: document.getElementById('fuel_skid').checked,
                 '120v_system': document.getElementById('120v_system').checked
             };
+            const naStates = {};
+            for (let task in tasks) {
+                naStates[task] = document.querySelector(`#${task} + .na-button`).classList.contains('active');
+            }
             if (currentJobName) {
                 localStorage.setItem('currentJobName', currentJobName);
                 localStorage.setItem('currentTasks', JSON.stringify(tasks));
+                localStorage.setItem('taskNA', JSON.stringify(naStates));
             }
+        }
+
+        function toggleNA(taskId) {
+            const naButton = document.querySelector(`#${taskId} + .na-button`);
+            const checkbox = document.getElementById(taskId);
+            naButton.classList.toggle('active');
+            if (naButton.classList.contains('active')) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            } else {
+                checkbox.disabled = false;
+            }
+            taskStates[taskId] = checkbox.checked;
+            taskStates.na = { ...taskStates.na, [taskId]: naButton.classList.contains('active') };
+            saveCurrentState();
+        }
+
+        function updateTaskStates() {
+            const tasks = ['flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid', '120v_system'];
+            tasks.forEach(task => {
+                const checkbox = document.getElementById(task);
+                const naButton = document.querySelector(`#${task} + .na-button`);
+                if (taskStates.na && taskStates.na[task]) {
+                    naButton.classList.add('active');
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    naButton.classList.remove('active');
+                    checkbox.disabled = false;
+                    checkbox.checked = taskStates[task] || false;
+                }
+            });
         }
 
         function saveJob() {
@@ -129,10 +163,15 @@
                 fuel_skid: document.getElementById('fuel_skid').checked,
                 '120v_system': document.getElementById('120v_system').checked
             };
+            const naStates = {};
+            for (let task in tasks) {
+                naStates[task] = document.querySelector(`#${task} + .na-button`).classList.contains('active');
+            }
 
             const job = {
                 name: currentJobName,
                 tasks: tasks,
+                na: naStates,
                 timestamp: new Date().toISOString()
             };
 
@@ -164,6 +203,8 @@
                         document.getElementById('120v_system').checked = job.tasks['120v_system'];
                         currentJobName = job.name;
                         document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                        taskStates = { ...job.tasks, na: job.na };
+                        updateTaskStates();
                         saveCurrentState();
                     }
                 })
@@ -186,10 +227,14 @@
             document.getElementById('light_poles').checked = false;
             document.getElementById('fuel_skid').checked = false;
             document.getElementById('120v_system').checked = false;
+            const naButtons = document.querySelectorAll('.na-button');
+            naButtons.forEach(button => button.classList.remove('active'));
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+            taskStates = { flare: false, bottoms_pump: false, air_compressor: false, salt_water_pump: false, burner_management: false, battery_charger: false, light_poles: false, fuel_skid: false, '120v_system': false, na: {} };
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
+            localStorage.removeItem('taskNA');
             saveCurrentState();
         }
     </script>
