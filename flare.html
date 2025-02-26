@@ -3,85 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flare</title>
+    <title>Padsite Pilot</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .task { margin-bottom: 15px; }
-        .nav-buttons { margin-top: 20px; }
-        button { padding: 10px 20px; margin: 0 5px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-image: url('./padsite picture main.jfif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+        }
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { margin: 10px 0; }
+        a { text-decoration: none; color: #00ccff; }
+        a:hover { text-decoration: underline; }
+        a.disabled { color: #666; pointer-events: none; text-decoration: none; }
+        button { margin-right: 10px; }
+        #currentJobName { margin: 10px 0; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>Flare</h1>
-    <p>Follow these steps for the Flare setup:</p>
+    <h1>Padsite Pilot</h1>
+    <p>Welcome! Complete the tasks below:</p>
+    <div id="currentJobName">Current Job: None</div>
     
-    <div class="task">
-        <p>1. New location - Flare located at far end of most pad sights.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-1"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-1-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>2. Install 3/4" conduit from flare disconnect to location of flare VFD panel, where VFD is located.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-2"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-2-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>3. Install a QUAT box on conduit and continue conduit run to the end of pipe rack that runs right at flare stack, add flex from QUAT to panel.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-3"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-3-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>4. Pull wire through conduit to QUAT box with enough wire to go.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-4"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-4-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>5. Install 3/4" flex from QUAT box to SPCC panel or other type of flare VFD panel.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-5"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-5-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>6. Install 3/4" flex from end of conduit run to flare blower motor.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-6"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-6-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>7. Pull wire (#10 thn, brown/orange/yellow/green) from flare disconnect on panel rack to QUAT box, flare panel, VFD panel.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-7"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-7-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>8. Pull wire from flare panel to flare blower motor and terminate in panel.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-8"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-8-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>9. Terminating wires - Flare panel wires (white) coming from disconnect will terminate on P side of breaker inside VFD.</p>
-        <label><input type="checkbox" class="completed" data-task="flare-9"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-9-na"> N/A</label>
-    </div>
-    <div class="task">
-        <p>10. Blower motor wires will terminate on the drive inside panel. Will have to remove covers to access. (L1-brown as indicated on nameplate).</p>
-        <label><input type="checkbox" class="completed" data-task="flare-10"> Completed</label>
-        <label><input type="checkbox" class="na" data-task="flare-10-na"> N/A</label>
-    </div>
+    <!-- Checklist with labels for accessibility -->
+    <ul class="checklist" id="taskList">
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html" id="flareLink" onclick="saveCurrentState()">1. Flare</a></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" id="bottomsPumpLink" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" id="airCompressorLink" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" id="saltWaterPumpLink" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" id="burnerManagementLink" onclick="saveCurrentState()">5. Burner Management</a></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" id="batteryChargerLink" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" id="lightPolesLink" onclick="saveCurrentState()">7. Light Poles</a></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" id="fuelSkidLink" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
+    </ul>
 
-    <div class="nav-buttons">
-        <button onclick="window.location.href='index.html'">Back to Checklist</button>
-        <button onclick="window.location.href='bottoms_pump.html'">Next Task</button>
-    </div>
+    <!-- Buttons -->
+    <button onclick="newJob()">New Job</button>
+    <button onclick="saveJob()">Save Job Progress</button>
+    <button onclick="saveCurrentState(); window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
+    <!-- Firebase SDKs (global namespace, v7.24.0) -->
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = localStorage.getItem(checkbox.dataset.task) === 'true';
-            checkbox.addEventListener('change', () => {
-                localStorage.setItem(checkbox.dataset.task, checkbox.checked);
-                const pair = checkbox.classList.contains('completed') ? '.na' : '.completed';
-                const other = checkbox.parentElement.parentElement.querySelector(pair);
-                if (checkbox.checked && other.checked) other.checked = false;
-                localStorage.setItem(other.dataset.task, other.checked);
-            });
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let currentJobName = null;
+
+        window.addEventListener('load', function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                }).catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+            }
+            // Restore state from localStorage if available, unless revisiting a saved job
+            const savedJobName = localStorage.getItem('currentJobName');
+            if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
+                currentJobName = savedJobName;
+                document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                const savedTasks = JSON.parse(localStorage.getItem('currentTasks')) || {};
+                document.getElementById('flare').checked = savedTasks.flare || false;
+                document.getElementById('bottoms_pump').checked = savedTasks.bottoms_pump || false;
+                document.getElementById('air_compressor').checked = savedTasks.air_compressor || false;
+                document.getElementById('salt_water_pump').checked = savedTasks.salt_water_pump || false;
+                document.getElementById('burner_management').checked = savedTasks.burner_management || false;
+                document.getElementById('battery_charger').checked = savedTasks.battery_charger || false;
+                document.getElementById('light_poles').checked = savedTasks.light_poles || false;
+                document.getElementById('fuel_skid').checked = savedTasks.fuel_skid || false;
+            }
+            // Check for revisited job from saved-jobs.html
+            const jobIndex = sessionStorage.getItem('loadJobIndex');
+            if (jobIndex !== null) {
+                loadJob(jobIndex);
+                sessionStorage.removeItem('loadJobIndex');
+            }
+            // Load subtask states and update link states
+            checkSubtaskCompletion();
         });
+
+        function saveCurrentState() {
+            const tasks = {
+                flare: document.getElementById('flare').checked,
+                bottoms_pump: document.getElementById('bottoms_pump').checked,
+                air_compressor: document.getElementById('air_compressor').checked,
+                salt_water_pump: document.getElementById('salt_water_pump').checked,
+                burner_management: document.getElementById('burner_management').checked,
+                battery_charger: document.getElementById('battery_charger').checked,
+                light_poles: document.getElementById('light_poles').checked,
+                fuel_skid: document.getElementById('fuel_skid').checked
+            };
+            if (currentJobName) {
+                localStorage.setItem('currentJobName', currentJobName);
+                localStorage.setItem('currentTasks', JSON.stringify(tasks));
+            }
+        }
+
+        function saveJob() {
+            if (!currentJobName) {
+                alert('Please start a new job first!');
+                return;
+            }
+
+            const tasks = {
+                flare: document.getElementById('flare').checked,
+                bottoms_pump: document.getElementById('bottoms_pump').checked,
+                air_compressor: document.getElementById('air_compressor').checked,
+                salt_water_pump: document.getElementById('salt_water_pump').checked,
+                burner_management: document.getElementById('burner_management').checked,
+                battery_charger: document.getElementById('battery_charger').checked,
+                light_poles: document.getElementById('light_poles').checked,
+                fuel_skid: document.getElementById('fuel_skid').checked
+            };
+
+            const job = {
+                name: currentJobName,
+                tasks: tasks,
+                timestamp: new Date().toISOString()
+            };
+
+            db.collection('jobs').add(job)
+                .then(() => {
+                    console.log('Job saved to Firestore');
+                    alert('Job saved successfully!');
+                    saveCurrentState();
+                })
+                .catch(error => {
+                    console.error('Error saving job:', error);
+                    alert('Failed to save job: ' + error.message);
+                });
+        }
+
+        function loadJob(docId) {
+            db.collection('jobs').doc(docId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const job = doc.data();
+                        document.getElementById('flare').checked = job.tasks.flare;
+                        document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
+                        document.getElementById('air_compressor').checked = job.tasks.air_compressor;
+                        document.getElementById('salt_water_pump').checked = job.tasks.salt_water_pump;
+                        document.getElementById('burner_management').checked = job.tasks.burner_management;
+                        document.getElementById('battery_charger').checked = job.tasks.battery_charger;
+                        document.getElementById('light_poles').checked = job.tasks.light_poles;
+                        document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
+                        currentJobName = job.name;
+                        document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                        saveCurrentState();
+                        checkSubtaskCompletion();
+                    }
+                })
+                .catch(error => console.error('Error loading job:', error));
+        }
+
+        function newJob() {
+            const jobName = prompt('Enter job name:');
+            if (!jobName || jobName.trim() === '') {
+                alert('Job name cannot be empty!');
+                return;
+            }
+
+            document.getElementById('flare').checked = false;
+            document.getElementById('bottoms_pump').checked = false;
+            document.getElementById('air_compressor').checked = false;
+            document.getElementById('salt_water_pump').checked = false;
+            document.getElementById('burner_management').checked = false;
+            document.getElementById('battery_charger').checked = false;
+            document.getElementById('light_poles').checked = false;
+            document.getElementById('fuel_skid').checked = false;
+            currentJobName = jobName.trim();
+            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+            localStorage.removeItem('currentJobName');
+            localStorage.removeItem('currentTasks');
+            saveCurrentState();
+            checkSubtaskCompletion(); // Reset link states for new job
+        }
+
+        function checkSubtaskCompletion() {
+            const tasks = [
+                { id: 'flare', linkId: 'flareLink', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
+                { id: 'bottoms_pump', linkId: 'bottomsPumpLink', subtaskIds: ['example1', 'example2'] }, // Adjust these
+                { id: 'air_compressor', linkId: 'airCompressorLink', subtaskIds: ['example3', 'example4'] },
+                { id: 'salt_water_pump', linkId: 'saltWaterPumpLink', subtaskIds: ['example5', 'example6'] },
+                { id: 'burner_management', linkId: 'burnerManagementLink', subtaskIds: ['example7', 'example8'] },
+                { id: 'battery_charger', linkId: 'batteryChargerLink', subtaskIds: ['example9', 'example10'] },
+                { id: 'light_poles', linkId: 'lightPolesLink', subtaskIds: ['example11', 'example12'] },
+                { id: 'fuel_skid', linkId: 'fuelSkidLink', subtaskIds: ['example13', 'example14'] }
+            ];
+
+            tasks.forEach(task => {
+                db.collection('subtasks').doc(task.id).get()
+                    .then(doc => {
+                        const link = document.getElementById(task.linkId);
+                        if (doc.exists) {
+                            const subtasks = doc.data();
+                            const allCompleted = task.subtaskIds.every(subtaskId => 
+                                subtasks[subtaskId] === 'completed' || subtasks[subtaskId] === 'na'
+                            );
+                            if (allCompleted) {
+                                link.classList.remove('disabled');
+                                document.getElementById(task.id).disabled = false; // Enable checkbox
+                            } else {
+                                link.classList.add('disabled');
+                                document.getElementById(task.id).disabled = true; // Disable checkbox
+                            }
+                        } else {
+                            link.classList.add('disabled');
+                            document.getElementById(task.id).disabled = true; // Disable if no subtasks saved
+                        }
+                    })
+                    .catch(error => console.error('Error checking subtasks:', error));
+            });
+        }
     </script>
 </body>
 </html>
