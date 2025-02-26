@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padsite Pilot - Saved Jobs</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-image: url('./padsite picture main.jfif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+        }
+        ul { list-style: none; padding: 0; }
+        li { margin: 10px 0; }
+        button { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Saved Jobs</h1>
+    <ul id="savedJobsList"></ul>
+    <button onclick="window.location.href='index.html'">Back to Main</button>
+
+    <script>
+        window.addEventListener('load', function() {
+            loadSavedJobs();
+        });
+
+        function loadSavedJobs() {
+            const savedJobsList = document.getElementById('savedJobsList');
+            savedJobsList.innerHTML = '';
+            const savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+            savedJobs.forEach((job, index) => {
+                const completedCount = Object.values(job.tasks).filter(completed => completed).length;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
+                    ${completedCount}/8 tasks completed)
+                    <button onclick="revisitJob(${index})">Revisit Job</button>
+                `;
+                savedJobsList.appendChild(li);
+            });
+        }
+
+        function revisitJob(index) {
+            sessionStorage.setItem('loadJobIndex', index); // Pass job index to index.html
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
