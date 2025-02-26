@@ -22,22 +22,22 @@
         #currentJobName { margin: 10px 0; font-weight: bold; }
     </style>
 </head>
-<link rel="manifest" href="/manifest.json">
+<!-- Removed manifest link until you add manifest.json -->
 <body>
     <h1>Padsite Pilot</h1>
     <p>Welcome! Complete the tasks below:</p>
     <div id="currentJobName">Current Job: None</div>
     
-    <!-- Checklist -->
+    <!-- Checklist with labels for accessibility -->
     <ul class="checklist" id="taskList">
-        <li><input type="checkbox" id="flare"> <a href="flare.html">1. Flare</a></li>
-        <li><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html">2. Bottoms Pump</a></li>
-        <li><input type="checkbox" id="air_compressor"> <a href="air_compressor.html">3. Air Compressor</a></li>
-        <li><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html">4. Salt Water Pump (SWP)</a></li>
-        <li><input type="checkbox" id="burner_management"> <a href="burner_management.html">5. Burner Management</a></li>
-        <li><input type="checkbox" id="battery_charger"> <a href="battery_charger.html">6. Battery Charger</a></li>
-        <li><input type="checkbox" id="light_poles"> <a href="light_poles.html">7. Light Poles</a></li>
-        <li><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html">8. Fuel Skid</a></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html">1. Flare</a></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html">2. Bottoms Pump</a></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html">3. Air Compressor</a></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html">4. Salt Water Pump (SWP)</a></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html">5. Burner Management</a></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html">6. Battery Charger</a></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html">7. Light Poles</a></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html">8. Fuel Skid</a></label></li>
     </ul>
 
     <!-- Buttons -->
@@ -45,11 +45,11 @@
     <button onclick="saveJob()">Save Job Progress</button>
     <button onclick="window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <!-- Firebase SDKs (global, correct version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
     <script>
-        // Your Firebase configuration
+        // Ensure Firebase loads first
         const firebaseConfig = {
             apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
             authDomain: "padsitepilot.firebaseapp.com",
@@ -64,6 +64,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Global variable
         let currentJobName = null;
 
         window.addEventListener('load', function() {
@@ -105,8 +106,14 @@
             };
 
             db.collection('jobs').add(job)
-                .then(() => console.log('Job saved to Firestore'))
-                .catch(error => console.error('Error saving job:', error));
+                .then(() => {
+                    console.log('Job saved to Firestore');
+                    alert('Job saved successfully!');
+                })
+                .catch(error => {
+                    console.error('Error saving job:', error);
+                    alert('Failed to save job: ' + error.message);
+                });
         }
 
         function loadJob(docId) {
