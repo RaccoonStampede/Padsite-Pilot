@@ -6,79 +6,49 @@
     <title>Bottoms Pump Subtasks</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        .subtask-list { list-style: none; padding: 0; }
-        .subtask-list li { margin: 10px 0; }
-        button { margin-right: 10px; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 15px 0; }
+        .step { font-size: 0.9em; color: #666; }
     </style>
 </head>
 <body>
     <h1>Bottoms Pump Subtasks</h1>
-    <ul class="subtask-list" id="subtaskList">
-        <li>Check Motor: <select id="motor">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-        <li>Measure Pressure: <select id="pressure">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
-        <li>Inspect Valve: <select id="valve">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="na">N/A</option>
-        </select></li>
+    <ul>
+        <li><input type="checkbox"> Bottoms Pump (Circulation Pump) – Location Varies
+            <div class="step">1. Identify location of bottoms pump (circulation pump—varies by site).</div>
+        </li>
+        <li><input type="checkbox"> Get Needed – 5’ of 2” Rigid Conduit
+            <div class="step">1. Obtain 5 feet of 2” rigid conduit for installation.</div>
+        </li>
+        <li><input type="checkbox"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump
+            <div class="step">1. Measure and install 3/4” conduit from power panel rack to bottoms pump location.</div>
+        </li>
+        <li><input type="checkbox"> Install 3/4” Flex from Conduit to Pump
+            <div class="step">1. Cut 2 pieces of Unistrut at 5”.</div>
+            <div class="step">2. Use 2 exhaust clamps to mount Unistrut to leg of bottoms pump stand.</div>
+        </li>
+        <li><input type="checkbox"> Cut 5’ of 2” Rigid Conduit
+            <div class="step">1. Cut 5 feet of 2” rigid conduit.</div>
+            <div class="step">2. Mount conduit on Unistrut with 2” Unistrut straps (ensure it’s secure).</div>
+        </li>
+        <li><input type="checkbox"> Use Bottoms Pump Panel – Needs Holes
+            <div class="step">1. Drill 4 holes in mounting brackets of bottoms pump panel.</div>
+            <div class="step">2. Use exhaust clamps for hole reference (2 holes on top and 2 on bottom).</div>
+        </li>
+        <li><input type="checkbox"> Mount Pump Panel to Pole Using Exhaust Clamps
+            <div class="step">1. Secure pump panel to pole using exhaust clamps through drilled holes.</div>
+        </li>
+        <li><input type="checkbox"> Install 3/4” Flex from End of Conduit Run to Bottom of Pump Panel
+            <div class="step">1. Install 3/4” flex from the end of the conduit run to the bottom of the pump panel.</div>
+        </li>
+        <li><input type="checkbox"> Pull Wire (Red, Black, Brown, Yellow, Blue, Gray) from Flare Disconnect to Pump Panel Rack
+            <div class="step">1. Pull wires (Red, Black, Brown, Yellow, Blue, Gray) from flare disconnect to pump panel rack.</div>
+            <div class="step">2. Terminate at the top of disconnect inside panel.</div>
+        </li>
+        <li><input type="checkbox"> Install 3/4” Flex from Panel to Pump Motor on Stand
+            <div class="step">1. Install 3/4” flex from the panel to the pump motor on the stand.</div>
+        </li>
     </ul>
-    <button onclick="saveSubtasks('bottoms_pump')">Save Subtasks</button>
-    <button onclick="window.location.href='index.html'">Back to Checklist</button>
-
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
-            authDomain: "padsitepilot.firebaseapp.com",
-            projectId: "padsitepilot",
-            storageBucket: "padsitepilot.firebasestorage.app",
-            messagingSenderId: "380246060537",
-            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
-            measurementId: "G-3H5TH08X46"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        window.addEventListener('load', function() {
-            loadSubtasks('bottoms_pump');
-        });
-
-        function saveSubtasks(taskId) {
-            const subtasks = {
-                motor: document.getElementById('motor').value,
-                pressure: document.getElementById('pressure').value,
-                valve: document.getElementById('valve').value
-            };
-            db.collection('subtasks').doc(taskId).set(subtasks)
-                .then(() => {
-                    console.log('Subtasks saved for', taskId);
-                    alert('Subtasks saved!');
-                })
-                .catch(error => console.error('Error saving subtasks:', error));
-        }
-
-        function loadSubtasks(taskId) {
-            db.collection('subtasks').doc(taskId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        document.getElementById('motor').value = subtasks.motor || 'pending';
-                        document.getElementById('pressure').value = subtasks.pressure || 'pending';
-                        document.getElementById('valve').value = subtasks.valve || 'pending';
-                    }
-                })
-                .catch(error => console.error('Error loading subtasks:', error));
-        }
-    </script>
+    <a href="index.html">Back to Checklist</a>
 </body>
 </html>
