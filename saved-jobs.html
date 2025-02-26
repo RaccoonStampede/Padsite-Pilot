@@ -24,7 +24,25 @@
     <ul id="savedJobsList"></ul>
     <button onclick="window.location.href='index.html'">Back to Main</button>
 
+    <!-- Firebase SDKs (Global) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         window.addEventListener('load', function() {
             loadSavedJobs();
         });
@@ -32,21 +50,25 @@
         function loadSavedJobs() {
             const savedJobsList = document.getElementById('savedJobsList');
             savedJobsList.innerHTML = '';
-            const savedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-            savedJobs.forEach((job, index) => {
-                const completedCount = Object.values(job.tasks).filter(completed => completed).length;
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
-                    ${completedCount}/8 tasks completed)
-                    <button onclick="revisitJob(${index})">Revisit Job</button>
-                `;
-                savedJobsList.appendChild(li);
-            });
+            db.collection('jobs').get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const job = doc.data();
+                        const completedCount = Object.values(job.tasks).filter(completed => completed).length;
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
+                            ${completedCount}/8 tasks completed)
+                            <button onclick="revisitJob('${doc.id}')">Revisit Job</button>
+                        `;
+                        savedJobsList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error loading jobs:', error));
         }
 
-        function revisitJob(index) {
-            sessionStorage.setItem('loadJobIndex', index); // Pass job index to index.html
+        function revisitJob(docId) {
+            sessionStorage.setItem('loadJobIndex', docId);
             window.location.href = 'index.html';
         }
     </script>
