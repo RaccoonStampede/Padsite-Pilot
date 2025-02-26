@@ -27,200 +27,21 @@
     <p>Welcome! Complete the tasks below:</p>
     <div id="currentJobName">Current Job: None</div>
     
-    <!-- Checklist with labels for accessibility -->
+    <!-- Checklist with labels -->
     <ul class="checklist" id="taskList">
-        <li><label><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">1. Flare</a></label></li>
-        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">2. Bottoms Pump</a></label></li>
-        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">3. Air Compressor</a></label></li>
-        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">4. Salt Water Pump (SWP)</a></label></li>
-        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">5. Burner Management</a></label></li>
-        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">6. Battery Charger</a></label></li>
-        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">7. Light Poles</a></label></li>
-        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">8. Fuel Skid</a></label></li>
+        <li><label><input type="checkbox" id="flare"> <a href="flare.html">1. Flare</a></label></li>
+        <li><label><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html">2. Bottoms Pump</a></label></li>
+        <li><label><input type="checkbox" id="air_compressor"> <a href="air_compressor.html">3. Air Compressor</a></label></li>
+        <li><label><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html">4. Salt Water Pump (SWP)</a></label></li>
+        <li><label><input type="checkbox" id="burner_management"> <a href="burner_management.html">5. Burner Management</a></label></li>
+        <li><label><input type="checkbox" id="battery_charger"> <a href="battery_charger.html">6. Battery Charger</a></label></li>
+        <li><label><input type="checkbox" id="light_poles"> <a href="light_poles.html">7. Light Poles</a></label></li>
+        <li><label><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html">8. Fuel Skid</a></label></li>
     </ul>
 
     <!-- Buttons -->
-    <button onclick="newJob()">New Job</button>
-    <button onclick="saveJob()">Save Job Progress</button>
-    <button onclick="saveCurrentState(); window.location.href='saved-jobs.html'">View Saved Jobs</button>
-
-    <!-- Firebase SDKs (global namespace, v7.24.0) -->
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
-            authDomain: "padsitepilot.firebaseapp.com",
-            projectId: "padsitepilot",
-            storageBucket: "padsitepilot.firebasestorage.app",
-            messagingSenderId: "380246060537",
-            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
-            measurementId: "G-3H5TH08X46"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        let currentJobName = null;
-
-        window.addEventListener('load', function() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                }).catch(function(error) {
-                    console.log('Service Worker registration failed:', error);
-                });
-            }
-            const savedJobName = localStorage.getItem('currentJobName');
-            if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
-                currentJobName = savedJobName;
-                document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-                const savedTasks = JSON.parse(localStorage.getItem('currentTasks')) || {};
-                document.getElementById('flare').checked = savedTasks.flare || false;
-                document.getElementById('bottoms_pump').checked = savedTasks.bottoms_pump || false;
-                document.getElementById('air_compressor').checked = savedTasks.air_compressor || false;
-                document.getElementById('salt_water_pump').checked = savedTasks.salt_water_pump || false;
-                document.getElementById('burner_management').checked = savedTasks.burner_management || false;
-                document.getElementById('battery_charger').checked = savedTasks.battery_charger || false;
-                document.getElementById('light_poles').checked = savedTasks.light_poles || false;
-                document.getElementById('fuel_skid').checked = savedTasks.fuel_skid || false;
-            }
-            const jobIndex = sessionStorage.getItem('loadJobIndex');
-            if (jobIndex !== null) {
-                loadJob(jobIndex);
-                sessionStorage.removeItem('loadJobIndex');
-            } else {
-                checkSubtaskCompletion();
-            }
-        });
-
-        function saveCurrentState() {
-            const tasks = {
-                flare: document.getElementById('flare').checked,
-                bottoms_pump: document.getElementById('bottoms_pump').checked,
-                air_compressor: document.getElementById('air_compressor').checked,
-                salt_water_pump: document.getElementById('salt_water_pump').checked,
-                burner_management: document.getElementById('burner_management').checked,
-                battery_charger: document.getElementById('battery_charger').checked,
-                light_poles: document.getElementById('light_poles').checked,
-                fuel_skid: document.getElementById('fuel_skid').checked
-            };
-            if (currentJobName) {
-                localStorage.setItem('currentJobName', currentJobName);
-                localStorage.setItem('currentTasks', JSON.stringify(tasks));
-            }
-        }
-
-        function saveJob() {
-            if (!currentJobName) {
-                alert('Please start a new job first!');
-                return;
-            }
-
-            const tasks = {
-                flare: document.getElementById('flare').checked,
-                bottoms_pump: document.getElementById('bottoms_pump').checked,
-                air_compressor: document.getElementById('air_compressor').checked,
-                salt_water_pump: document.getElementById('salt_water_pump').checked,
-                burner_management: document.getElementById('burner_management').checked,
-                battery_charger: document.getElementById('battery_charger').checked,
-                light_poles: document.getElementById('light_poles').checked,
-                fuel_skid: document.getElementById('fuel_skid').checked
-            };
-
-            const job = {
-                name: currentJobName,
-                tasks: tasks,
-                timestamp: new Date().toISOString()
-            };
-
-            db.collection('jobs').add(job)
-                .then(() => {
-                    console.log('Job saved to Firestore');
-                    alert('Job saved successfully!');
-                    saveCurrentState();
-                    checkSubtaskCompletion(); // Update checkbox states after saving
-                })
-                .catch(error => {
-                    console.error('Error saving job:', error);
-                    alert('Failed to save job: ' + error.message);
-                });
-        }
-
-        function loadJob(docId) {
-            db.collection('jobs').doc(docId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const job = doc.data();
-                        document.getElementById('flare').checked = job.tasks.flare;
-                        document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
-                        document.getElementById('air_compressor').checked = job.tasks.air_compressor;
-                        document.getElementById('salt_water_pump').checked = job.tasks.salt_water_pump;
-                        document.getElementById('burner_management').checked = job.tasks.burner_management;
-                        document.getElementById('battery_charger').checked = job.tasks.battery_charger;
-                        document.getElementById('light_poles').checked = job.tasks.light_poles;
-                        document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
-                        currentJobName = job.name;
-                        document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-                        saveCurrentState();
-                        checkSubtaskCompletion();
-                    }
-                })
-                .catch(error => console.error('Error loading job:', error));
-        }
-
-        function newJob() {
-            const jobName = prompt('Enter job name:');
-            if (!jobName || jobName.trim() === '') {
-                alert('Job name cannot be empty!');
-                return;
-            }
-
-            document.getElementById('flare').checked = false;
-            document.getElementById('bottoms_pump').checked = false;
-            document.getElementById('air_compressor').checked = false;
-            document.getElementById('salt_water_pump').checked = false;
-            document.getElementById('burner_management').checked = false;
-            document.getElementById('battery_charger').checked = false;
-            document.getElementById('light_poles').checked = false;
-            document.getElementById('fuel_skid').checked = false;
-            currentJobName = jobName.trim();
-            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-            localStorage.removeItem('currentJobName');
-            localStorage.removeItem('currentTasks');
-            saveCurrentState();
-            checkSubtaskCompletion();
-        }
-
-        function checkSubtaskCompletion() {
-            const tasks = [
-                { id: 'flare', subtaskIds: ['ignition', 'fuelLine', 'burner'] },
-                { id: 'bottoms_pump', subtaskIds: ['motor', 'pressure', 'valve'] },
-                { id: 'air_compressor', subtaskIds: ['belt', 'pressureGauge', 'oilLevel'] },
-                { id: 'salt_water_pump', subtaskIds: ['seal', 'inlet', 'motor'] },
-                { id: 'burner_management', subtaskIds: ['sensor', 'controlUnit', 'ignition'] },
-                { id: 'battery_charger', subtaskIds: ['voltage', 'cables', 'indicator'] },
-                { id: 'light_poles', subtaskIds: ['wiring', 'bulb', 'grounding'] },
-                { id: 'fuel_skid', subtaskIds: ['pump', 'filter', 'valve'] }
-            ];
-
-            tasks.forEach(task => {
-                db.collection('subtasks').doc(task.id).get()
-                    .then(doc => {
-                        const checkbox = document.getElementById(task.id);
-                        if (doc.exists) {
-                            const subtasks = doc.data();
-                            const allCompleted = task.subtaskIds.every(subtaskId => 
-                                subtasks[subtaskId] === 'completed' || subtasks[subtaskId] === 'na'
-                            );
-                            checkbox.disabled = !allCompleted;
-                        } else {
-                            checkbox.disabled = true; // Disable by default until subtasks are saved
-                        }
-                    })
-                    .catch(error => console.error('Error checking subtasks:', error));
-            });
-        }
-    </script>
+    <button onclick="alert('New Job not implemented yet')">New Job</button>
+    <button onclick="alert('Save Job not implemented yet')">Save Job Progress</button>
+    <button onclick="window.location.href='saved-jobs.html'">View Saved Jobs</button>
 </body>
 </html>
