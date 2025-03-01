@@ -291,7 +291,7 @@
             naButtons.forEach(button => button.classList.remove('active'));
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-            taskStates = { flare: false, bottoms_pump: false, air_compressor: false, salt_water_pump: false, burner_management: false, battery_charger: false, light_poles: false, fuel_skid: false, na: {} };
+            taskStates = { power_distribution_rack: false, locate_equipment: false, flare: false, bottoms_pump: false, air_compressor: false, salt_water_pump: false, burner_management: false, battery_charger: false, light_poles: false, fuel_skid: false, na: {} };
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
             localStorage.removeItem('taskNA');
