@@ -159,7 +159,7 @@
         }
 
         function updateTaskStates() {
-            const tasks = ['power_distribution_rack','locate_equipment','flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
