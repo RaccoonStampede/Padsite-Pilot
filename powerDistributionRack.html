@@ -13,14 +13,12 @@
         ul { list-style: none; padding: 0; }
         li { margin: 20px 0; }
         .step { font-size: 0.9em; color: #666; }
-        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; }
-        button.active { background-color: #00cc00; }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; justify-content: space-between; }
+        .task-controls { display: flex; align-items: center; }
         .task-left { display: flex; align-items: center; gap: 10px; }
         .subtask-tracker { 
             margin-top: 20px; 
@@ -36,32 +34,32 @@
 <body>
     <h1>Power Distribution Rack Subtasks</h1>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmPowerSources"> Confirm Location of Existing Power Sources</span> <button class="na-button" onclick="toggleSubtaskNA('confirmPowerSources', 'power')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmPowerSources" onchange="saveSubtasks('power_distribution_rack')"> Confirm Location of Existing Power Sources</span></span></label>
             <div class="step">1. Confirm the location of existing power sources for 120/240V and 277/480V.</div>
             <div class="step">2. Look for an existing electrical panel, skid, or power distribution rack.</div>
             <div class="step">3. If the location has none of these, a generator will be used to power the location.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmGenerator"> Confirm Generator Location</span> <button class="na-button" onclick="toggleSubtaskNA('confirmGenerator', 'power')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmGenerator" onchange="saveSubtasks('power_distribution_rack')"> Confirm Generator Location</span></span></label>
             <div class="step">1. Confirm with the site manager where the generator will be placed when it arrives.</div>
             <div class="step">2. This location will be where you build the power distribution rack, installed parallel with the pipe rack.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateExistingSkid"> Locate Existing Electrical Skid and/or Existing Power Distribution Rack</span> <button class="na-button" onclick="toggleSubtaskNA('locateExistingSkid', 'power')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateExistingSkid" onchange="saveSubtasks('power_distribution_rack')"> Locate Existing Electrical Skid and/or Existing Power Distribution Rack</span></span></label>
             <div class="step">1. If the power distribution rack is not on location, you will need to confirm where the new rack will be built.</div>
             <div class="step">2. Route 120/240V to the location directly.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="buildRack"> Build Rack</span> <button class="na-button" onclick="toggleSubtaskNA('buildRack', 'power')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="buildRack" onchange="saveSubtasks('power_distribution_rack')"> Build Rack</span></span></label>
             <div class="step">1. Post holes will be located 3’ from the pipe rack that runs down, 4’6” apart.</div>
             <div class="step">2. Holes will be 2’+ deep.</div>
             <div class="step">3. Use drop augers to dig holes.</div>
             <div class="step">4. Place 2” rigid conduit in each hole and cement, level poles perfectly (let dry before proceeding to the next step).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installUnistrut"> Install Unistrut on Rack</span> <button class="na-button" onclick="toggleSubtaskNA('installUnistrut', 'power')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installUnistrut" onchange="saveSubtasks('power_distribution_rack')"> Install Unistrut on Rack</span></span></label>
             <div class="step">1. Use 3 pieces of Unistrut #9, cut at 5 feet long.</div>
             <div class="step">2. Mount to poles with 2½ inch exhaust clamps.</div>
         </li>
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
-    <a href="index.html">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('power_distribution_rack')">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -80,38 +78,9 @@
         const db = firebase.firestore();
 
         window.addEventListener('load', function() {
-            loadSubtasks('power');
+            loadSubtasks('power_distribution_rack');
             updateSubtaskTracker();
         });
-
-        function toggleSubtaskNA(subtaskId, taskId) {
-            console.log(`toggleSubtaskNA called for: ${subtaskId}`); // Debug log
-            const checkbox = document.getElementById(subtaskId);
-            if (!checkbox) {
-                console.error(`Checkbox not found for subtask: ${subtaskId}`);
-                return;
-            }
-            const taskControls = checkbox.closest('.task-controls');
-            if (!taskControls) {
-                console.error(`Task controls not found for subtask: ${subtaskId}`);
-                return;
-            }
-            const naButton = taskControls.querySelector('.na-button');
-            if (!naButton) {
-                console.error(`N/A button not found for subtask: ${subtaskId}`);
-                return;
-            }
-            
-            naButton.classList.toggle('active');
-            if (naButton.classList.contains('active')) {
-                checkbox.disabled = true;
-                checkbox.checked = false;
-            } else {
-                checkbox.disabled = false;
-            }
-            saveSubtasks(taskId);
-            updateSubtaskTracker();
-        }
 
         function saveSubtasks(taskId) {
             const subtasks = {
@@ -119,75 +88,35 @@
                 confirmGenerator: document.getElementById('confirmGenerator')?.checked || false,
                 locateExistingSkid: document.getElementById('locateExistingSkid')?.checked || false,
                 buildRack: document.getElementById('buildRack')?.checked || false,
-                installUnistrut: document.getElementById('installUnistrut')?.checked || false,
-                na: {
-                    confirmPowerSources: document.querySelector('#confirmPowerSources')?.closest('.task-controls')?.querySelector('.na-button')?.classList.contains('active') || false,
-                    confirmGenerator: document.querySelector('#confirmGenerator')?.closest('.task-controls')?.querySelector('.na-button')?.classList.contains('active') || false,
-                    locateExistingSkid: document.querySelector('#locateExistingSkid')?.closest('.task-controls')?.querySelector('.na-button')?.classList.contains('active') || false,
-                    buildRack: document.querySelector('#buildRack')?.closest('.task-controls')?.querySelector('.na-button')?.classList.contains('active') || false,
-                    installUnistrut: document.querySelector('#installUnistrut')?.closest('.task-controls')?.querySelector('.na-button')?.classList.contains('active') || false
-                }
+                installUnistrut: document.getElementById('installUnistrut')?.checked || false
             };
-            db.collection('subtasks').doc(taskId).set(subtasks)
-                .then(() => console.log('Subtasks saved for', taskId))
-                .catch(error => console.error('Error saving subtasks:', error));
+            localStorage.setItem(`subtasks_${taskId}`, JSON.stringify(subtasks)); // Save to localStorage
+            updateSubtaskTracker();
         }
 
         function loadSubtasks(taskId) {
-            db.collection('subtasks').doc(taskId).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        document.getElementById('confirmPowerSources')?.checked = subtasks.confirmPowerSources || false;
-                        document.getElementById('confirmGenerator')?.checked = subtasks.confirmGenerator || false;
-                        document.getElementById('locateExistingSkid')?.checked = subtasks.locateExistingSkid || false;
-                        document.getElementById('buildRack')?.checked = subtasks.buildRack || false;
-                        document.getElementById('installUnistrut')?.checked = subtasks.installUnistrut || false;
-                        if (subtasks.na) {
-                            ['confirmPowerSources', 'confirmGenerator', 'locateExistingSkid', 'buildRack', 'installUnistrut'].forEach(subtask => {
-                                const naButton = document.querySelector(`#${subtask}`)?.closest('.task-controls')?.querySelector('.na-button');
-                                if (subtasks.na[subtask] && naButton) naButton.classList.add('active');
-                            });
-                            updateSubtaskDisables();
-                        }
-                    }
-                })
-                .catch(error => console.error('Error loading subtasks:', error));
-        }
-
-        function updateSubtaskDisables() {
-            const subtasks = ['confirmPowerSources', 'confirmGenerator', 'locateExistingSkid', 'buildRack', 'installUnistrut'];
-            subtasks.forEach(subtask => {
-                const checkbox = document.getElementById(subtask);
-                const naButton = checkbox?.closest('.task-controls')?.querySelector('.na-button');
-                if (naButton && naButton.classList.contains('active')) {
-                    checkbox.disabled = true;
-                    checkbox.checked = false;
-                } else if (checkbox) {
-                    checkbox.disabled = false;
-                }
-            });
+            const savedSubtasks = JSON.parse(localStorage.getItem(`subtasks_${taskId}`)) || {};
+            document.getElementById('confirmPowerSources')?.checked = savedSubtasks.confirmPowerSources || false;
+            document.getElementById('confirmGenerator')?.checked = savedSubtasks.confirmGenerator || false;
+            document.getElementById('locateExistingSkid')?.checked = savedSubtasks.locateExistingSkid || false;
+            document.getElementById('buildRack')?.checked = savedSubtasks.buildRack || false;
+            document.getElementById('installUnistrut')?.checked = savedSubtasks.installUnistrut || false;
         }
 
         function updateSubtaskTracker() {
-            db.collection('subtasks').doc('power').get()
-                .then(doc => {
-                    const tracker = document.getElementById('subtask-tracker');
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        let completed = 0, pending = 0, na = 0;
-                        for (let subtask in subtasks) {
-                            if (subtask === 'na') continue;
-                            if (subtasks.na && subtasks.na[subtask]) na++;
-                            else if (subtasks[subtask]) completed++;
-                            else pending++;
-                        }
-                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
-                    } else {
-                        tracker.textContent = "No subtasks saved yet.";
-                    }
-                })
-                .catch(error => console.error('Error updating subtask tracker:', error));
+            const subtasks = {
+                confirmPowerSources: document.getElementById('confirmPowerSources')?.checked || false,
+                confirmGenerator: document.getElementById('confirmGenerator')?.checked || false,
+                locateExistingSkid: document.getElementById('locateExistingSkid')?.checked || false,
+                buildRack: document.getElementById('buildRack')?.checked || false,
+                installUnistrut: document.getElementById('installUnistrut')?.checked || false
+            };
+            let completed = 0, pending = 0;
+            for (let subtask in subtasks) {
+                if (subtasks[subtask]) completed++;
+                else pending++;
+            }
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
 </body>
