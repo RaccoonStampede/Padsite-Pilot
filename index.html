@@ -38,7 +38,6 @@
     <p>Welcome! Complete the tasks below:</p>
     <div id="currentJobName">Current Job: None</div>
     
-    <!-- Checklist with labels, large checkbox, small N/A on right, no subtask trackers -->
     <ul class="checklist" id="taskList">
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="power_distribution_rack"> <a href="powerDistributionRack.html" onclick="saveCurrentState()">1. Power Distribution Rack</a></span> <button class="na-button" onclick="toggleNA('power_distribution_rack')">N/A</button></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locate_equipment"> <a href="locateEquipment.html" onclick="saveCurrentState()">2. Locate Equipment</a></span> <button class="na-button" onclick="toggleNA('locate_equipment')">N/A</button></span></label></li>
@@ -52,15 +51,12 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">10. Fuel Skid</a></span> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></span></label></li>
     </ul>
 
-    <!-- Main Task Tracker -->
     <div class="task-tracker" id="main-task-tracker">Loading main tasks...</div>
 
-    <!-- Buttons -->
     <button onclick="newJob()">New Job</button>
     <button onclick="saveJob()">Save Job Progress</button>
     <button onclick="saveCurrentState(); window.location.href='saved-jobs.html'">View Saved Jobs</button>
 
-    <!-- Firebase SDKs (global namespace, v7.24.0) -->
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
@@ -75,23 +71,12 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        console.log('Firebase initialized:', firebase.app().name);
         const db = firebase.firestore();
 
         let currentJobName = null;
         let taskStates = {};
 
         window.addEventListener('load', function() {
-            // Optional: Comment out or remove Service Worker if not needed
-            /*
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                }).catch(function(error) {
-                    console.log('Service Worker registration failed:', error);
-                });
-            }
-            */
             const savedJobName = localStorage.getItem('currentJobName');
             if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
                 currentJobName = savedJobName;
@@ -106,6 +91,7 @@
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
+            syncSubtaskStates(); // Sync subtask states on load
             updateTrackers();
         });
 
@@ -124,14 +110,8 @@
             };
             const naStates = {};
             for (let task in tasks) {
-                console.log(`Processing task: ${task}`); // Debugging log
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
-                if (naButton) {
-                    naStates[task] = naButton.classList.contains('active');
-                } else {
-                    console.warn(`N/A button not found for task: ${task}`);
-                    naStates[task] = false; // Default to false if not found
-                }
+                naStates[task] = naButton ? naButton.classList.contains('active') : false;
             }
             if (currentJobName) {
                 localStorage.setItem('currentJobName', currentJobName);
@@ -155,8 +135,6 @@
                 taskStates[taskId] = checkbox.checked;
                 taskStates.na = { ...taskStates.na, [taskId]: naButton.classList.contains('active') };
                 saveCurrentState();
-            } else {
-                console.error(`N/A button not found for task: ${taskId}`);
             }
         }
 
@@ -175,8 +153,6 @@
                         checkbox.disabled = false;
                         checkbox.checked = taskStates[task] || false;
                     }
-                } else {
-                    console.warn(`N/A button not found for task: ${task}`);
                 }
             });
         }
@@ -184,7 +160,6 @@
         function updateTrackers() {
             const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             let completed = 0, pending = 0, na = 0;
-
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
@@ -192,9 +167,7 @@
                 else if (checkbox.checked) completed++;
                 else pending++;
             });
-
-            const mainTracker = document.getElementById('main-task-tracker');
-            mainTracker.textContent = `Main Tasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+            document.getElementById('main-task-tracker').textContent = `Main Tasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
         }
 
         function saveJob() {
@@ -202,7 +175,6 @@
                 alert('Please start a new job first!');
                 return;
             }
-
             const tasks = {
                 power_distribution_rack: document.getElementById('power_distribution_rack').checked,
                 locate_equipment: document.getElementById('locate_equipment').checked,
@@ -218,22 +190,14 @@
             const naStates = {};
             for (let task in tasks) {
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
-                if (naButton) {
-                    naStates[task] = naButton.classList.contains('active');
-                } else {
-                    console.warn(`N/A button not found for task: ${task}`);
-                    naStates[task] = false; // Default to false if not found
-                }
+                naStates[task] = naButton ? naButton.classList.contains('active') : false;
             }
-
             const job = {
                 name: currentJobName,
                 tasks: tasks,
                 na: naStates,
                 timestamp: new Date().toISOString()
             };
-
-            console.log('Attempting to save job:', job);
             db.collection('jobs').add(job)
                 .then(() => {
                     console.log('Job saved successfully to Firestore');
@@ -256,62 +220,4 @@
                         document.getElementById('flare').checked = job.tasks.flare;
                         document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
                         document.getElementById('air_compressor').checked = job.tasks.air_compressor;
-                        document.getElementById('salt_water_pump').checked = job.tasks.salt_water_pump;
-                        document.getElementById('burner_management').checked = job.tasks.burner_management;
-                        document.getElementById('battery_charger').checked = job.tasks.battery_charger;
-                        document.getElementById('light_poles').checked = job.tasks.light_poles;
-                        document.getElementById('fuel_skid').checked = job.tasks.fuel_skid;
-                        currentJobName = job.name;
-                        document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-                        taskStates = { ...job.tasks, na: job.na };
-                        updateTaskStates();
-                        updateTrackers();
-                        saveCurrentState();
-                    }
-                })
-                .catch(error => console.error('Error loading job:', error));
-        }
-
-        function newJob() {
-            const jobName = prompt('Enter job name:');
-            if (!jobName || jobName.trim() === '') {
-                alert('Job name cannot be empty!');
-                return;
-            }
-
-            document.getElementById('power_distribution_rack').checked = false;
-            document.getElementById('locate_equipment').checked = false;
-            document.getElementById('flare').checked = false;
-            document.getElementById('bottoms_pump').checked = false;
-            document.getElementById('air_compressor').checked = false;
-            document.getElementById('salt_water_pump').checked = false;
-            document.getElementById('burner_management').checked = false;
-            document.getElementById('battery_charger').checked = false;
-            document.getElementById('light_poles').checked = false;
-            document.getElementById('fuel_skid').checked = false;
-            const naButtons = document.querySelectorAll('.na-button');
-            naButtons.forEach(button => button.classList.remove('active'));
-            currentJobName = jobName.trim();
-            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-            taskStates = { 
-                power_distribution_rack: false, 
-                locate_equipment: false, 
-                flare: false, 
-                bottoms_pump: false, 
-                air_compressor: false, 
-                salt_water_pump: false, 
-                burner_management: false, 
-                battery_charger: false, 
-                light_poles: false, 
-                fuel_skid: false, 
-                na: {} 
-            };
-            localStorage.removeItem('currentJobName');
-            localStorage.removeItem('currentTasks');
-            localStorage.removeItem('taskNA');
-            saveCurrentState();
-            updateTrackers();
-        }
-    </script>
-</body>
-</html>
+                        document.getElementById('salt_water_pump').checked
