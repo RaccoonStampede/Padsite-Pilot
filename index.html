@@ -21,15 +21,16 @@
         .checklist li { margin: 20px 0; position: relative; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
-        button { padding: 5px 8px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; } /* Smaller N/A buttons */
+        button { padding: 5px 8px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; }
         button.active { background-color: #00cc00; }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; justify-content: space-between; align-items: center; } /* Right-aligned N/A */
-        .task-left { display: flex; align-items: center; gap: 10px; } /* 10px gap between checkbox and name */
+        .task-controls { display: flex; justify-content: space-between; align-items: center; }
+        .task-left { display: flex; align-items: center; gap: 10px; }
+        .task-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; color: #ffffff; }
     </style>
 </head>
 <body>
@@ -39,16 +40,16 @@
     
     <!-- Checklist with labels, large checkbox, small N/A on right, no subtask trackers -->
     <ul class="checklist" id="taskList">
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="power_distribution_rack"> <a href="power_distribution_rack" onclick="saveCurrentState()">1. Power Distribution Rack</a></span> <button class="na-button" onclick="toggleNA('power_distribution_rack')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locate_equipment"> <a href="locate_equipment" onclick="saveCurrentState()">2. Locate Equipment</a></span> <button class="na-button" onclick="toggleNA('locate_equipment')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare"> <a href="flare.html" onclick="saveCurrentState()">3. Flare</a></span> <button class="na-button" onclick="toggleNA('flare')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">4. Bottoms Pump</a></span> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">5. Air Compressor</a></span> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">6. Salt Water Pump (SWP)</a></span> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">7. Burner Management</a></span> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">8. Battery Charger</a></span> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">9. Light Poles</a></span> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="fuel_skid"> <a href="fuel_skid.html" onclick="saveCurrentState()">10. Fuel Skid</a></span> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="power_distribution_rack"> <a href="power_distribution_rack.html" onclick="saveCurrentState()">1. Power Distribution Rack</a></span> <button class="na-button" onclick="toggleNA('power_distribution_rack')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locate_equipment"> <a href="locateEquipment.html" onclick="saveCurrentState()">2. Locate Equipment</a></span> <button class="na-button" onclick="toggleNA('locate_equipment')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare"> <a href="flareSubtasks.html" onclick="saveCurrentState()">3. Flare</a></span> <button class="na-button" onclick="toggleNA('flare')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="bottoms_pump"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">4. Bottoms Pump</a></span> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">5. Air Compressor</a></span> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="salt_water_pump"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">6. Salt Water Pump (SWP)</a></span> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">7. Burner Management</a></span> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="battery_charger"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">8. Battery Charger</a></span> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">9. Light Poles</a></span> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="fuel_skid"> <a href="pumpSubtasks.html" onclick="saveCurrentState()">10. Fuel Skid</a></span> <button class="na-button" onclick="toggleNA('fuel_skid')">N/A</button></span></label></li>
     </ul>
 
     <!-- Main Task Tracker -->
@@ -203,8 +204,8 @@
             }
 
             const tasks = {
-                power_distribution_rack: document.getElementById(power_distribution_rack).checked,
-                locate_equipment: document.getElementById(locate_equipment).checked,
+                power_distribution_rack: document.getElementById('power_distribution_rack').checked,
+                locate_equipment: document.getElementById('locate_equipment').checked,
                 flare: document.getElementById('flare').checked,
                 bottoms_pump: document.getElementById('bottoms_pump').checked,
                 air_compressor: document.getElementById('air_compressor').checked,
@@ -228,7 +229,7 @@
             const job = {
                 name: currentJobName,
                 tasks: tasks,
-                na: naStates, // Ensure N/A states are saved
+                na: naStates,
                 timestamp: new Date().toISOString()
             };
 
@@ -250,8 +251,8 @@
                 .then(doc => {
                     if (doc.exists) {
                         const job = doc.data();
-                        document.getElementById('power_distribution_rack').checked =job.tasks.power_distribution_rack;
-                        document.getElementById('locate_equipment').checked =job.tasks.locate_equipment;
+                        document.getElementById('power_distribution_rack').checked = job.tasks.power_distribution_rack;
+                        document.getElementById('locate_equipment').checked = job.tasks.locate_equipment;
                         document.getElementById('flare').checked = job.tasks.flare;
                         document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
                         document.getElementById('air_compressor').checked = job.tasks.air_compressor;
@@ -278,8 +279,8 @@
                 return;
             }
 
-            document.getElementById('power_distribution_rack').checked =false;
-            document.getElementById('locate_equipment').checked =false;
+            document.getElementById('power_distribution_rack').checked = false;
+            document.getElementById('locate_equipment').checked = false;
             document.getElementById('flare').checked = false;
             document.getElementById('bottoms_pump').checked = false;
             document.getElementById('air_compressor').checked = false;
@@ -292,7 +293,19 @@
             naButtons.forEach(button => button.classList.remove('active'));
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-            taskStates = { power_distribution_rack: false, locate_equipment: false, flare: false, bottoms_pump: false, air_compressor: false, salt_water_pump: false, burner_management: false, battery_charger: false, light_poles: false, fuel_skid: false, na: {} };
+            taskStates = { 
+                power_distribution_rack: false, 
+                locate_equipment: false, 
+                flare: false, 
+                bottoms_pump: false, 
+                air_compressor: false, 
+                salt_water_pump: false, 
+                burner_management: false, 
+                battery_charger: false, 
+                light_poles: false, 
+                fuel_skid: false, 
+                na: {} 
+            };
             localStorage.removeItem('currentJobName');
             localStorage.removeItem('currentTasks');
             localStorage.removeItem('taskNA');
