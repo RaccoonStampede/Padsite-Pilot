@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locate Equipment Subtasks</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 20px 0; }
+        .step { font-size: 0.9em; color: #666; }
+        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; }
+        button.active { background-color: #00cc00; }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { display: flex; align-items: center; justify-content: space-between; }
+        .task-left { display: flex; align-items: center; gap: 10px; }
+        .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
+    </style>
+</head>
+<body>
+    <h1>Locate Equipment Subtasks</h1>
+    <ul>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFlare"> Locate and Mark Flare</span> <button class="na-button" onclick="toggleSubtaskNA('locateFlare', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the flare and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBottomsPump"> Locate and Mark Bottoms Pump</span> <button class="na-button" onclick="toggleSubtaskNA('locateBottomsPump', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the bottoms pump and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateAirCompressor"> Locate and Mark Air Compressor</span> <button class="na-button" onclick="toggleSubtaskNA('locateAirCompressor', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the air compressor and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateSaltWaterPump"> Locate and Mark Salt Water Pump</span> <button class="na-button" onclick="toggleSubtaskNA('locateSaltWaterPump', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the salt water pump and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateLightPoles"> Locate and Mark Light Poles</span> <button class="na-button" onclick="toggleSubtaskNA('locateLightPoles', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the light poles and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBurnerManagements"> Locate and Mark Burner Managements</span> <button class="na-button" onclick="toggleSubtaskNA('locateBurnerManagements', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the burner managements and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBatteryChargers"> Locate and Mark Battery Chargers</span> <button class="na-button" onclick="toggleSubtaskNA('locateBatteryChargers', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the battery chargers and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFuelSkid"> Locate and Mark Fuel Skid</span> <button class="na-button" onclick="toggleSubtaskNA('locateFuelSkid', 'locate')">N/A</button></span></label>
+            <div class="step">1. Find the location of the fuel skid and mark with spray paint on the ground.</div>
+        </li>
+    </ul>
+    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
+    <a href="index.html">Back to Checklist</a>
+
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            loadSubtasks('locate');
+            updateSubtaskTracker();
+        });
+
+        function toggleSubtaskNA(subtaskId, taskId) {
+            const checkbox = document.getElementById(subtaskId);
+            const naButton = document.querySelector(`#${subtaskId} + .na-button`);
+            naButton.classList.toggle('active');
+            if (naButton.classList.contains('active')) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            } else {
+                checkbox.disabled = false;
+            }
+            saveSubtasks(taskId);
+            updateSubtaskTracker();
+        }
+
+        function saveSubtasks(taskId) {
+            const subtasks = {
+                locateFlare: document.getElementById('locateFlare')?.checked || false,
+                locateBottomsPump: document.getElementById('locateBottomsPump')?.checked || false,
+                locateAirCompressor: document.getElementById('locateAirCompressor')?.checked || false,
+                locateSaltWaterPump: document.getElementById('locateSaltWaterPump')?.checked || false,
+                locateLightPoles: document.getElementById('locateLightPoles')?.checked || false,
+                locateBurnerManagements: document.getElementById('locateBurnerManagements')?.checked || false,
+                locateBatteryChargers: document.getElementById('locateBatteryChargers')?.checked || false,
+                locateFuelSkid: document.getElementById('locateFuelSkid')?.checked || false,
+                na: {
+                    locateFlare: document.querySelector('#locateFlare + .na-button')?.classList.contains('active') || false,
+                    locateBottomsPump: document.querySelector('#locateBottomsPump + .na-button')?.classList.contains('active') || false,
+                    locateAirCompressor: document.querySelector('#locateAirCompressor + .na-button')?.classList.contains('active') || false,
+                    locateSaltWaterPump: document.querySelector('#locateSaltWaterPump + .na-button')?.classList.contains('active') || false,
+                    locateLightPoles: document.querySelector('#locateLightPoles + .na-button')?.classList.contains('active') || false,
+                    locateBurnerManagements: document.querySelector('#locateBurnerManagements + .na-button')?.classList.contains('active') || false,
+                    locateBatteryChargers: document.querySelector('#locateBatteryChargers + .na-button')?.classList.contains('active') || false,
+                    locateFuelSkid: document.querySelector('#locateFuelSkid + .na-button')?.classList.contains('active') || false
+                }
+            };
+            db.collection('subtasks').doc(taskId).set(subtasks)
+                .then(() => console.log('Subtasks saved for', taskId))
+                .catch(error => console.error('Error saving subtasks:', error));
+        }
+
+        function loadSubtasks(taskId) {
+            db.collection('subtasks').doc(taskId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        document.getElementById('locateFlare')?.checked = subtasks.locateFlare || false;
+                        document.getElementById('locateBottomsPump')?.checked = subtasks.locateBottomsPump || false;
+                        document.getElementById('locateAirCompressor')?.checked = subtasks.locateAirCompressor || false;
+                        document.getElementById('locateSaltWaterPump')?.checked = subtasks.locateSaltWaterPump || false;
+                        document.getElementById('locateLightPoles')?.checked = subtasks.locateLightPoles || false;
+                        document.getElementById('locateBurnerManagements')?.checked = subtasks.locateBurnerManagements || false;
+                        document.getElementById('locateBatteryChargers')?.checked = subtasks.locateBatteryChargers || false;
+                        document.getElementById('locateFuelSkid')?.checked = subtasks.locateFuelSkid || false;
+                        if (subtasks.na) {
+                            if (subtasks.na.locateFlare) document.querySelector('#locateFlare + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateBottomsPump) document.querySelector('#locateBottomsPump + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateAirCompressor) document.querySelector('#locateAirCompressor + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateSaltWaterPump) document.querySelector('#locateSaltWaterPump + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateLightPoles) document.querySelector('#locateLightPoles + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateBurnerManagements) document.querySelector('#locateBurnerManagements + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateBatteryChargers) document.querySelector('#locateBatteryChargers + .na-button')?.classList.add('active');
+                            if (subtasks.na.locateFuelSkid) document.querySelector('#locateFuelSkid + .na-button')?.classList.add('active');
+                            updateSubtaskDisables();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
+
+        function updateSubtaskDisables() {
+            const subtasks = ['locateFlare', 'locateBottomsPump', 'locateAirCompressor', 'locateSaltWaterPump', 'locateLightPoles', 'locateBurnerManagements', 'locateBatteryChargers', 'locateFuelSkid'];
+            subtasks.forEach(subtask => {
+                const checkbox = document.getElementById(subtask);
+                const naButton = document.querySelector(`#${subtask} + .na-button`);
+                if (naButton && naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+            });
+        }
+
+        function updateSubtaskTracker() {
+            db.collection('subtasks').doc('locate').get()
+                .then(doc => {
+                    const tracker = document.getElementById('subtask-tracker');
+                    if (doc.exists) {
+                        const subtasks = doc.data();
+                        let completed = 0, pending = 0, na = 0;
+                        for (let subtask in subtasks) {
+                            if (subtask === 'na') continue;
+                            if (subtasks.na && subtasks.na[subtask]) na++;
+                            else if (subtasks[subtask]) completed++;
+                            else pending++;
+                        }
+                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+                    } else {
+                        tracker.textContent = "No subtasks saved yet.";
+                    }
+                })
+                .catch(error => console.error('Error updating subtask tracker:', error));
+        }
+    </script>
+</body>
+</html>
