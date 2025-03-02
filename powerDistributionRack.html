@@ -8,11 +8,11 @@
         body { 
             font-family: Arial, sans-serif; 
             margin: 20px; 
-            color: #333; /* Original dark text color */
+            color: #333;
         }
         ul { list-style: none; padding: 0; }
         li { margin: 20px 0; }
-        .step { font-size: 0.9em; color: #666; } /* Original step color */
+        .step { font-size: 0.9em; color: #666; }
         button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; }
         button.active { background-color: #00cc00; }
         input[type="checkbox"] { 
@@ -85,10 +85,18 @@
         });
 
         function toggleSubtaskNA(subtaskId, taskId) {
+            console.log(`toggleSubtaskNA called for: ${subtaskId}`); // Debug log
             const checkbox = document.getElementById(subtaskId);
+            if (!checkbox) {
+                console.error(`Checkbox not found for subtask: ${subtaskId}`);
+                return;
+            }
             const taskControls = checkbox.closest('.task-controls');
+            if (!taskControls) {
+                console.error(`Task controls not found for subtask: ${subtaskId}`);
+                return;
+            }
             const naButton = taskControls.querySelector('.na-button');
-            
             if (!naButton) {
                 console.error(`N/A button not found for subtask: ${subtaskId}`);
                 return;
