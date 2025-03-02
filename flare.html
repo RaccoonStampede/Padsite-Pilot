@@ -9,21 +9,37 @@
         ul { list-style: none; padding: 0; }
         li { margin: 20px 0; }
         .step { font-size: 0.9em; color: #666; }
-        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; } /* Smaller N/A buttons */
+        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; }
         button.active { background-color: #00cc00; }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
-        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
+        .task-controls { display: flex; align-items: center; justify-content: space-between; }
+        .task-left { display: flex; align-items: center; gap: 10px; }
         .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
     </style>
 </head>
 <body>
     <h1>Flare Subtasks (Igniter)</h1>
     <ul>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="rigidConduit"> Install 3/4" Rigid Conduit</span> <button class="na-button" onclick="toggleSubtaskNA('rigidConduit', 'flare')">N/A</button></span></label>
+            <div class="step">1. Install 3/4" rigid conduit from the power panel rack to the location of the flare blower VFD panel.</div>
+            <div class="step">2. Install a guat box on the conduit at the VFD location and continue the conduit run to the end of the pipe rack at the flare stack.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexConduit"> Install 3/4" Flex</span> <button class="na-button" onclick="toggleSubtaskNA('flexConduit', 'flare')">N/A</button></span></label>
+            <div class="step">1. Install 3/4" flex from the guat box to the bottom of the VFD panel.</div>
+            <div class="step">2. Install 3/4" flex from the end of the conduit run to the flare blower motor.</div>
+            <div class="step">3. Install 3/4" flex from a conduit run that starts at the power rack to the gutter.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pullWire"> Pull Wire (#10 THHN)</span> <button class="na-button" onclick="toggleSubtaskNA('pullWire', 'flare')">N/A</button></span></label>
+            <div class="step">1. Pull #10 THHN wire (Brown/Orange/Yellow/Green) from the flare 30A flare disconnect to the VFD panel and terminate on top of the breaker.</div>
+            <div class="step">2. Pull wire from the VFD to the blower motor and terminate wires.</div>
+            <div class="step">3. Blower motor wires will terminate as indicated on the motor nameplate.</div>
+            <div class="step">4. Terminate the other end of the blower motor wires on the VFD drive in the VFD panel.</div>
+            <div class="step">5. Terminate wires in a 30A disconnect on the panel rack at the bottom.</div>
+        </li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="ignition"> Check Igniter Control Box (Red Plastic Box)</span> <button class="na-button" onclick="toggleSubtaskNA('ignition', 'flare')">N/A</button></span></label>
             <div class="step">1. Verify igniter control box is mounted on or near the flare (usually on VFD panel).</div>
         </li>
@@ -58,6 +74,7 @@
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
             authDomain: "padsitepilot.firebaseapp.com",
@@ -68,14 +85,17 @@
             measurementId: "G-3H5TH08X46"
         };
 
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Load subtasks and update tracker on page load
         window.addEventListener('load', function() {
             loadSubtasks('flare');
             updateSubtaskTracker();
         });
 
+        // Toggle N/A status for a subtask
         function toggleSubtaskNA(subtaskId, taskId) {
             const checkbox = document.getElementById(subtaskId);
             const naButton = document.querySelector(`#${subtaskId} + .na-button`);
@@ -90,8 +110,12 @@
             updateSubtaskTracker();
         }
 
+        // Save subtasks to Firebase
         function saveSubtasks(taskId) {
             const subtasks = {
+                rigidConduit: document.getElementById('rigidConduit')?.checked || false,
+                flexConduit: document.getElementById('flexConduit')?.checked || false,
+                pullWire: document.getElementById('pullWire')?.checked || false,
                 ignition: document.getElementById('ignition')?.checked || false,
                 fuelLine: document.getElementById('fuelLine')?.checked || false,
                 wirePull: document.getElementById('wirePull')?.checked || false,
@@ -100,6 +124,9 @@
                 tempTerminals: document.getElementById('tempTerminals')?.checked || false,
                 wireBlocks: document.getElementById('wireBlocks')?.checked || false,
                 na: {
+                    rigidConduit: document.querySelector('#rigidConduit + .na-button')?.classList.contains('active') || false,
+                    flexConduit: document.querySelector('#flexConduit + .na-button')?.classList.contains('active') || false,
+                    pullWire: document.querySelector('#pullWire + .na-button')?.classList.contains('active') || false,
                     ignition: document.querySelector('#ignition + .na-button')?.classList.contains('active') || false,
                     fuelLine: document.querySelector('#fuelLine + .na-button')?.classList.contains('active') || false,
                     wirePull: document.querySelector('#wirePull + .na-button')?.classList.contains('active') || false,
@@ -114,11 +141,15 @@
                 .catch(error => console.error('Error saving subtasks:', error));
         }
 
+        // Load subtasks from Firebase
         function loadSubtasks(taskId) {
             db.collection('subtasks').doc(taskId).get()
                 .then(doc => {
                     if (doc.exists) {
                         const subtasks = doc.data();
+                        document.getElementById('rigidConduit')?.checked = subtasks.rigidConduit || false;
+                        document.getElementById('flexConduit')?.checked = subtasks.flexConduit || false;
+                        document.getElementById('pullWire')?.checked = subtasks.pullWire || false;
                         document.getElementById('ignition')?.checked = subtasks.ignition || false;
                         document.getElementById('fuelLine')?.checked = subtasks.fuelLine || false;
                         document.getElementById('wirePull')?.checked = subtasks.wirePull || false;
@@ -127,6 +158,9 @@
                         document.getElementById('tempTerminals')?.checked = subtasks.tempTerminals || false;
                         document.getElementById('wireBlocks')?.checked = subtasks.wireBlocks || false;
                         if (subtasks.na) {
+                            if (subtasks.na.rigidConduit) document.querySelector('#rigidConduit + .na-button')?.classList.add('active');
+                            if (subtasks.na.flexConduit) document.querySelector('#flexConduit + .na-button')?.classList.add('active');
+                            if (subtasks.na.pullWire) document.querySelector('#pullWire + .na-button')?.classList.add('active');
                             if (subtasks.na.ignition) document.querySelector('#ignition + .na-button')?.classList.add('active');
                             if (subtasks.na.fuelLine) document.querySelector('#fuelLine + .na-button')?.classList.add('active');
                             if (subtasks.na.wirePull) document.querySelector('#wirePull + .na-button')?.classList.add('active');
@@ -141,8 +175,9 @@
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        // Update subtask disables based on N/A status
         function updateSubtaskDisables() {
-            const subtasks = ['ignition', 'fuelLine', 'wirePull', 'flareStack', 'greenBlocks', 'tempTerminals', 'wireBlocks'];
+            const subtasks = ['rigidConduit', 'flexConduit', 'pullWire', 'ignition', 'fuelLine', 'wirePull', 'flareStack', 'greenBlocks', 'tempTerminals', 'wireBlocks'];
             subtasks.forEach(subtask => {
                 const checkbox = document.getElementById(subtask);
                 const naButton = document.querySelector(`#${subtask} + .na-button`);
@@ -155,6 +190,7 @@
             });
         }
 
+        // Update subtask tracker display
         function updateSubtaskTracker() {
             db.collection('subtasks').doc('flare').get()
                 .then(doc => {
