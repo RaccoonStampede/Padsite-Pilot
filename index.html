@@ -74,28 +74,31 @@
         const db = firebase.firestore();
 
         let currentJobName = null;
-        let taskStates = { na: {} };
+        let taskStates = { tasks: {}, na: {}, subtasks: {} };
 
         window.addEventListener('load', function() {
             const savedJobName = localStorage.getItem('currentJobName');
             if (savedJobName && !sessionStorage.getItem('loadJobIndex')) {
                 currentJobName = savedJobName;
                 document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-                const savedTasks = JSON.parse(localStorage.getItem('currentTasks')) || {};
-                const savedNA = JSON.parse(localStorage.getItem('taskNA')) || {};
-                taskStates = { ...savedTasks, na: savedNA };
-                updateTaskStates();
+                loadJobFromFirestore(currentJobName);
             }
             const jobIndex = sessionStorage.getItem('loadJobIndex');
             if (jobIndex !== null) {
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
-            syncSubtaskStates(); // Stubbed out for now
             updateTrackers();
+
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            tasks.forEach(task => {
+                const checkbox = document.getElementById(task);
+                checkbox.addEventListener('change', saveCurrentState);
+            });
         });
 
         function saveCurrentState() {
+            if (!currentJobName) return;
             const tasks = {
                 power_distribution_rack: document.getElementById('power_distribution_rack').checked,
                 locate_equipment: document.getElementById('locate_equipment').checked,
@@ -113,12 +116,11 @@
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
                 naStates[task] = naButton ? naButton.classList.contains('active') : false;
             }
-            if (currentJobName) {
-                localStorage.setItem('currentJobName', currentJobName);
-                localStorage.setItem('currentTasks', JSON.stringify(tasks));
-                localStorage.setItem('taskNA', JSON.stringify(naStates));
-            }
-            taskStates = { ...tasks, na: naStates };
+            taskStates.tasks = tasks;
+            taskStates.na = naStates;
+            db.collection('jobs').doc(currentJobName).set(taskStates, { merge: true })
+                .then(() => console.log('Main tasks saved to Firestore'))
+                .catch(error => console.error('Error saving main tasks:', error));
             updateTrackers();
         }
 
@@ -133,7 +135,7 @@
                 } else {
                     checkbox.disabled = false;
                 }
-                taskStates[taskId] = checkbox.checked;
+                taskStates.tasks[taskId] = checkbox.checked;
                 taskStates.na[taskId] = naButton.classList.contains('active');
                 saveCurrentState();
             }
@@ -152,7 +154,7 @@
                     } else {
                         naButton.classList.remove('active');
                         checkbox.disabled = false;
-                        checkbox.checked = taskStates[task] || false;
+                        checkbox.checked = taskStates.tasks[task] || false;
                     }
                 }
             });
@@ -177,9 +179,9 @@
                 alert("Job name cannot be empty. Please try again.");
                 return;
             }
-
             currentJobName = jobName.trim();
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+            localStorage.setItem('currentJobName', currentJobName);
 
             const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
@@ -190,10 +192,10 @@
                 if (naButton) naButton.classList.remove('active');
             });
 
-            taskStates = { na: {} };
-            localStorage.setItem('currentJobName', currentJobName);
-            localStorage.setItem('currentTasks', JSON.stringify({}));
-            localStorage.setItem('taskNA', JSON.stringify({}));
+            taskStates = { tasks: {}, na: {}, subtasks: {} };
+            db.collection('jobs').doc(currentJobName).set(taskStates)
+                .then(() => console.log('New job initialized in Firestore'))
+                .catch(error => console.error('Error initializing job:', error));
             updateTrackers();
         }
 
@@ -202,39 +204,8 @@
                 alert('Please start a new job first!');
                 return;
             }
-            const tasks = {
-                power_distribution_rack: document.getElementById('power_distribution_rack').checked,
-                locate_equipment: document.getElementById('locate_equipment').checked,
-                flare: document.getElementById('flare').checked,
-                bottoms_pump: document.getElementById('bottoms_pump').checked,
-                air_compressor: document.getElementById('air_compressor').checked,
-                salt_water_pump: document.getElementById('salt_water_pump').checked,
-                burner_management: document.getElementById('burner_management').checked,
-                battery_charger: document.getElementById('battery_charger').checked,
-                light_poles: document.getElementById('light_poles').checked,
-                fuel_skid: document.getElementById('fuel_skid').checked
-            };
-            const naStates = {};
-            for (let task in tasks) {
-                const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
-                naStates[task] = naButton ? naButton.classList.contains('active') : false;
-            }
-            const job = {
-                name: currentJobName,
-                tasks: tasks,
-                na: naStates,
-                timestamp: new Date().toISOString()
-            };
-            db.collection('jobs').add(job)
-                .then(() => {
-                    console.log('Job saved successfully to Firestore');
-                    alert('Job saved successfully!');
-                    saveCurrentState();
-                })
-                .catch(error => {
-                    console.error('Failed to save job:', error);
-                    alert('Failed to save job: ' + error.message);
-                });
+            saveCurrentState();
+            alert('Job progress saved to Firestore!');
         }
 
         function loadJob(docId) {
@@ -242,14 +213,13 @@
                 .then(doc => {
                     if (doc.exists) {
                         const job = doc.data();
-                        currentJobName = job.name;
+                        currentJobName = doc.id;
                         document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
-                        taskStates = { ...job.tasks, na: job.na };
-                        updateTaskStates();
-                        updateTrackers();
+                        taskStates = job;
                         localStorage.setItem('currentJobName', currentJobName);
-                        localStorage.setItem('currentTasks', JSON.stringify(job.tasks));
-                        localStorage.setItem('taskNA', JSON.stringify(job.na));
+                        updateTaskStates();
+                        syncSubtaskStates();
+                        updateTrackers();
                     } else {
                         alert('Job not found!');
                     }
@@ -260,9 +230,35 @@
                 });
         }
 
+        function loadJobFromFirestore(jobName) {
+            db.collection('jobs').doc(jobName).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        taskStates = doc.data();
+                        updateTaskStates();
+                        syncSubtaskStates();
+                        updateTrackers();
+                    } else {
+                        taskStates = { tasks: {}, na: {}, subtasks: {} };
+                    }
+                })
+                .catch(error => console.error('Error loading job:', error));
+        }
+
         function syncSubtaskStates() {
-            // Stub: This would sync subtasks from linked pages if they existed
-            console.log('syncSubtaskStates: No subtask pages provided, skipping sync.');
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            tasks.forEach(taskId => {
+                const checkbox = document.getElementById(taskId);
+                if (taskStates.subtasks && taskStates.subtasks[taskId]) {
+                    const subtaskData = taskStates.subtasks[taskId];
+                    const allSubtasksComplete = Object.values(subtaskData).every(state => state === true);
+                    if (checkbox && allSubtasksComplete && !taskStates.na[taskId]) {
+                        checkbox.checked = true;
+                        taskStates.tasks[taskId] = true;
+                    }
+                }
+            });
+            saveCurrentState();
         }
     </script>
 </body>
