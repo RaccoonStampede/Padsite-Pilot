@@ -13,16 +13,23 @@
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
-        const firebaseConfig = { /* Same config as above */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         db.collection('jobs').get().then(querySnapshot => {
             const jobList = document.getElementById('jobList');
-            querySnapshot.forEach((doc, index) => {
-                const job = doc.data();
+            querySnapshot.forEach(doc => {
                 const li = document.createElement('li');
-                li.innerHTML = `<a href="#" onclick="sessionStorage.setItem('loadJobIndex', '${doc.id}'); window.location.href='index.html'">${job.name} (${job.timestamp})</a>`;
+                li.innerHTML = `<a href="#" onclick="sessionStorage.setItem('loadJobIndex', '${doc.id}'); window.location.href='index.html'">${doc.id}</a>`;
                 jobList.appendChild(li);
             });
         });
