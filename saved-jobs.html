@@ -2,90 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Padsite Pilot - Saved Jobs</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
-            background-image: url('./padsite picture main.jfif');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            color: #ffffff;
-        }
-        ul { list-style: none; padding: 0; }
-        li { margin: 10px 0; }
-        button { margin-right: 10px; }
-    </style>
+    <title>Saved Jobs</title>
+    <style>body { font-family: Arial, sans-serif; margin: 20px; color: #333; }</style>
 </head>
 <body>
     <h1>Saved Jobs</h1>
-    <ul id="savedJobsList"></ul>
-    <button onclick="window.location.href='index.html'">Back to Main</button>
+    <ul id="jobList"></ul>
+    <button onclick="window.location.href='index.html'">Back</button>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
-            authDomain: "padsitepilot.firebaseapp.com",
-            projectId: "padsitepilot",
-            storageBucket: "padsitepilot.firebasestorage.app",
-            messagingSenderId: "380246060537",
-            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
-            measurementId: "G-3H5TH08X46"
-        };
-
+        const firebaseConfig = { /* Same config as above */ };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        window.addEventListener('load', function() {
-            loadSavedJobs();
+        db.collection('jobs').get().then(querySnapshot => {
+            const jobList = document.getElementById('jobList');
+            querySnapshot.forEach((doc, index) => {
+                const job = doc.data();
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#" onclick="sessionStorage.setItem('loadJobIndex', '${doc.id}'); window.location.href='index.html'">${job.name} (${job.timestamp})</a>`;
+                jobList.appendChild(li);
+            });
         });
-
-        function loadSavedJobs() {
-            const savedJobsList = document.getElementById('savedJobsList');
-            savedJobsList.innerHTML = '<li>Loading...</li>';
-            console.log('Attempting to load saved jobs from Firestore');
-            db.collection('jobs').get()
-                .then(querySnapshot => {
-                    console.log('Query snapshot:', querySnapshot);
-                    if (querySnapshot.empty) {
-                        console.log('No jobs found');
-                        savedJobsList.innerHTML = '<li>No saved jobs yet.</li>';
-                    } else {
-                        savedJobsList.innerHTML = '';
-                        querySnapshot.forEach(doc => {
-                            console.log('Job document:', doc.data());
-                            const job = doc.data();
-                            // Handle missing 'na' field with default empty object
-                            const naStates = job.na || {};
-                            const completedCount = Object.values(job.tasks).filter(completed => completed).length;
-                            const naCount = Object.values(naStates).filter(na => na).length;
-                            const totalTasks = 9; // Number of tasks
-                            const pendingCount = totalTasks - completedCount - naCount;
-                            const li = document.createElement('li');
-                            li.innerHTML = `
-                                ${job.name} (Saved: ${new Date(job.timestamp).toLocaleString()}, 
-                                Completed: ${completedCount}, Pending: ${pendingCount}, N/A: ${naCount})
-                                <button onclick="revisitJob('${doc.id}')">Revisit Job</button>
-                            `;
-                            savedJobsList.appendChild(li);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading jobs:', error);
-                    savedJobsList.innerHTML = `<li>Error loading jobs: ${error.message}</li>`;
-                });
-        }
-
-        function revisitJob(docId) {
-            console.log('Revisiting job with ID:', docId);
-            sessionStorage.setItem('loadJobIndex', docId);
-            window.location.href = 'index.html';
-        }
     </script>
 </body>
 </html>
