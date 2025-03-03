@@ -1,0 +1,51 @@
+<!-- light_poles.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Light Poles Subtasks</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Light Poles Subtasks</h1>
+    <ul>
+        <li><label><input type="checkbox" id="light_poles_task1"> Build light horns - by use lift to mount light horns on light poles with appropriate tools</label></li>
+        <li><label><input type="checkbox" id="light_poles_task2"> Drill 1/2" to 3/4" hole in light pole at 48" from ground, push fishtape up light pole and wait for person on lift to feed wire back through hole</label></li>
+        <li><label><input type="checkbox" id="light_poles_task3"> Build switch and receptacle boxes: use 2 bell boxes with 3/4" holes, connect both boxes with 3/4" x 3" nipple, install photocell with 3/4" x 1/2" reducer on top of bell box, connect 3/4" flex on bottom of bell box, use 8" 3/4" blank (comes with box) on the back of bottom box</label></li>
+        <li><label><input type="checkbox" id="light_poles_task4"> Mount bell box over hole drilled on light pole using self-tappers, align with the hole in back of top bell box, use self-tappers</label></li>
+        <li><label><input type="checkbox" id="light_poles_task5"> Terminate wires from 3/4" flex to make pig tails to split circuit to both bell boxes, install GFCI in bottom box and terminate pig tails on line side of GFCI, install clear in-use cover over GFCI, install weatherproof toggle switch in top box by terminating black wire from pole - a flex with black wire from photocell to one switch screw</label></li>
+        <li><label><input type="checkbox" id="light_poles_task6"> Terminate black wire from pole with red wire from photocell and terminate on remaining switch screw, connect grounds together and terminate, terminate white neutrals together, install mount switch to box and install weatherproof cover</label></li>
+    </ul>
+    <button onclick="saveSubtaskState(); window.location.href='index.html'">Back to Main</button>
+
+    <script>
+        window.addEventListener('load', function() {
+            const savedSubtasks = JSON.parse(localStorage.getItem('lightPolesSubtasks')) || {};
+            document.getElementById('light_poles_task1').checked = savedSubtasks.light_poles_task1 || false;
+            document.getElementById('light_poles_task2').checked = savedSubtasks.light_poles_task2 || false;
+            document.getElementById('light_poles_task3').checked = savedSubtasks.light_poles_task3 || false;
+            document.getElementById('light_poles_task4').checked = savedSubtasks.light_poles_task4 || false;
+            document.getElementById('light_poles_task5').checked = savedSubtasks.light_poles_task5 || false;
+            document.getElementById('light_poles_task6').checked = savedSubtasks.light_poles_task6 || false;
+
+            const checkboxes = ['light_poles_task1', 'light_poles_task2', 'light_poles_task3', 'light_poles_task4', 'light_poles_task5', 'light_poles_task6'];
+            checkboxes.forEach(id => document.getElementById(id).addEventListener('change', saveSubtaskState));
+        });
+
+        function saveSubtaskState() {
+            const subtaskState = {
+                light_poles_task1: document.getElementById('light_poles_task1').checked,
+                light_poles_task2: document.getElementById('light_poles_task2').checked,
+                light_poles_task3: document.getElementById('light_poles_task3').checked,
+                light_poles_task4: document.getElementById('light_poles_task4').checked,
+                light_poles_task5: document.getElementById('light_poles_task5').checked,
+                light_poles_task6: document.getElementById('light_poles_task6').checked
+            };
+            localStorage.setItem('lightPolesSubtasks', JSON.stringify(subtaskState));
+        }
+    </script>
+</body>
+</html>
