@@ -80,36 +80,38 @@
         window.addEventListener('load', function() {
             loadSubtasks('power_distribution_rack');
             updateSubtaskTracker();
+            console.log('Loaded subtasks:', JSON.parse(localStorage.getItem('subtasks_power_distribution_rack')));
         });
 
         function saveSubtasks(taskId) {
             const subtasks = {
-                confirmPowerSources: document.getElementById('confirmPowerSources')?.checked || false,
-                confirmGenerator: document.getElementById('confirmGenerator')?.checked || false,
-                locateExistingSkid: document.getElementById('locateExistingSkid')?.checked || false,
-                buildRack: document.getElementById('buildRack')?.checked || false,
-                installUnistrut: document.getElementById('installUnistrut')?.checked || false
+                confirmPowerSources: document.getElementById('confirmPowerSources').checked,
+                confirmGenerator: document.getElementById('confirmGenerator').checked,
+                locateExistingSkid: document.getElementById('locateExistingSkid').checked,
+                buildRack: document.getElementById('buildRack').checked,
+                installUnistrut: document.getElementById('installUnistrut').checked
             };
-            localStorage.setItem(`subtasks_${taskId}`, JSON.stringify(subtasks)); // Save to localStorage
+            localStorage.setItem(`subtasks_${taskId}`, JSON.stringify(subtasks));
+            console.log('Saved subtasks:', subtasks);
             updateSubtaskTracker();
         }
 
         function loadSubtasks(taskId) {
             const savedSubtasks = JSON.parse(localStorage.getItem(`subtasks_${taskId}`)) || {};
-            document.getElementById('confirmPowerSources')?.checked = savedSubtasks.confirmPowerSources || false;
-            document.getElementById('confirmGenerator')?.checked = savedSubtasks.confirmGenerator || false;
-            document.getElementById('locateExistingSkid')?.checked = savedSubtasks.locateExistingSkid || false;
-            document.getElementById('buildRack')?.checked = savedSubtasks.buildRack || false;
-            document.getElementById('installUnistrut')?.checked = savedSubtasks.installUnistrut || false;
+            document.getElementById('confirmPowerSources').checked = savedSubtasks.confirmPowerSources || false;
+            document.getElementById('confirmGenerator').checked = savedSubtasks.confirmGenerator || false;
+            document.getElementById('locateExistingSkid').checked = savedSubtasks.locateExistingSkid || false;
+            document.getElementById('buildRack').checked = savedSubtasks.buildRack || false;
+            document.getElementById('installUnistrut').checked = savedSubtasks.installUnistrut || false;
         }
 
         function updateSubtaskTracker() {
             const subtasks = {
-                confirmPowerSources: document.getElementById('confirmPowerSources')?.checked || false,
-                confirmGenerator: document.getElementById('confirmGenerator')?.checked || false,
-                locateExistingSkid: document.getElementById('locateExistingSkid')?.checked || false,
-                buildRack: document.getElementById('buildRack')?.checked || false,
-                installUnistrut: document.getElementById('installUnistrut')?.checked || false
+                confirmPowerSources: document.getElementById('confirmPowerSources').checked,
+                confirmGenerator: document.getElementById('confirmGenerator').checked,
+                locateExistingSkid: document.getElementById('locateExistingSkid').checked,
+                buildRack: document.getElementById('buildRack').checked,
+                installUnistrut: document.getElementById('installUnistrut').checked
             };
             let completed = 0, pending = 0;
             for (let subtask in subtasks) {
