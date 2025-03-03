@@ -9,39 +9,39 @@
         ul { list-style: none; padding: 0; }
         li { margin: 20px 0; }
         .step { font-size: 0.9em; color: #666; }
-        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; } /* Smaller N/A buttons */
-        button.active { background-color: #00cc00; }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
-        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
+        .task-controls { display: flex; align-items: center; }
+        .task-left { display: flex; align-items: center; gap: 10px; }
         .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
+        a { text-decoration: none; color: #00ccff; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <h1>Air Compressor Subtasks</h1>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="beltTension"> Check Belt Tension</span> <button class="na-button" onclick="toggleSubtaskNA('beltTension', 'air_compressor')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="beltTension" onchange="saveSubtasks('air_compressor')"> Check Belt Tension</span></span></label>
             <div class="step">1. Power off compressor at breaker.</div>
             <div class="step">2. Press belt midway—should deflect 1/4 inch.</div>
             <div class="step">3. Adjust tensioner if loose or replace if worn.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pressureGauge"> Inspect Pressure Gauge</span> <button class="na-button" onclick="toggleSubtaskNA('pressureGauge', 'air_compressor')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pressureGauge" onchange="saveSubtasks('air_compressor')"> Inspect Pressure Gauge</span></span></label>
             <div class="step">1. Start compressor—let it build pressure.</div>
             <div class="step">2. Check gauge reading (should reach 120-150 psi).</div>
             <div class="step">3. Tap gauge—if stuck, replace it.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="oilLevel"> Verify Oil Level</span> <button class="na-button" onclick="toggleSubtaskNA('oilLevel', 'air_compressor')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="oilLevel" onchange="saveSubtasks('air_compressor')"> Verify Oil Level</span></span></label>
             <div class="step">1. Shut off and cool compressor.</div>
             <div class="step">2. Check dipstick—oil should be between marks.</div>
             <div class="step">3. Top off with SAE 30 if low.</div>
         </li>
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
-    <a href="index.html">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('air_compressor')">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -60,92 +60,60 @@
         const db = firebase.firestore();
 
         window.addEventListener('load', function() {
-            loadSubtasks('air_compressor');
+            const jobName = localStorage.getItem('currentJobName');
+            if (jobName) {
+                loadSubtasks(jobName, 'air_compressor');
+            } else {
+                document.getElementById('subtask-tracker').textContent = 'No current job selected.';
+            }
             updateSubtaskTracker();
         });
 
-        function toggleSubtaskNA(subtaskId, taskId) {
-            const checkbox = document.getElementById(subtaskId);
-            const naButton = document.querySelector(`#${subtaskId} + .na-button`);
-            naButton.classList.toggle('active');
-            if (naButton.classList.contains('active')) {
-                checkbox.disabled = true;
-                checkbox.checked = false;
-            } else {
-                checkbox.disabled = false;
+        function saveSubtasks(taskId) {
+            const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
             }
-            saveSubtasks(taskId);
+            const subtasks = {
+                beltTension: document.getElementById('beltTension').checked,
+                pressureGauge: document.getElementById('pressureGauge').checked,
+                oilLevel: document.getElementById('oilLevel').checked
+            };
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+             .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
         }
 
-        function saveSubtasks(taskId) {
-            const subtasks = {
-                beltTension: document.getElementById('beltTension')?.checked || false,
-                pressureGauge: document.getElementById('pressureGauge')?.checked || false,
-                oilLevel: document.getElementById('oilLevel')?.checked || false,
-                na: {
-                    beltTension: document.querySelector('#beltTension + .na-button')?.classList.contains('active') || false,
-                    pressureGauge: document.querySelector('#pressureGauge + .na-button')?.classList.contains('active') || false,
-                    oilLevel: document.querySelector('#oilLevel + .na-button')?.classList.contains('active') || false
-                }
-            };
-            db.collection('subtasks').doc(taskId).set(subtasks)
-                .then(() => console.log('Subtasks saved for', taskId))
-                .catch(error => console.error('Error saving subtasks:', error));
-        }
-
-        function loadSubtasks(taskId) {
-            db.collection('subtasks').doc(taskId).get()
+        function loadSubtasks(jobName, taskId) {
+            db.collection('jobs').doc(jobName).get()
                 .then(doc => {
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        document.getElementById('beltTension')?.checked = subtasks.beltTension || false;
-                        document.getElementById('pressureGauge')?.checked = subtasks.pressureGauge || false;
-                        document.getElementById('oilLevel')?.checked = subtasks.oilLevel || false;
-                        if (subtasks.na) {
-                            if (subtasks.na.beltTension) document.querySelector('#beltTension + .na-button')?.classList.add('active');
-                            if (subtasks.na.pressureGauge) document.querySelector('#pressureGauge + .na-button')?.classList.add('active');
-                            if (subtasks.na.oilLevel) document.querySelector('#oilLevel + .na-button')?.classList.add('active');
-                            updateSubtaskDisables();
-                        }
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
+                        document.getElementById('beltTension').checked = subtasks.beltTension || false;
+                        document.getElementById('pressureGauge').checked = subtasks.pressureGauge || false;
+                        document.getElementById('oilLevel').checked = subtasks.oilLevel || false;
                     }
+                    updateSubtaskTracker();
                 })
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
-        function updateSubtaskDisables() {
-            const subtasks = ['beltTension', 'pressureGauge', 'oilLevel'];
-            subtasks.forEach(subtask => {
-                const checkbox = document.getElementById(subtask);
-                const naButton = document.querySelector(`#${subtask} + .na-button`);
-                if (naButton && naButton.classList.contains('active')) {
-                    checkbox.disabled = true;
-                    checkbox.checked = false;
-                } else {
-                    checkbox.disabled = false;
-                }
-            });
-        }
-
         function updateSubtaskTracker() {
-            db.collection('subtasks').doc('air_compressor').get()
-                .then(doc => {
-                    const tracker = document.getElementById('subtask-tracker');
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        let completed = 0, pending = 0, na = 0;
-                        for (let subtask in subtasks) {
-                            if (subtask === 'na') continue;
-                            if (subtasks.na && subtasks.na[subtask]) na++;
-                            else if (subtasks[subtask]) completed++;
-                            else pending++;
-                        }
-                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
-                    } else {
-                        tracker.textContent = "No subtasks saved yet.";
-                    }
-                })
-                .catch(error => console.error('Error updating subtask tracker:', error));
+            const subtasks = {
+                beltTension: document.getElementById('beltTension').checked,
+                pressureGauge: document.getElementById('pressureGauge').checked,
+                oilLevel: document.getElementById('oilLevel').checked
+            };
+            let completed = 0, pending = 0;
+            for (let subtask in subtasks) {
+                if (subtasks[subtask]) completed++;
+                else pending++;
+            }
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
 </body>
