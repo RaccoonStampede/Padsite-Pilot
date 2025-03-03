@@ -78,12 +78,21 @@
         const db = firebase.firestore();
 
         window.addEventListener('load', function() {
-            loadSubtasks('power_distribution_rack');
+            const jobName = localStorage.getItem('currentJobName');
+            if (jobName) {
+                loadSubtasks(jobName, 'power_distribution_rack');
+            } else {
+                document.getElementById('subtask-tracker').textContent = 'No current job selected.';
+            }
             updateSubtaskTracker();
-            console.log('Loaded subtasks:', JSON.parse(localStorage.getItem('subtasks_power_distribution_rack')));
         });
 
         function saveSubtasks(taskId) {
+            const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
+            }
             const subtasks = {
                 confirmPowerSources: document.getElementById('confirmPowerSources').checked,
                 confirmGenerator: document.getElementById('confirmGenerator').checked,
@@ -91,18 +100,28 @@
                 buildRack: document.getElementById('buildRack').checked,
                 installUnistrut: document.getElementById('installUnistrut').checked
             };
-            localStorage.setItem(`subtasks_${taskId}`, JSON.stringify(subtasks));
-            console.log('Saved subtasks:', subtasks);
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+             .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
         }
 
-        function loadSubtasks(taskId) {
-            const savedSubtasks = JSON.parse(localStorage.getItem(`subtasks_${taskId}`)) || {};
-            document.getElementById('confirmPowerSources').checked = savedSubtasks.confirmPowerSources || false;
-            document.getElementById('confirmGenerator').checked = savedSubtasks.confirmGenerator || false;
-            document.getElementById('locateExistingSkid').checked = savedSubtasks.locateExistingSkid || false;
-            document.getElementById('buildRack').checked = savedSubtasks.buildRack || false;
-            document.getElementById('installUnistrut').checked = savedSubtasks.installUnistrut || false;
+        function loadSubtasks(jobName, taskId) {
+            db.collection('jobs').doc(jobName).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
+                        document.getElementById('confirmPowerSources').checked = subtasks.confirmPowerSources || false;
+                        document.getElementById('confirmGenerator').checked = subtasks.confirmGenerator || false;
+                        document.getElementById('locateExistingSkid').checked = subtasks.locateExistingSkid || false;
+                        document.getElementById('buildRack').checked = subtasks.buildRack || false;
+                        document.getElementById('installUnistrut').checked = subtasks.installUnistrut || false;
+                    }
+                    updateSubtaskTracker();
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
         }
 
         function updateSubtaskTracker() {
