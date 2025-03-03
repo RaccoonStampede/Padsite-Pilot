@@ -74,7 +74,7 @@
         const db = firebase.firestore();
 
         let currentJobName = null;
-        let taskStates = {};
+        let taskStates = { na: {} };
 
         window.addEventListener('load', function() {
             const savedJobName = localStorage.getItem('currentJobName');
@@ -91,7 +91,7 @@
                 loadJob(jobIndex);
                 sessionStorage.removeItem('loadJobIndex');
             }
-            syncSubtaskStates(); // Sync subtask states on load
+            syncSubtaskStates(); // Stubbed out for now
             updateTrackers();
         });
 
@@ -118,6 +118,7 @@
                 localStorage.setItem('currentTasks', JSON.stringify(tasks));
                 localStorage.setItem('taskNA', JSON.stringify(naStates));
             }
+            taskStates = { ...tasks, na: naStates };
             updateTrackers();
         }
 
@@ -133,7 +134,7 @@
                     checkbox.disabled = false;
                 }
                 taskStates[taskId] = checkbox.checked;
-                taskStates.na = { ...taskStates.na, [taskId]: naButton.classList.contains('active') };
+                taskStates.na[taskId] = naButton.classList.contains('active');
                 saveCurrentState();
             }
         }
@@ -168,6 +169,32 @@
                 else pending++;
             });
             document.getElementById('main-task-tracker').textContent = `Main Tasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
+        }
+
+        function newJob() {
+            const jobName = prompt("Enter a name for the new job:");
+            if (jobName === null || jobName.trim() === "") {
+                alert("Job name cannot be empty. Please try again.");
+                return;
+            }
+
+            currentJobName = jobName.trim();
+            document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            tasks.forEach(task => {
+                const checkbox = document.getElementById(task);
+                const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
+                checkbox.checked = false;
+                checkbox.disabled = false;
+                if (naButton) naButton.classList.remove('active');
+            });
+
+            taskStates = { na: {} };
+            localStorage.setItem('currentJobName', currentJobName);
+            localStorage.setItem('currentTasks', JSON.stringify({}));
+            localStorage.setItem('taskNA', JSON.stringify({}));
+            updateTrackers();
         }
 
         function saveJob() {
@@ -215,9 +242,28 @@
                 .then(doc => {
                     if (doc.exists) {
                         const job = doc.data();
-                        document.getElementById('power_distribution_rack').checked = job.tasks.power_distribution_rack;
-                        document.getElementById('locate_equipment').checked = job.tasks.locate_equipment;
-                        document.getElementById('flare').checked = job.tasks.flare;
-                        document.getElementById('bottoms_pump').checked = job.tasks.bottoms_pump;
-                        document.getElementById('air_compressor').checked = job.tasks.air_compressor;
-                        document.getElementById('salt_water_pump').checked
+                        currentJobName = job.name;
+                        document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
+                        taskStates = { ...job.tasks, na: job.na };
+                        updateTaskStates();
+                        updateTrackers();
+                        localStorage.setItem('currentJobName', currentJobName);
+                        localStorage.setItem('currentTasks', JSON.stringify(job.tasks));
+                        localStorage.setItem('taskNA', JSON.stringify(job.na));
+                    } else {
+                        alert('Job not found!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading job:', error);
+                    alert('Failed to load job: ' + error.message);
+                });
+        }
+
+        function syncSubtaskStates() {
+            // Stub: This would sync subtasks from linked pages if they existed
+            console.log('syncSubtaskStates: No subtask pages provided, skipping sync.');
+        }
+    </script>
+</body>
+</html>
