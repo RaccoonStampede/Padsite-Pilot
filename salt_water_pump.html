@@ -9,48 +9,48 @@
         ul { list-style: none; padding: 0; }
         li { margin: 20px 0; }
         .step { font-size: 0.9em; color: #666; }
-        button { padding: 5px 8px; font-size: 0.9em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; } /* Smaller N/A buttons */
-        button.active { background-color: #00cc00; }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; justify-content: space-between; } /* Full width with N/A on right */
-        .task-left { display: flex; align-items: center; gap: 10px; } /* Checkbox and task name with 10px gap */
+        .task-controls { display: flex; align-items: center; }
+        .task-left { display: flex; align-items: center; gap: 10px; }
         .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
+        a { text-decoration: none; color: #00ccff; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <h1>Salt Water Pump Subtasks (SWP)</h1>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)</span> <button class="na-button" onclick="toggleSubtaskNA('swpLocation', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="swpLocation" onchange="saveSubtasks('salt_water_pump')"> Salt Water Pump (SWP)</span></span></label>
             <div class="step">1. Identify and verify the location of the salt water pump (SWP).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 1” Conduit from Saltwater Pump Disconnect to Location of SWP VFD</span> <button class="na-button" onclick="toggleSubtaskNA('conduitInstall', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall" onchange="saveSubtasks('salt_water_pump')"> Install 1” Conduit from Saltwater Pump Disconnect to Location of SWP VFD</span></span></label>
             <div class="step">1. Measure and install 1” conduit from saltwater pump disconnect to SWP VFD location.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToVFD"> Install 1” Flex from Conduit to VFD Panel</span> <button class="na-button" onclick="toggleSubtaskNA('flexToVFD', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToVFD" onchange="saveSubtasks('salt_water_pump')"> Install 1” Flex from Conduit to VFD Panel</span></span></label>
             <div class="step">1. Install 1” flex from the conduit to the VFD panel.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull"> Pull Wire from Disconnect on Power Panel Rack to VFD Panel</span> <button class="na-button" onclick="toggleSubtaskNA('wirePull', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull" onchange="saveSubtasks('salt_water_pump')"> Pull Wire from Disconnect on Power Panel Rack to VFD Panel</span></span></label>
             <div class="step">1. Pull wire from disconnect on power panel rack to VFD panel.</div>
             <div class="step">2. Terminate wires on top side of disconnect breaker in panel.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor"> Install 1” Flex from VFD to SWP Motor</span> <button class="na-button" onclick="toggleSubtaskNA('flexToMotor', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor" onchange="saveSubtasks('salt_water_pump')"> Install 1” Flex from VFD to SWP Motor</span></span></label>
             <div class="step">1. Install 1” flex from VFD to SWP motor.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="motorWire"> Pull Wire from VFD to Pump Motor</span> <button class="na-button" onclick="toggleSubtaskNA('motorWire', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="motorWire" onchange="saveSubtasks('salt_water_pump')"> Pull Wire from VFD to Pump Motor</span></span></label>
             <div class="step">1. Pull wire from VFD to pump motor.</div>
             <div class="step">2. Terminate in accordance with nameplate on motor.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="vfdPanelWire"> Terminate Wires on VFD Pump Panel on the Bottom of VFD (Remove Cover)</span> <button class="na-button" onclick="toggleSubtaskNA('vfdPanelWire', 'salt_water_pump')">N/A</button></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="vfdPanelWire" onchange="saveSubtasks('salt_water_pump')"> Terminate Wires on VFD Pump Panel on the Bottom of VFD (Remove Cover)</span></span></label>
             <div class="step">1. Remove cover from the bottom of the VFD pump panel.</div>
             <div class="step">2. Terminate wires on the VFD pump panel according to specifications.</div>
         </li>
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
-    <a href="index.html">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('salt_water_pump')">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -69,108 +69,72 @@
         const db = firebase.firestore();
 
         window.addEventListener('load', function() {
-            loadSubtasks('salt_water_pump');
+            const jobName = localStorage.getItem('currentJobName');
+            if (jobName) {
+                loadSubtasks(jobName, 'salt_water_pump');
+            } else {
+                document.getElementById('subtask-tracker').textContent = 'No current job selected.';
+            }
             updateSubtaskTracker();
         });
 
-        function toggleSubtaskNA(subtaskId, taskId) {
-            const checkbox = document.getElementById(subtaskId);
-            const naButton = document.querySelector(`#${subtaskId} + .na-button`);
-            naButton.classList.toggle('active');
-            if (naButton.classList.contains('active')) {
-                checkbox.disabled = true;
-                checkbox.checked = false;
-            } else {
-                checkbox.disabled = false;
+        function saveSubtasks(taskId) {
+            const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
             }
-            saveSubtasks(taskId);
+            const subtasks = {
+                swpLocation: document.getElementById('swpLocation').checked,
+                conduitInstall: document.getElementById('conduitInstall').checked,
+                flexToVFD: document.getElementById('flexToVFD').checked,
+                wirePull: document.getElementById('wirePull').checked,
+                flexToMotor: document.getElementById('flexToMotor').checked,
+                motorWire: document.getElementById('motorWire').checked,
+                vfdPanelWire: document.getElementById('vfdPanelWire').checked
+            };
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+             .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
         }
 
-        function saveSubtasks(taskId) {
-            const subtasks = {
-                swpLocation: document.getElementById('swpLocation')?.checked || false,
-                conduitInstall: document.getElementById('conduitInstall')?.checked || false,
-                flexToVFD: document.getElementById('flexToVFD')?.checked || false,
-                wirePull: document.getElementById('wirePull')?.checked || false,
-                flexToMotor: document.getElementById('flexToMotor')?.checked || false,
-                motorWire: document.getElementById('motorWire')?.checked || false,
-                vfdPanelWire: document.getElementById('vfdPanelWire')?.checked || false,
-                na: {
-                    swpLocation: document.querySelector('#swpLocation + .na-button')?.classList.contains('active') || false,
-                    conduitInstall: document.querySelector('#conduitInstall + .na-button')?.classList.contains('active') || false,
-                    flexToVFD: document.querySelector('#flexToVFD + .na-button')?.classList.contains('active') || false,
-                    wirePull: document.querySelector('#wirePull + .na-button')?.classList.contains('active') || false,
-                    flexToMotor: document.querySelector('#flexToMotor + .na-button')?.classList.contains('active') || false,
-                    motorWire: document.querySelector('#motorWire + .na-button')?.classList.contains('active') || false,
-                    vfdPanelWire: document.querySelector('#vfdPanelWire + .na-button')?.classList.contains('active') || false
-                }
-            };
-            db.collection('subtasks').doc(taskId).set(subtasks)
-                .then(() => console.log('Subtasks saved for', taskId))
-                .catch(error => console.error('Error saving subtasks:', error));
-        }
-
-        function loadSubtasks(taskId) {
-            db.collection('subtasks').doc(taskId).get()
+        function loadSubtasks(jobName, taskId) {
+            db.collection('jobs').doc(jobName).get()
                 .then(doc => {
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        document.getElementById('swpLocation')?.checked = subtasks.swpLocation || false;
-                        document.getElementById('conduitInstall')?.checked = subtasks.conduitInstall || false;
-                        document.getElementById('flexToVFD')?.checked = subtasks.flexToVFD || false;
-                        document.getElementById('wirePull')?.checked = subtasks.wirePull || false;
-                        document.getElementById('flexToMotor')?.checked = subtasks.flexToMotor || false;
-                        document.getElementById('motorWire')?.checked = subtasks.motorWire || false;
-                        document.getElementById('vfdPanelWire')?.checked = subtasks.vfdPanelWire || false;
-                        if (subtasks.na) {
-                            if (subtasks.na.swpLocation) document.querySelector('#swpLocation + .na-button')?.classList.add('active');
-                            if (subtasks.na.conduitInstall) document.querySelector('#conduitInstall + .na-button')?.classList.add('active');
-                            if (subtasks.na.flexToVFD) document.querySelector('#flexToVFD + .na-button')?.classList.add('active');
-                            if (subtasks.na.wirePull) document.querySelector('#wirePull + .na-button')?.classList.add('active');
-                            if (subtasks.na.flexToMotor) document.querySelector('#flexToMotor + .na-button')?.classList.add('active');
-                            if (subtasks.na.motorWire) document.querySelector('#motorWire + .na-button')?.classList.add('active');
-                            if (subtasks.na.vfdPanelWire) document.querySelector('#vfdPanelWire + .na-button')?.classList.add('active');
-                            updateSubtaskDisables();
-                        }
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
+                        document.getElementById('swpLocation').checked = subtasks.swpLocation || false;
+                        document.getElementById('conduitInstall').checked = subtasks.conduitInstall || false;
+                        document.getElementById('flexToVFD').checked = subtasks.flexToVFD || false;
+                        document.getElementById('wirePull').checked = subtasks.wirePull || false;
+                        document.getElementById('flexToMotor').checked = subtasks.flexToMotor || false;
+                        document.getElementById('motorWire').checked = subtasks.motorWire || false;
+                        document.getElementById('vfdPanelWire').checked = subtasks.vfdPanelWire || false;
                     }
+                    updateSubtaskTracker();
                 })
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
-        function updateSubtaskDisables() {
-            const subtasks = ['swpLocation', 'conduitInstall', 'flexToVFD', 'wirePull', 'flexToMotor', 'motorWire', 'vfdPanelWire'];
-            subtasks.forEach(subtask => {
-                const checkbox = document.getElementById(subtask);
-                const naButton = document.querySelector(`#${subtask} + .na-button`);
-                if (naButton && naButton.classList.contains('active')) {
-                    checkbox.disabled = true;
-                    checkbox.checked = false;
-                } else {
-                    checkbox.disabled = false;
-                }
-            });
-        }
-
         function updateSubtaskTracker() {
-            db.collection('subtasks').doc('salt_water_pump').get()
-                .then(doc => {
-                    const tracker = document.getElementById('subtask-tracker');
-                    if (doc.exists) {
-                        const subtasks = doc.data();
-                        let completed = 0, pending = 0, na = 0;
-                        for (let subtask in subtasks) {
-                            if (subtask === 'na') continue;
-                            if (subtasks.na && subtasks.na[subtask]) na++;
-                            else if (subtasks[subtask]) completed++;
-                            else pending++;
-                        }
-                        tracker.textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
-                    } else {
-                        tracker.textContent = "No subtasks saved yet.";
-                    }
-                })
-                .catch(error => console.error('Error updating subtask tracker:', error));
+            const subtasks = {
+                swpLocation: document.getElementById('swpLocation').checked,
+                conduitInstall: document.getElementById('conduitInstall').checked,
+                flexToVFD: document.getElementById('flexToVFD').checked,
+                wirePull: document.getElementById('wirePull').checked,
+                flexToMotor: document.getElementById('flexToMotor').checked,
+                motorWire: document.getElementById('motorWire').checked,
+                vfdPanelWire: document.getElementById('vfdPanelWire').checked
+            };
+            let completed = 0, pending = 0;
+            for (let subtask in subtasks) {
+                if (subtasks[subtask]) completed++;
+                else pending++;
+            }
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
 </body>
