@@ -2,40 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Air Compressor Subtasks</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .subtask-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+        }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
     </style>
 </head>
 <body>
     <h1>Air Compressor Subtasks</h1>
     <ul>
-        <!-- Air Compressor Tasks from the Photo -->
-        <li><label><input type="checkbox" id="air_compressor_task1"> Install 3/4" conduit from air compressor disconnect to air compressor on power panel rack to disconnect on air compressor skid</label></li>
-        <li><label><input type="checkbox" id="air_compressor_task2"> Pull wire (#8/#8/#8/#10 THHN) from disconnect to disconnect</label></li>
-        <li><label><input type="checkbox" id="air_compressor_task3"> Install 3/4" flex from the end of conduit to the bottom of disconnect on skid</label></li>
-        <li><label><input type="checkbox" id="air_compressor_task4"> Terminate wires on top side of disconnect on air compressor skid</label></li>
+        <!-- Air Compressor Tasks -->
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task1"> Install 3/4" conduit from air compressor disconnect to air compressor on power panel rack to disconnect on air compressor skid</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task2"> Pull wire (#8/#8/#8/#10 THHN) from disconnect to disconnect</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task3"> Install 3/4" flex from the end of conduit to the bottom of disconnect on skid</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task4"> Terminate wires on top side of disconnect on air compressor skid</span></span></label></li>
     </ul>
-    <button onclick="saveSubtaskState(); window.location.href='index.html'">Back to Main</button>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 4</div>
+    <a href="index.html" onclick="saveSubtaskState()">Back to Main</a>
 
     <script>
-        // Load saved subtask states on page load
+        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const savedSubtasks = JSON.parse(localStorage.getItem('airCompressorSubtasks')) || {};
-            // Air Compressor tasks
-            document.getElementById('air_compressor_task1').checked = savedSubtasks.air_compressor_task1 || false;
-            document.getElementById('air_compressor_task2').checked = savedSubtasks.air_compressor_task2 || false;
-            document.getElementById('air_compressor_task3').checked = savedSubtasks.air_compressor_task3 || false;
-            document.getElementById('air_compressor_task4').checked = savedSubtasks.air_compressor_task4 || false;
-
-            // Add event listeners to save state on change
             const checkboxes = [
                 'air_compressor_task1', 'air_compressor_task2', 'air_compressor_task3', 'air_compressor_task4'
             ];
             checkboxes.forEach(id => {
-                document.getElementById(id).addEventListener('change', saveSubtaskState);
+                document.getElementById(id).checked = savedSubtasks[id] || false;
+                document.getElementById(id).addEventListener('change', () => {
+                    saveSubtaskState();
+                    updateSubtaskTracker();
+                });
             });
+            updateSubtaskTracker(); // Initial update
         });
 
         // Save subtask states to localStorage
@@ -47,6 +89,17 @@
                 air_compressor_task4: document.getElementById('air_compressor_task4').checked
             };
             localStorage.setItem('airCompressorSubtasks', JSON.stringify(subtaskState));
+        }
+
+        // Update subtask tracker
+        function updateSubtaskTracker() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let completed = 0, pending = 0;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
+                else pending++;
+            });
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
 </body>
