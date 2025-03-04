@@ -45,6 +45,7 @@
         a { 
             text-decoration: none; 
             color: #00ccff; 
+            font-size: 1.2em;
         }
         a:hover { 
             text-decoration: underline; 
@@ -53,8 +54,8 @@
 </head>
 <body>
     <h1>Flare Subtasks</h1>
+    <a href="index.html" onclick="saveSubtaskState(event)">Back to Checklist</a>
     <ul>
-        <!-- New Flare Tasks -->
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task1"> New location: Flare located at far end of most pad sites</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task2"> Disconnect 3/4" conduit on-rack VFD to location of flare where VFD panel is located, install a guat box on conduit and continue conduit run to the end of pipe rack that stops right at flare stack, add flex from guat to panel</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task3"> Pull wire through conduit to guat box with enough wire to go</span></span></label></li>
@@ -64,8 +65,6 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task7"> Pull wire from flare panel to flare blower motor and terminate in place</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task8"> Terminating wires: Flare panel wires (white coming from disconnect) will terminate on P side of breaker inside VFD</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task9"> Blower motor wires will terminate on the drive inside panel, will have to remove covers to access, Blower motor will be terminated EL-Brown as indicated on nameplate</span></span></label></li>
-
-        <!-- Existing Igniter Tasks -->
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task1"> Igniter control box (red plastic box) usually mounted on or near flare VFD panel</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task2"> Install 3/4" flex from VFD panel to igniter panel, with 120V wires terminated on L1-N transformer in VFD</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task3"> Pull wire (#10 THHN) Black/White/Green from VFD panel to igniter panel</span></span></label></li>
@@ -77,10 +76,8 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task9"> Terminate last two wires on terminals marked TEMP</span></span></label></li>
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 18</div>
-    <a href="index.html" onclick="saveSubtaskState()">Back to Main</a>
 
     <script>
-        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const savedSubtasks = JSON.parse(localStorage.getItem('flareSubtasks')) || {};
             const checkboxes = [
@@ -89,16 +86,13 @@
             ];
             checkboxes.forEach(id => {
                 document.getElementById(id).checked = savedSubtasks[id] || false;
-                document.getElementById(id).addEventListener('change', () => {
-                    saveSubtaskState();
-                    updateSubtaskTracker();
-                });
+                document.getElementById(id).addEventListener('change', saveSubtaskState);
             });
-            updateSubtaskTracker(); // Initial update
+            updateSubtaskTracker();
         });
 
-        // Save subtask states to localStorage
-        function saveSubtaskState() {
+        function saveSubtaskState(event) {
+            if (event) event.preventDefault();
             const subtaskState = {
                 flare_task1: document.getElementById('flare_task1').checked,
                 flare_task2: document.getElementById('flare_task2').checked,
@@ -120,9 +114,10 @@
                 igniter_task9: document.getElementById('igniter_task9').checked
             };
             localStorage.setItem('flareSubtasks', JSON.stringify(subtaskState));
+            updateSubtaskTracker();
+            if (event) window.location.href = 'index.html';
         }
 
-        // Update subtask tracker
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             let completed = 0, pending = 0;
