@@ -45,6 +45,7 @@
         a { 
             text-decoration: none; 
             color: #00ccff; 
+            font-size: 1.2em; 
         }
         a:hover { 
             text-decoration: underline; 
@@ -53,6 +54,7 @@
 </head>
 <body>
     <h1>Locate Equipment Subtasks</h1>
+    <a href="index.html" onclick="saveSubtasks('locate_equipment')">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFlare"> Locate and Mark Flare</span></span></label>
             <div class="step">1. Find the location of the flare and mark with spray paint on the ground.</div>
@@ -80,7 +82,6 @@
         </li>
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 8</div>
-    <a href="index.html" onclick="saveSubtasks()">Back to Main</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -98,18 +99,20 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
-                loadSubtasks(jobName);
+                loadSubtasks(jobName, 'locate_equipment');
             }
             updateSubtaskTracker();
         });
 
-        // Save subtask states to Firestore
-        function saveSubtasks() {
+        function saveSubtasks(taskId) {
             const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
+            }
             const subtasks = {
                 locateFlare: document.getElementById('locateFlare').checked,
                 locateBottomsPump: document.getElementById('locateBottomsPump').checked,
@@ -120,22 +123,19 @@
                 locateBatteryChargers: document.getElementById('locateBatteryChargers').checked,
                 locateFuelSkid: document.getElementById('locateFuelSkid').checked
             };
-            if (jobName) { // Only save to Firestore if jobName exists
-                db.collection('jobs').doc(jobName).set(
-                    { subtasks: { locate_equipment: subtasks } },
-                    { merge: true }
-                ).then(() => console.log('Subtasks for locate_equipment saved to Firestore'))
-                 .catch(error => console.error('Error saving subtasks:', error));
-            }
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+             .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
         }
 
-        // Load subtask states from Firestore
-        function loadSubtasks(jobName) {
+        function loadSubtasks(jobName, taskId) {
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
-                    if (doc.exists && doc.data().subtasks && doc.data().subtasks.locate_equipment) {
-                        const subtasks = doc.data().subtasks.locate_equipment;
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
                         document.getElementById('locateFlare').checked = subtasks.locateFlare || false;
                         document.getElementById('locateBottomsPump').checked = subtasks.locateBottomsPump || false;
                         document.getElementById('locateAirCompressor').checked = subtasks.locateAirCompressor || false;
@@ -150,7 +150,6 @@
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
-        // Update subtask tracker
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             let completed = 0, pending = 0;
