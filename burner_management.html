@@ -54,7 +54,7 @@
 </head>
 <body>
     <h1>Burner Management Subtasks</h1>
-    <a href="index.html" onclick="saveSubtasks('burner_management')">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('burner_management', event)">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management_task1"> Install 3/4" conduit from burner management disconnect to burner management on power panel rack to disconnect on burner management skid</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management_task2"> Pull wire (#8/#8/#8/#10 THHN) from disconnect to disconnect</span></span></label></li>
@@ -87,7 +87,8 @@
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        function saveSubtasks(taskId, event) {
+            event.preventDefault(); // Prevent default navigation
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -102,9 +103,13 @@
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtasks } },
                 { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
-             .catch(error => console.error('Error saving subtasks:', error));
-            updateSubtaskTracker();
+            ).then(() => {
+                console.log(`Subtasks for ${taskId} saved to Firestore`);
+                updateSubtaskTracker();
+                window.location.href = 'index.html'; // Navigate after save
+            }).catch(error => {
+                console.error('Error saving subtasks:', error);
+            });
         }
 
         function loadSubtasks(jobName, taskId) {
