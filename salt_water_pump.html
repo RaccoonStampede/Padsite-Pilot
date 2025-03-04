@@ -54,7 +54,7 @@
 </head>
 <body>
     <h1>Salt Water Pump Subtasks (SWP)</h1>
-    <a href="index.html" onclick="saveSubtasks('salt_water_pump')">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('salt_water_pump', event)">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)</span></span></label>
             <div class="step">1. Identify and verify the location of the salt water pump (SWP).</div>
@@ -107,7 +107,8 @@
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        function saveSubtasks(taskId, event) {
+            event.preventDefault(); // Prevent default navigation
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -125,9 +126,13 @@
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtasks } },
                 { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
-             .catch(error => console.error('Error saving subtasks:', error));
-            updateSubtaskTracker();
+            ).then(() => {
+                console.log(`Subtasks for ${taskId} saved to Firestore`);
+                updateSubtaskTracker();
+                window.location.href = 'index.html'; // Navigate after save
+            }).catch(error => {
+                console.error('Error saving subtasks:', error);
+            });
         }
 
         function loadSubtasks(jobName, taskId) {
