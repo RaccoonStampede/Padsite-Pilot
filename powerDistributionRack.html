@@ -8,18 +8,33 @@
         body { 
             font-family: Arial, sans-serif; 
             margin: 20px; 
-            color: #333;
+            color: #333; 
         }
-        ul { list-style: none; padding: 0; }
-        li { margin: 20px 0; }
-        .step { font-size: 0.9em; color: #666; }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; }
-        .task-left { display: flex; align-items: center; gap: 10px; }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
         .subtask-tracker { 
             margin-top: 20px; 
             padding: 10px; 
@@ -27,39 +42,44 @@
             border-radius: 5px; 
             font-size: 1em; 
         }
-        a { text-decoration: none; color: #00ccff; }
-        a:hover { text-decoration: underline; }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
     </style>
 </head>
 <body>
     <h1>Power Distribution Rack Subtasks</h1>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmPowerSources" onchange="saveSubtasks('power_distribution_rack')"> Confirm Location of Existing Power Sources</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmPowerSources"> Confirm Location of Existing Power Sources</span></span></label>
             <div class="step">1. Confirm the location of existing power sources for 120/240V and 277/480V.</div>
             <div class="step">2. Look for an existing electrical panel, skid, or power distribution rack.</div>
             <div class="step">3. If the location has none of these, a generator will be used to power the location.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmGenerator" onchange="saveSubtasks('power_distribution_rack')"> Confirm Generator Location</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmGenerator"> Confirm Generator Location</span></span></label>
             <div class="step">1. Confirm with the site manager where the generator will be placed when it arrives.</div>
             <div class="step">2. This location will be where you build the power distribution rack, installed parallel with the pipe rack.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateExistingSkid" onchange="saveSubtasks('power_distribution_rack')"> Locate Existing Electrical Skid and/or Existing Power Distribution Rack</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateExistingSkid"> Locate Existing Electrical Skid and/or Existing Power Distribution Rack</span></span></label>
             <div class="step">1. If the power distribution rack is not on location, you will need to confirm where the new rack will be built.</div>
             <div class="step">2. Route 120/240V to the location directly.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="buildRack" onchange="saveSubtasks('power_distribution_rack')"> Build Rack</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="buildRack"> Build Rack</span></span></label>
             <div class="step">1. Post holes will be located 3’ from the pipe rack that runs down, 4’6” apart.</div>
             <div class="step">2. Holes will be 2’+ deep.</div>
             <div class="step">3. Use drop augers to dig holes.</div>
             <div class="step">4. Place 2” rigid conduit in each hole and cement, level poles perfectly (let dry before proceeding to the next step).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installUnistrut" onchange="saveSubtasks('power_distribution_rack')"> Install Unistrut on Rack</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installUnistrut"> Install Unistrut on Rack</span></span></label>
             <div class="step">1. Use 3 pieces of Unistrut #9, cut at 5 feet long.</div>
             <div class="step">2. Mount to poles with 2½ inch exhaust clamps.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
-    <a href="index.html" onclick="saveSubtasks('power_distribution_rack')">Back to Checklist</a>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 5</div>
+    <a href="index.html" onclick="saveSubtasks()">Back to Checklist</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -77,17 +97,19 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
-                loadSubtasks(jobName, 'power_distribution_rack');
+                loadSubtasks(jobName);
             } else {
                 document.getElementById('subtask-tracker').textContent = 'No current job selected.';
             }
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        // Save subtask states to Firestore
+        function saveSubtasks() {
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -101,18 +123,19 @@
                 installUnistrut: document.getElementById('installUnistrut').checked
             };
             db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
+                { subtasks: { power_distribution_rack: subtasks } },
                 { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+            ).then(() => console.log('Subtasks for power_distribution_rack saved to Firestore'))
              .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
         }
 
-        function loadSubtasks(jobName, taskId) {
+        // Load subtask states from Firestore
+        function loadSubtasks(jobName) {
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
-                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks.power_distribution_rack) {
+                        const subtasks = doc.data().subtasks.power_distribution_rack;
                         document.getElementById('confirmPowerSources').checked = subtasks.confirmPowerSources || false;
                         document.getElementById('confirmGenerator').checked = subtasks.confirmGenerator || false;
                         document.getElementById('locateExistingSkid').checked = subtasks.locateExistingSkid || false;
@@ -124,19 +147,14 @@
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        // Update subtask tracker
         function updateSubtaskTracker() {
-            const subtasks = {
-                confirmPowerSources: document.getElementById('confirmPowerSources').checked,
-                confirmGenerator: document.getElementById('confirmGenerator').checked,
-                locateExistingSkid: document.getElementById('locateExistingSkid').checked,
-                buildRack: document.getElementById('buildRack').checked,
-                installUnistrut: document.getElementById('installUnistrut').checked
-            };
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             let completed = 0, pending = 0;
-            for (let subtask in subtasks) {
-                if (subtasks[subtask]) completed++;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
                 else pending++;
-            }
+            });
             document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
