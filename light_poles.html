@@ -42,17 +42,14 @@
             border-radius: 5px; 
             font-size: 1em; 
         }
-        a { 
-            text-decoration: none; 
-            color: #00ccff; 
-        }
-        a:hover { 
-            text-decoration: underline; 
+        button { 
+            font-size: 1.2em; 
         }
     </style>
 </head>
 <body>
     <h1>Light Poles Subtasks</h1>
+    <button onclick="saveSubtaskState(); window.location.href='index.html'">Back to Checklist</button>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task1"> Build light horns - by use lift to mount light horns on light poles with appropriate tools</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task2"> Drill 1/2" to 3/4" hole in light pole at 48" from ground, push fishtape up light pole and wait for person on lift to feed wire back through hole</span></span></label></li>
@@ -62,10 +59,8 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task6"> Terminate black wire from pole with red wire from photocell and terminate on remaining switch screw, connect grounds together and terminate, terminate white neutrals together, install mount switch to box and install weatherproof cover</span></span></label></li>
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 6</div>
-    <a href="index.html" onclick="saveSubtaskState()">Back to Main</a>
 
     <script>
-        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const savedSubtasks = JSON.parse(localStorage.getItem('lightPolesSubtasks')) || {};
             const checkboxes = [
@@ -73,15 +68,11 @@
             ];
             checkboxes.forEach(id => {
                 document.getElementById(id).checked = savedSubtasks[id] || false;
-                document.getElementById(id).addEventListener('change', () => {
-                    saveSubtaskState();
-                    updateSubtaskTracker();
-                });
+                document.getElementById(id).addEventListener('change', saveSubtaskState);
             });
-            updateSubtaskTracker(); // Initial update
+            updateSubtaskTracker();
         });
 
-        // Save subtask states to localStorage
         function saveSubtaskState() {
             const subtaskState = {
                 light_poles_task1: document.getElementById('light_poles_task1').checked,
@@ -95,7 +86,6 @@
             updateSubtaskTracker();
         }
 
-        // Update subtask tracker
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             let completed = 0, pending = 0;
