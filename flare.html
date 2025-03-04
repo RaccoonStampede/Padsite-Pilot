@@ -54,7 +54,7 @@
 </head>
 <body>
     <h1>Flare Subtasks</h1>
-    <a href="index.html" onclick="saveSubtaskState(event)">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('flare')">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task1"> New location: Flare located at far end of most pad sites</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task2"> Disconnect 3/4" conduit on-rack VFD to location of flare where VFD panel is located, install a guat box on conduit and continue conduit run to the end of pipe rack that stops right at flare stack, add flex from guat to panel</span></span></label></li>
@@ -77,23 +77,37 @@
     </ul>
     <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 18</div>
 
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         window.addEventListener('load', function() {
-            const savedSubtasks = JSON.parse(localStorage.getItem('flareSubtasks')) || {};
-            const checkboxes = [
-                'flare_task1', 'flare_task2', 'flare_task3', 'flare_task4', 'flare_task5', 'flare_task6', 'flare_task7', 'flare_task8', 'flare_task9',
-                'igniter_task1', 'igniter_task2', 'igniter_task3', 'igniter_task4', 'igniter_task5', 'igniter_task6', 'igniter_task7', 'igniter_task8', 'igniter_task9'
-            ];
-            checkboxes.forEach(id => {
-                document.getElementById(id).checked = savedSubtasks[id] || false;
-                document.getElementById(id).addEventListener('change', saveSubtaskState);
-            });
+            const jobName = localStorage.getItem('currentJobName');
+            if (jobName) {
+                loadSubtasks(jobName, 'flare');
+            }
             updateSubtaskTracker();
         });
 
-        function saveSubtaskState(event) {
-            if (event) event.preventDefault();
-            const subtaskState = {
+        function saveSubtasks(taskId) {
+            const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
+            }
+            const subtasks = {
                 flare_task1: document.getElementById('flare_task1').checked,
                 flare_task2: document.getElementById('flare_task2').checked,
                 flare_task3: document.getElementById('flare_task3').checked,
@@ -113,9 +127,41 @@
                 igniter_task8: document.getElementById('igniter_task8').checked,
                 igniter_task9: document.getElementById('igniter_task9').checked
             };
-            localStorage.setItem('flareSubtasks', JSON.stringify(subtaskState));
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+             .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
-            if (event) window.location.href = 'index.html';
+        }
+
+        function loadSubtasks(jobName, taskId) {
+            db.collection('jobs').doc(jobName).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
+                        document.getElementById('flare_task1').checked = subtasks.flare_task1 || false;
+                        document.getElementById('flare_task2').checked = subtasks.flare_task2 || false;
+                        document.getElementById('flare_task3').checked = subtasks.flare_task3 || false;
+                        document.getElementById('flare_task4').checked = subtasks.flare_task4 || false;
+                        document.getElementById('flare_task5').checked = subtasks.flare_task5 || false;
+                        document.getElementById('flare_task6').checked = subtasks.flare_task6 || false;
+                        document.getElementById('flare_task7').checked = subtasks.flare_task7 || false;
+                        document.getElementById('flare_task8').checked = subtasks.flare_task8 || false;
+                        document.getElementById('flare_task9').checked = subtasks.flare_task9 || false;
+                        document.getElementById('igniter_task1').checked = subtasks.igniter_task1 || false;
+                        document.getElementById('igniter_task2').checked = subtasks.igniter_task2 || false;
+                        document.getElementById('igniter_task3').checked = subtasks.igniter_task3 || false;
+                        document.getElementById('igniter_task4').checked = subtasks.igniter_task4 || false;
+                        document.getElementById('igniter_task5').checked = subtasks.igniter_task5 || false;
+                        document.getElementById('igniter_task6').checked = subtasks.igniter_task6 || false;
+                        document.getElementById('igniter_task7').checked = subtasks.igniter_task7 || false;
+                        document.getElementById('igniter_task8').checked = subtasks.igniter_task8 || false;
+                        document.getElementById('igniter_task9').checked = subtasks.igniter_task9 || false;
+                    }
+                    updateSubtaskTracker();
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
         }
 
         function updateSubtaskTracker() {
