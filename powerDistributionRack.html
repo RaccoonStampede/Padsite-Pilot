@@ -54,7 +54,7 @@
 </head>
 <body>
     <h1>Power Distribution Rack Subtasks</h1>
-    <a href="index.html" onclick="saveSubtasks('power_distribution_rack')">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('power_distribution_rack', event)">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="confirmPowerSources"> Confirm Location of Existing Power Sources</span></span></label>
             <div class="step">1. Confirm the location of existing power sources for 120/240V and 277/480V.</div>
@@ -86,7 +86,7 @@
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            apiKey: "AiSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
             authDomain: "padsitepilot.firebaseapp.com",
             projectId: "padsitepilot",
             storageBucket: "padsitepilot.firebasestorage.app",
@@ -106,7 +106,8 @@
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        function saveSubtasks(taskId, event) {
+            event.preventDefault(); // Prevent default navigation
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -122,9 +123,13 @@
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtasks } },
                 { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
-             .catch(error => console.error('Error saving subtasks:', error));
-            updateSubtaskTracker();
+            ).then(() => {
+                console.log(`Subtasks for ${taskId} saved to Firestore`);
+                updateSubtaskTracker();
+                window.location.href = 'index.html'; // Navigate after save
+            }).catch(error => {
+                console.error('Error saving subtasks:', error);
+            });
         }
 
         function loadSubtasks(jobName, taskId) {
