@@ -5,62 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bottoms Pump Subtasks</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { margin: 20px 0; }
-        .step { font-size: 0.9em; color: #666; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; }
-        .task-left { display: flex; align-items: center; gap: 10px; }
-        .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
-        a { text-decoration: none; color: #00ccff; }
-        a:hover { text-decoration: underline; }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .subtask-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+        }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
     </style>
 </head>
 <body>
     <h1>Bottoms Pump Subtasks</h1>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpLocation" onchange="saveSubtasks('bottoms_pump')"> Bottoms Pump (Circulation Pump) – Location Varies</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpLocation"> Bottoms Pump (Circulation Pump) – Location Varies</span></span></label>
             <div class="step">1. Identify location of bottoms pump (circulation pump—varies by site).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="rigidConduit" onchange="saveSubtasks('bottoms_pump')"> Get Needed – 5’ of 2” Rigid Conduit</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="rigidConduit"> Get Needed – 5’ of 2” Rigid Conduit</span></span></label>
             <div class="step">1. Obtain 5 feet of 2” rigid conduit for installation.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall" onchange="saveSubtasks('bottoms_pump')"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump</span></span></label>
             <div class="step">1. Measure and install 3/4” conduit from power panel rack to bottoms pump location.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexInstall" onchange="saveSubtasks('bottoms_pump')"> Install 3/4” Flex from Conduit to Pump</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexInstall"> Install 3/4” Flex from Conduit to Pump</span></span></label>
             <div class="step">1. Cut 2 pieces of Unistrut at 5”.</div>
             <div class="step">2. Use 2 exhaust clamps to mount Unistrut to leg of bottoms pump stand.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitCut" onchange="saveSubtasks('bottoms_pump')"> Cut 5’ of 2” Rigid Conduit</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitCut"> Cut 5’ of 2” Rigid Conduit</span></span></label>
             <div class="step">1. Cut 5 feet of 2” rigid conduit.</div>
             <div class="step">2. Mount conduit on Unistrut with 2” Unistrut straps (ensure it’s secure).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpPanelHoles" onchange="saveSubtasks('bottoms_pump')"> Use Bottoms Pump Panel – Needs Holes</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpPanelHoles"> Use Bottoms Pump Panel – Needs Holes</span></span></label>
             <div class="step">1. Drill 4 holes in mounting brackets of bottoms pump panel.</div>
             <div class="step">2. Use exhaust clamps for hole reference (2 holes on top and 2 on bottom).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="mountPanel" onchange="saveSubtasks('bottoms_pump')"> Mount Pump Panel to Pole Using Exhaust Clamps</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="mountPanel"> Mount Pump Panel to Pole Using Exhaust Clamps</span></span></label>
             <div class="step">1. Secure pump panel to pole using exhaust clamps through drilled holes.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToPanel" onchange="saveSubtasks('bottoms_pump')"> Install 3/4” Flex from End of Conduit Run to Bottom of Pump Panel</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToPanel"> Install 3/4” Flex from End of Conduit Run to Bottom of Pump Panel</span></span></label>
             <div class="step">1. Install 3/4” flex from the end of the conduit run to the bottom of the pump panel.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull" onchange="saveSubtasks('bottoms_pump')"> Pull Wire (Red, Black, Brown, Yellow, Blue, Gray) from Flare Disconnect to Pump Panel Rack</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull"> Pull Wire (Red, Black, Brown, Yellow, Blue, Gray) from Flare Disconnect to Pump Panel Rack</span></span></label>
             <div class="step">1. Pull wires (Red, Black, Brown, Yellow, Blue, Gray) from flare disconnect to pump panel rack.</div>
             <div class="step">2. Terminate at the top of disconnect inside panel.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor" onchange="saveSubtasks('bottoms_pump')"> Install 3/4” Flex from Panel to Pump Motor on Stand</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor"> Install 3/4” Flex from Panel to Pump Motor on Stand</span></span></label>
             <div class="step">1. Install 3/4” flex from the panel to the pump motor on the stand.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
-    <a href="index.html" onclick="saveSubtasks('bottoms_pump')">Back to Checklist</a>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 10</div>
+    <a href="index.html" onclick="saveSubtasks()">Back to Main</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -78,22 +108,18 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
-                loadSubtasks(jobName, 'bottoms_pump');
-            } else {
-                document.getElementById('subtask-tracker').textContent = 'No current job selected.';
+                loadSubtasks(jobName);
             }
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        // Save subtask states to Firestore
+        function saveSubtasks() {
             const jobName = localStorage.getItem('currentJobName');
-            if (!jobName) {
-                alert('No current job selected. Please start a job on the main page.');
-                return;
-            }
             const subtasks = {
                 pumpLocation: document.getElementById('pumpLocation').checked,
                 rigidConduit: document.getElementById('rigidConduit').checked,
@@ -106,19 +132,22 @@
                 wirePull: document.getElementById('wirePull').checked,
                 flexToMotor: document.getElementById('flexToMotor').checked
             };
-            db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
-                { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
-             .catch(error => console.error('Error saving subtasks:', error));
+            if (jobName) { // Only save to Firestore if jobName exists
+                db.collection('jobs').doc(jobName).set(
+                    { subtasks: { bottoms_pump: subtasks } },
+                    { merge: true }
+                ).then(() => console.log('Subtasks for bottoms_pump saved to Firestore'))
+                 .catch(error => console.error('Error saving subtasks:', error));
+            }
             updateSubtaskTracker();
         }
 
-        function loadSubtasks(jobName, taskId) {
+        // Load subtask states from Firestore
+        function loadSubtasks(jobName) {
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
-                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks.bottoms_pump) {
+                        const subtasks = doc.data().subtasks.bottoms_pump;
                         document.getElementById('pumpLocation').checked = subtasks.pumpLocation || false;
                         document.getElementById('rigidConduit').checked = subtasks.rigidConduit || false;
                         document.getElementById('conduitInstall').checked = subtasks.conduitInstall || false;
@@ -135,24 +164,14 @@
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        // Update subtask tracker
         function updateSubtaskTracker() {
-            const subtasks = {
-                pumpLocation: document.getElementById('pumpLocation').checked,
-                rigidConduit: document.getElementById('rigidConduit').checked,
-                conduitInstall: document.getElementById('conduitInstall').checked,
-                flexInstall: document.getElementById('flexInstall').checked,
-                conduitCut: document.getElementById('conduitCut').checked,
-                pumpPanelHoles: document.getElementById('pumpPanelHoles').checked,
-                mountPanel: document.getElementById('mountPanel').checked,
-                flexToPanel: document.getElementById('flexToPanel').checked,
-                wirePull: document.getElementById('wirePull').checked,
-                flexToMotor: document.getElementById('flexToMotor').checked
-            };
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             let completed = 0, pending = 0;
-            for (let subtask in subtasks) {
-                if (subtasks[subtask]) completed++;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
                 else pending++;
-            }
+            });
             document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
