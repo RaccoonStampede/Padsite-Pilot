@@ -1,36 +1,85 @@
-<!-- burner_management.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Burner Management Subtasks</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .subtask-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+        }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
     </style>
 </head>
 <body>
     <h1>Burner Management Subtasks</h1>
     <ul>
-        <li><label><input type="checkbox" id="burner_management_task1"> Install 3/4" conduit from burner management disconnect to burner management on power panel rack to disconnect on burner management skid</label></li>
-        <li><label><input type="checkbox" id="burner_management_task2"> Pull wire (#8/#8/#8/#10 THHN) from disconnect to disconnect</label></li>
-        <li><label><input type="checkbox" id="burner_management_task3"> Install 3/4" flex from the end of conduit to the bottom of disconnect on skid</label></li>
-        <li><label><input type="checkbox" id="burner_management_task4"> Terminate wires on top side of disconnect on burner management skid</label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management_task1"> Install 3/4" conduit from burner management disconnect to burner management on power panel rack to disconnect on burner management skid</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management_task2"> Pull wire (#8/#8/#8/#10 THHN) from disconnect to disconnect</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management_task3"> Install 3/4" flex from the end of conduit to the bottom of disconnect on skid</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management_task4"> Terminate wires on top side of disconnect on burner management skid</span></span></label></li>
     </ul>
-    <button onclick="saveSubtaskState(); window.location.href='index.html'">Back to Main</button>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 4</div>
+    <a href="index.html" onclick="saveSubtaskState()">Back to Main</a>
 
     <script>
+        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const savedSubtasks = JSON.parse(localStorage.getItem('burnerManagementSubtasks')) || {};
-            document.getElementById('burner_management_task1').checked = savedSubtasks.burner_management_task1 || false;
-            document.getElementById('burner_management_task2').checked = savedSubtasks.burner_management_task2 || false;
-            document.getElementById('burner_management_task3').checked = savedSubtasks.burner_management_task3 || false;
-            document.getElementById('burner_management_task4').checked = savedSubtasks.burner_management_task4 || false;
-
-            const checkboxes = ['burner_management_task1', 'burner_management_task2', 'burner_management_task3', 'burner_management_task4'];
-            checkboxes.forEach(id => document.getElementById(id).addEventListener('change', saveSubtaskState));
+            const checkboxes = [
+                'burner_management_task1', 'burner_management_task2', 'burner_management_task3', 'burner_management_task4'
+            ];
+            checkboxes.forEach(id => {
+                document.getElementById(id).checked = savedSubtasks[id] || false;
+                document.getElementById(id).addEventListener('change', () => {
+                    saveSubtaskState();
+                    updateSubtaskTracker();
+                });
+            });
+            updateSubtaskTracker(); // Initial update
         });
 
+        // Save subtask states to localStorage
         function saveSubtaskState() {
             const subtaskState = {
                 burner_management_task1: document.getElementById('burner_management_task1').checked,
@@ -39,6 +88,18 @@
                 burner_management_task4: document.getElementById('burner_management_task4').checked
             };
             localStorage.setItem('burnerManagementSubtasks', JSON.stringify(subtaskState));
+            updateSubtaskTracker();
+        }
+
+        // Update subtask tracker
+        function updateSubtaskTracker() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let completed = 0, pending = 0;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
+                else pending++;
+            });
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
         }
     </script>
 </body>
