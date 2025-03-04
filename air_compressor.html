@@ -89,6 +89,7 @@
                 air_compressor_task4: document.getElementById('air_compressor_task4').checked
             };
             localStorage.setItem('airCompressorSubtasks', JSON.stringify(subtaskState));
+            updateSubtaskTracker();
         }
 
         // Update subtask tracker
