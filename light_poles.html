@@ -54,7 +54,7 @@
 </head>
 <body>
     <h1>Light Poles Subtasks</h1>
-    <a href="index.html" onclick="saveSubtasks('light_poles')">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('light_poles', event)">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task1"> Build light horns - by use lift to mount light horns on light poles with appropriate tools</span></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task2"> Drill 1/2" to 3/4" hole in light pole at 48" from ground, push fishtape up light pole and wait for person on lift to feed wire back through hole</span></span></label></li>
@@ -89,7 +89,8 @@
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        function saveSubtasks(taskId, event) {
+            event.preventDefault(); // Prevent default navigation
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -106,9 +107,13 @@
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtasks } },
                 { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
-             .catch(error => console.error('Error saving subtasks:', error));
-            updateSubtaskTracker();
+            ).then(() => {
+                console.log(`Subtasks for ${taskId} saved to Firestore`);
+                updateSubtaskTracker();
+                window.location.href = 'index.html'; // Navigate after save
+            }).catch(error => {
+                console.error('Error saving subtasks:', error);
+            });
         }
 
         function loadSubtasks(jobName, taskId) {
