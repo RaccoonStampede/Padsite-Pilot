@@ -5,52 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Locate Equipment Subtasks</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { margin: 20px 0; }
-        .step { font-size: 0.9em; color: #666; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; align-items: center; }
-        .task-left { display: flex; align-items: center; gap: 10px; }
-        .subtask-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; }
-        a { text-decoration: none; color: #00ccff; }
-        a:hover { text-decoration: underline; }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .subtask-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+        }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
     </style>
 </head>
 <body>
     <h1>Locate Equipment Subtasks</h1>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFlare" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Flare</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFlare"> Locate and Mark Flare</span></span></label>
             <div class="step">1. Find the location of the flare and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBottomsPump" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Bottoms Pump</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBottomsPump"> Locate and Mark Bottoms Pump</span></span></label>
             <div class="step">1. Find the location of the bottoms pump and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateAirCompressor" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Air Compressor</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateAirCompressor"> Locate and Mark Air Compressor</span></span></label>
             <div class="step">1. Find the location of the air compressor and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateSaltWaterPump" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Salt Water Pump</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateSaltWaterPump"> Locate and Mark Salt Water Pump</span></span></label>
             <div class="step">1. Find the location of the salt water pump and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateLightPoles" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Light Poles</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateLightPoles"> Locate and Mark Light Poles</span></span></label>
             <div class="step">1. Find the location of the light poles and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBurnerManagements" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Burner Managements</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBurnerManagements"> Locate and Mark Burner Managements</span></span></label>
             <div class="step">1. Find the location of the burner managements and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBatteryChargers" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Battery Chargers</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBatteryChargers"> Locate and Mark Battery Chargers</span></span></label>
             <div class="step">1. Find the location of the battery chargers and mark with spray paint on the ground.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFuelSkid" onchange="saveSubtasks('locate_equipment')"> Locate and Mark Fuel Skid</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFuelSkid"> Locate and Mark Fuel Skid</span></span></label>
             <div class="step">1. Find the location of the fuel skid and mark with spray paint on the ground.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Loading subtasks...</div>
-    <a href="index.html" onclick="saveSubtasks('locate_equipment')">Back to Checklist</a>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 8</div>
+    <a href="index.html" onclick="saveSubtasks()">Back to Main</a>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -68,17 +98,19 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Load saved subtask states and update tracker on page load
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
-                loadSubtasks(jobName, 'locate_equipment');
+                loadSubtasks(jobName);
             } else {
                 document.getElementById('subtask-tracker').textContent = 'No current job selected.';
             }
             updateSubtaskTracker();
         });
 
-        function saveSubtasks(taskId) {
+        // Save subtask states to Firestore
+        function saveSubtasks() {
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -95,50 +127,13 @@
                 locateFuelSkid: document.getElementById('locateFuelSkid').checked
             };
             db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
+                { subtasks: { locate_equipment: subtasks } },
                 { merge: true }
-            ).then(() => console.log(`Subtasks for ${taskId} saved to Firestore`))
+            ).then(() => console.log('Subtasks for locate_equipment saved to Firestore'))
              .catch(error => console.error('Error saving subtasks:', error));
             updateSubtaskTracker();
         }
 
-        function loadSubtasks(jobName, taskId) {
-            db.collection('jobs').doc(jobName).get()
-                .then(doc => {
-                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('locateFlare').checked = subtasks.locateFlare || false;
-                        document.getElementById('locateBottomsPump').checked = subtasks.locateBottomsPump || false;
-                        document.getElementById('locateAirCompressor').checked = subtasks.locateAirCompressor || false;
-                        document.getElementById('locateSaltWaterPump').checked = subtasks.locateSaltWaterPump || false;
-                        document.getElementById('locateLightPoles').checked = subtasks.locateLightPoles || false;
-                        document.getElementById('locateBurnerManagements').checked = subtasks.locateBurnerManagements || false;
-                        document.getElementById('locateBatteryChargers').checked = subtasks.locateBatteryChargers || false;
-                        document.getElementById('locateFuelSkid').checked = subtasks.locateFuelSkid || false;
-                    }
-                    updateSubtaskTracker();
-                })
-                .catch(error => console.error('Error loading subtasks:', error));
-        }
-
-        function updateSubtaskTracker() {
-            const subtasks = {
-                locateFlare: document.getElementById('locateFlare').checked,
-                locateBottomsPump: document.getElementById('locateBottomsPump').checked,
-                locateAirCompressor: document.getElementById('locateAirCompressor').checked,
-                locateSaltWaterPump: document.getElementById('locateSaltWaterPump').checked,
-                locateLightPoles: document.getElementById('locateLightPoles').checked,
-                locateBurnerManagements: document.getElementById('locateBurnerManagements').checked,
-                locateBatteryChargers: document.getElementById('locateBatteryChargers').checked,
-                locateFuelSkid: document.getElementById('locateFuelSkid').checked
-            };
-            let completed = 0, pending = 0;
-            for (let subtask in subtasks) {
-                if (subtasks[subtask]) completed++;
-                else pending++;
-            }
-            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
-        }
-    </script>
-</body>
-</html>
+        // Load subtask states from Firestore
+        function loadSubtasks(jobName) {
+            db.collection('jobs').do
