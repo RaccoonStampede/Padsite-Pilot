@@ -103,8 +103,6 @@
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
                 loadSubtasks(jobName);
-            } else {
-                document.getElementById('subtask-tracker').textContent = 'No current job selected.';
             }
             updateSubtaskTracker();
         });
@@ -112,10 +110,6 @@
         // Save subtask states to Firestore
         function saveSubtasks() {
             const jobName = localStorage.getItem('currentJobName');
-            if (!jobName) {
-                alert('No current job selected. Please start a job on the main page.');
-                return;
-            }
             const subtasks = {
                 locateFlare: document.getElementById('locateFlare').checked,
                 locateBottomsPump: document.getElementById('locateBottomsPump').checked,
@@ -126,14 +120,46 @@
                 locateBatteryChargers: document.getElementById('locateBatteryChargers').checked,
                 locateFuelSkid: document.getElementById('locateFuelSkid').checked
             };
-            db.collection('jobs').doc(jobName).set(
-                { subtasks: { locate_equipment: subtasks } },
-                { merge: true }
-            ).then(() => console.log('Subtasks for locate_equipment saved to Firestore'))
-             .catch(error => console.error('Error saving subtasks:', error));
+            if (jobName) { // Only save to Firestore if jobName exists
+                db.collection('jobs').doc(jobName).set(
+                    { subtasks: { locate_equipment: subtasks } },
+                    { merge: true }
+                ).then(() => console.log('Subtasks for locate_equipment saved to Firestore'))
+                 .catch(error => console.error('Error saving subtasks:', error));
+            }
             updateSubtaskTracker();
         }
 
         // Load subtask states from Firestore
         function loadSubtasks(jobName) {
-            db.collection('jobs').do
+            db.collection('jobs').doc(jobName).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks.locate_equipment) {
+                        const subtasks = doc.data().subtasks.locate_equipment;
+                        document.getElementById('locateFlare').checked = subtasks.locateFlare || false;
+                        document.getElementById('locateBottomsPump').checked = subtasks.locateBottomsPump || false;
+                        document.getElementById('locateAirCompressor').checked = subtasks.locateAirCompressor || false;
+                        document.getElementById('locateSaltWaterPump').checked = subtasks.locateSaltWaterPump || false;
+                        document.getElementById('locateLightPoles').checked = subtasks.locateLightPoles || false;
+                        document.getElementById('locateBurnerManagements').checked = subtasks.locateBurnerManagements || false;
+                        document.getElementById('locateBatteryChargers').checked = subtasks.locateBatteryChargers || false;
+                        document.getElementById('locateFuelSkid').checked = subtasks.locateFuelSkid || false;
+                    }
+                    updateSubtaskTracker();
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
+
+        // Update subtask tracker
+        function updateSubtaskTracker() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let completed = 0, pending = 0;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
+                else pending++;
+            });
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+        }
+    </script>
+</body>
+</html>
