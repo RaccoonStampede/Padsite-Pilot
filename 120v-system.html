@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>120V System Subtasks</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .subtask-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+        }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+            font-size: 1.2em; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+    <h1>120V System Subtasks</h1>
+    <a href="index.html" onclick="saveSubtasks('120v_system', event)">Back to Checklist</a>
+    <ul>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="findLocations"> Find Location of the Following Managers</span></span></label>
+            <div class="step">1. Identify and mark the locations of light poles, burner management, battery chargers, and fuel skid (total power stations).</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitLightPoles"> Install Conduit for Light Poles</span></span></label>
+            <div class="step">1. Install conduit from rack frame-rack to light poles.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitBurner"> Install Conduit for Burner Management</span></span></label>
+            <div class="step">1. Install conduit from rack frame-rack to burner management.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitBattery"> Install Conduit for Battery Chargers</span></span></label>
+            <div class="step">1. Install conduit from rack frame-rack to battery chargers.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitFuel"> Install Conduit for Fuel Skid</span></span></label>
+            <div class="step">1. Install conduit from rack frame-rack to fuel skid.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="install34ConduitBoxes"> Install 3/4" Conduit Equipment Boxes</span></span></label>
+            <div class="step">1. Install 3/4" conduit equipment boxes and run conduit to the next equipment.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installSquatConduit"> Install Squat or 90 Degree Conduit</span></span></label>
+            <div class="step">1. Install squat or 90-degree conduit to the next equipment.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installNecessaryConduit"> If Necessary, Install 3/4" Conduit to Box</span></span></label>
+            <div class="step">1. Install 3/4" conduit to the box if required (box in box configuration).</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installFrontConduit"> Install Conduit From Front to Third Box</span></span></label>
+            <div class="step">1. Install conduit from the front to the third box (white, red, green).</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pullWireWRG"> Pull Wire #10 to #10 White, Red, Green</span></span></label>
+            <div class="step">1. Pull #10 to #10 wire (white, red, green) through the conduit.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pullWireBBW"> Pull Wire #10 to #10 Black, Blue, White</span></span></label>
+            <div class="step">1. Pull #10 to #10 wire (black, blue, white) through the conduit.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="shareGroundWire"> Share Rest of Equipment Ground Wire</span></span></label>
+            <div class="step">1. Share the rest of the equipment ground wire in the same conduit.</div>
+        </li>
+    </ul>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 12</div>
+
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AiSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            const jobName = localStorage.getItem('currentJobName');
+            if (jobName) {
+                loadSubtasks(jobName, '120v_system');
+            }
+            updateSubtaskTracker();
+        });
+
+        function saveSubtasks(taskId, event) {
+            event.preventDefault(); // Prevent default navigation
+            const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
+            }
+            const subtasks = {
+                findLocations: document.getElementById('findLocations').checked,
+                installConduitLightPoles: document.getElementById('installConduitLightPoles').checked,
+                installConduitBurner: document.getElementById('installConduitBurner').checked,
+                installConduitBattery: document.getElementById('installConduitBattery').checked,
+                installConduitFuel: document.getElementById('installConduitFuel').checked,
+                install34ConduitBoxes: document.getElementById('install34ConduitBoxes').checked,
+                installSquatConduit: document.getElementById('installSquatConduit').checked,
+                installNecessaryConduit: document.getElementById('installNecessaryConduit').checked,
+                installFrontConduit: document.getElementById('installFrontConduit').checked,
+                pullWireWRG: document.getElementById('pullWireWRG').checked,
+                pullWireBBW: document.getElementById('pullWireBBW').checked,
+                shareGroundWire: document.getElementById('shareGroundWire').checked
+            };
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => {
+                console.log(`Subtasks for ${taskId} saved to Firestore`);
+                updateSubtaskTracker();
+                window.location.href = 'index.html'; // Navigate after save
+            }).catch(error => {
+                console.error('Error saving subtasks:', error);
+            });
+        }
+
+        function loadSubtasks(jobName, taskId) {
+            db.collection('jobs').doc(jobName).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
+                        document.getElementById('findLocations').checked = subtasks.findLocations || false;
+                        document.getElementById('installConduitLightPoles').checked = subtasks.installConduitLightPoles || false;
+                        document.getElementById('installConduitBurner').checked = subtasks.installConduitBurner || false;
+                        document.getElementById('installConduitBattery').checked = subtasks.installConduitBattery || false;
+                        document.getElementById('installConduitFuel').checked = subtasks.installConduitFuel || false;
+                        document.getElementById('install34ConduitBoxes').checked = subtasks.install34ConduitBoxes || false;
+                        document.getElementById('installSquatConduit').checked = subtasks.installSquatConduit || false;
+                        document.getElementById('installNecessaryConduit').checked = subtasks.installNecessaryConduit || false;
+                        document.getElementById('installFrontConduit').checked = subtasks.installFrontConduit || false;
+                        document.getElementById('pullWireWRG').checked = subtasks.pullWireWRG || false;
+                        document.getElementById('pullWireBBW').checked = subtasks.pullWireBBW || false;
+                        document.getElementById('shareGroundWire').checked = subtasks.shareGroundWire || false;
+                    }
+                    updateSubtaskTracker();
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
+
+        function updateSubtaskTracker() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let completed = 0, pending = 0;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
+                else pending++;
+            });
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+        }
+    </script>
+</body>
+</html>
