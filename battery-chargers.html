@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Chargers Subtasks</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 20px 0; 
+        }
+        .step { 
+            font-size: 0.9em; 
+            color: #666; 
+        }
+        input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+            vertical-align: middle;
+        }
+        .task-controls { 
+            display: flex; 
+            align-items: center; 
+        }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .subtask-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+        }
+        a { 
+            text-decoration: none; 
+            color: #00ccff; 
+            font-size: 1.2em; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Battery Chargers Subtasks</h1>
+    <a href="index.html" onclick="saveSubtasks('battery_chargers', event)">Back to Checklist</a>
+    <ul>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBatteryChargers"> Locate</span></span></label>
+            <div class="step">1. Find the location of the battery chargers and mark with spray paint on the ground.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="connectFlex"> Connect 3/4" Flex Edge to Box</span></span></label>
+            <div class="step">1. Connect the 3/4" flex edge to the box securely.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="nearBox"> Near the Box</span></span></label>
+            <div class="step">1. Position components near the box as specified.</div>
+        </li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="capOffWires"> Cap Off Wires and Leave Aluminum</span></span></label>
+            <div class="step">1. Cap off the wires and leave them secured with aluminum.</div>
+        </li>
+    </ul>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 4</div>
+
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AiSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            authDomain: "padsitepilot.firebaseapp.com",
+            projectId: "padsitepilot",
+            storageBucket: "padsitepilot.firebasestorage.app",
+            messagingSenderId: "380246060537",
+            appId: "1:380246060537:web:b8b92fdbc32d1a74826128",
+            measurementId: "G-3H5TH08X46"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.addEventListener('load', function() {
+            const jobName = localStorage.getItem('currentJobName');
+            if (jobName) {
+                loadSubtasks(jobName, 'battery_chargers');
+            }
+            updateSubtaskTracker();
+        });
+
+        function saveSubtasks(taskId, event) {
+            event.preventDefault(); // Prevent default navigation
+            const jobName = localStorage.getItem('currentJobName');
+            if (!jobName) {
+                alert('No current job selected. Please start a job on the main page.');
+                return;
+            }
+            const subtasks = {
+                locateBatteryChargers: document.getElementById('locateBatteryChargers').checked,
+                connectFlex: document.getElementById('connectFlex').checked,
+                nearBox: document.getElementById('nearBox').checked,
+                capOffWires: document.getElementById('capOffWires').checked
+            };
+            db.collection('jobs').doc(jobName).set(
+                { subtasks: { [taskId]: subtasks } },
+                { merge: true }
+            ).then(() => {
+                console.log(`Subtasks for ${taskId} saved to Firestore`);
+                updateSubtaskTracker();
+                window.location.href = 'index.html'; // Navigate after save
+            }).catch(error => {
+                console.error('Error saving subtasks:', error);
+            });
+        }
+
+        function loadSubtasks(jobName, taskId) {
+            db.collection('jobs').doc(jobName).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
+                        const subtasks = doc.data().subtasks[taskId];
+                        document.getElementById('locateBatteryChargers').checked = subtasks.locateBatteryChargers || false;
+                        document.getElementById('connectFlex').checked = subtasks.connectFlex || false;
+                        document.getElementById('nearBox').checked = subtasks.nearBox || false;
+                        document.getElementById('capOffWires').checked = subtasks.capOffWires || false;
+                    }
+                    updateSubtaskTracker();
+                })
+                .catch(error => console.error('Error loading subtasks:', error));
+        }
+
+        function updateSubtaskTracker() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let completed = 0, pending = 0;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
+                else pending++;
+            });
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+        }
+    </script>
+</body>
+</html>
