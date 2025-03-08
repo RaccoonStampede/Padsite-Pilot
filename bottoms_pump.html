@@ -77,7 +77,7 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="mountPanel"> Mount Pump Panel to Pole Using Exhaust Clamps</span></span></label>
             <div class="step">1. Secure pump panel to pole using exhaust clamps through drilled holes.</div>
         </li>        
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="rigidConduit"> Install 3/4” Conduit from Power Panel Rack to Location of Bottoms Pump</span></span></label>
             <div class="step">1. Measure and install 3/4” conduit from power panel rack to bottoms pump location.</div>
         </li>    
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToPanel"> Install 3/4” Flex from End of Conduit Run to Bottom of Pump Panel</span></span></label>
@@ -129,12 +129,12 @@
             }
             const subtasks = {
                 pumpLocation: document.getElementById('pumpLocation').checked,
-                rigidConduit: document.getElementById('rigidConduit').checked,
                 conduitInstall: document.getElementById('conduitInstall').checked,
                 flexInstall: document.getElementById('flexInstall').checked,
                 conduitCut: document.getElementById('conduitCut').checked,
                 pumpPanelHoles: document.getElementById('pumpPanelHoles').checked,
                 mountPanel: document.getElementById('mountPanel').checked,
+                rigidConduit: document.getElementById('rigidConduit').checked,
                 flexToPanel: document.getElementById('flexToPanel').checked,
                 wirePull: document.getElementById('wirePull').checked,
                 flexToMotor: document.getElementById('flexToMotor').checked
@@ -157,12 +157,12 @@
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
                         const subtasks = doc.data().subtasks[taskId];
                         document.getElementById('pumpLocation').checked = subtasks.pumpLocation || false;
-                        document.getElementById('rigidConduit').checked = subtasks.rigidConduit || false;
                         document.getElementById('conduitInstall').checked = subtasks.conduitInstall || false;
                         document.getElementById('flexInstall').checked = subtasks.flexInstall || false;
                         document.getElementById('conduitCut').checked = subtasks.conduitCut || false;
                         document.getElementById('pumpPanelHoles').checked = subtasks.pumpPanelHoles || false;
                         document.getElementById('mountPanel').checked = subtasks.mountPanel || false;
+                        document.getElementById('rigidConduit').checked = subtasks.rigidConduit || false;
                         document.getElementById('flexToPanel').checked = subtasks.flexToPanel || false;
                         document.getElementById('wirePull').checked = subtasks.wirePull || false;
                         document.getElementById('flexToMotor').checked = subtasks.flexToMotor || false;
