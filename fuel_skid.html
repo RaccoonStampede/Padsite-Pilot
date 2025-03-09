@@ -57,28 +57,16 @@
     <a href="index.html" onclick="saveSubtasks('fuel_skid', event)">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateFuelSkid"> Locate</span></span></label>
-            <div class="step">1. Find the location of the fuel skid and mark with spray paint on the ground.</div>
+            <div class="step">1. Find the location of the Heat Tape J-box on fuel skid.</div>
         </li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installFuelSkid"> Install</span></span></label>
-            <div class="step">1. Install the fuel skid according to the provided specifications.</div>
+            <div class="step">1. Install 3/4 inchg flex with wire into J-box.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="terminateWires"> Terminate Wires and Flex J-Box into KIT</span></span></label>
-            <div class="step">1. Connect and terminate wires into the J-Box and integrate with the KIT.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="heatTape"> Heat Tape J-Box</span></span></label>
-            <div class="step">1. Apply heat tape to the J-Box to prevent freezing.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="proweldTraining"> 3/4" Proweld Training</span></span></label>
-            <div class="step">1. Perform 3/4" Proweld training as per the guidelines.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="directBury"> Direct Bury Wires</span></span></label>
-            <div class="step">1. Bury the wires directly into the ground as specified.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="aluminumTape"> With Aluminum Tape</span></span></label>
-            <div class="step">1. Secure components with aluminum tape as required.</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="terminateWires"> Terminate Wires</span></span></label>
+            <div class="step">1. Connect and terminate wires directly to Heat Tape with provided termination kit.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 7</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 3</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -115,10 +103,6 @@
                 locateFuelSkid: document.getElementById('locateFuelSkid').checked,
                 installFuelSkid: document.getElementById('installFuelSkid').checked,
                 terminateWires: document.getElementById('terminateWires').checked,
-                heatTape: document.getElementById('heatTape').checked,
-                proweldTraining: document.getElementById('proweldTraining').checked,
-                directBury: document.getElementById('directBury').checked,
-                aluminumTape: document.getElementById('aluminumTape').checked
             };
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtasks } },
@@ -140,10 +124,6 @@
                         document.getElementById('locateFuelSkid').checked = subtasks.locateFuelSkid || false;
                         document.getElementById('installFuelSkid').checked = subtasks.installFuelSkid || false;
                         document.getElementById('terminateWires').checked = subtasks.terminateWires || false;
-                        document.getElementById('heatTape').checked = subtasks.heatTape || false;
-                        document.getElementById('proweldTraining').checked = subtasks.proweldTraining || false;
-                        document.getElementById('directBury').checked = subtasks.directBury || false;
-                        document.getElementById('aluminumTape').checked = subtasks.aluminumTape || false;
                     }
                     updateSubtaskTracker();
                 })
