@@ -59,7 +59,7 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pumpLocation"> Bottoms Pump (Circulation Pump) – Location Varies</span></span></label>
             <div class="step">1. Identify location of bottoms pump (circulation pump—varies by site).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexInstall"> Install 3/4” Flex from Conduit to Pump</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="Installunistrut"> Install Unistrut</span></span></label>
             <div class="step">1. Cut 2 pieces of Unistrut at 5”.</div>
             <div class="step">2. Use 2 exhaust clamps to mount Unistrut to leg of bottoms pump stand.</div>
         </li>
@@ -126,7 +126,7 @@
             }
             const subtasks = {
                 pumpLocation: document.getElementById('pumpLocation').checked,
-                flexInstall: document.getElementById('flexInstall').checked,
+                flexInstall: document.getElementById('Imstallunistrut').checked,
                 conduitCut: document.getElementById('conduitCut').checked,
                 pumpPanelHoles: document.getElementById('pumpPanelHoles').checked,
                 mountPanel: document.getElementById('mountPanel').checked,
@@ -153,7 +153,7 @@
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
                         const subtasks = doc.data().subtasks[taskId];
                         document.getElementById('pumpLocation').checked = subtasks.pumpLocation || false;
-                        document.getElementById('flexInstall').checked = subtasks.flexInstall || false;
+                        document.getElementById('Installunistrut').checked = subtasks.flexInstall || false;
                         document.getElementById('conduitCut').checked = subtasks.conduitCut || false;
                         document.getElementById('pumpPanelHoles').checked = subtasks.pumpPanelHoles || false;
                         document.getElementById('mountPanel').checked = subtasks.mountPanel || false;
