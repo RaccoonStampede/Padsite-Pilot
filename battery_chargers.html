@@ -56,20 +56,14 @@
     <h1>Battery Chargers Subtasks</h1>
     <a href="index.html" onclick="saveSubtasks('battery_chargers', event)">Back to Checklist</a>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="locateBatteryChargers"> Locate</span></span></label>
-            <div class="step">1. Find the location of the battery chargers and mark with spray paint on the ground.</div>
-        </li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="connectFlex"> Connect 3/4" Flex Edge to Box</span></span></label>
-            <div class="step">1. Connect the 3/4" flex edge to the box securely.</div>
+            <div class="step">1. Connect the 3/4" flex to the bottom of Aluminum box near the edge.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="nearBox"> Near the Box</span></span></label>
-            <div class="step">1. Position components near the box as specified.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="capOffWires"> Cap Off Wires and Leave Aluminum</span></span></label>
-            <div class="step">1. Cap off the wires and leave them secured with aluminum.</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="capOffWires"> Cap Off Wires</span></span></label>
+            <div class="step">1. Cap off the wires and leave them in Battery box.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 4</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: </div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -103,9 +97,7 @@
                 return;
             }
             const subtasks = {
-                locateBatteryChargers: document.getElementById('locateBatteryChargers').checked,
                 connectFlex: document.getElementById('connectFlex').checked,
-                nearBox: document.getElementById('nearBox').checked,
                 capOffWires: document.getElementById('capOffWires').checked
             };
             db.collection('jobs').doc(jobName).set(
@@ -125,9 +117,7 @@
                 .then(doc => {
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
                         const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('locateBatteryChargers').checked = subtasks.locateBatteryChargers || false;
                         document.getElementById('connectFlex').checked = subtasks.connectFlex || false;
-                        document.getElementById('nearBox').checked = subtasks.nearBox || false;
                         document.getElementById('capOffWires').checked = subtasks.capOffWires || false;
                     }
                     updateSubtaskTracker();
