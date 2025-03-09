@@ -56,50 +56,38 @@
     <h1>120V System Subtasks</h1>
     <a href="index.html" onclick="saveSubtasks('120v_system', event)">Back to Checklist</a>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="findLocations"> Find Location of the Following Managers</span></span></label>
-            <div class="step">1. Identify and mark the locations of light poles, burner management, battery chargers, and fuel skid (total power stations).</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="findLocation"> Find Location of the Following (Cemented Poles)</span></span></label>
+            <div class="step">1. Light Pole</div>
+            <div class="step">2. Burner Management System</div>
+            <div class="step">3. Battery Chargers</div>
+            <div class="step">4. Fuel Skid Locations</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitLightPoles"> Install Conduit for Light Poles</span></span></label>
-            <div class="step">1. Install conduit from rack frame-rack to light poles.</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installRack"> Once Power Feeders Are Installed, Install Rack</span></span></label>
+            <div class="step">1. Install 1-1/4" Conduit + Boxes on Rack</div>
+            <div class="step">2. Run Conduit from Pipe Rack to Equipment Location</div>
+            <div class="step">3. Install Equipment + Conduit at Equipment Location</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitBurner"> Install Conduit for Burner Management</span></span></label>
-            <div class="step">1. Install conduit from rack frame-rack to burner management.</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduit"> Install Above Ground Conduit</span></span></label>
+            <div class="step">1. Use 3/4" Conduit</div>
+            <div class="step">2. Install Conduit from Pipe Rack to Equipment</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitBattery"> Install Conduit for Battery Chargers</span></span></label>
-            <div class="step">1. Install conduit from rack frame-rack to battery chargers.</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installCessnaFlex"> If Necessary, Install Cessna Flex</span></span></label>
+            <div class="step">1. Install Cessna Flex from Pipe Rack to Equipment</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installConduitFuel"> Install Conduit for Fuel Skid</span></span></label>
-            <div class="step">1. Install conduit from rack frame-rack to fuel skid.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="install34ConduitBoxes"> Install 3/4" Conduit Equipment Boxes</span></span></label>
-            <div class="step">1. Install 3/4" conduit equipment boxes and run conduit to the next equipment.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installSquatConduit"> Install Squat or 90 Degree Conduit</span></span></label>
-            <div class="step">1. Install squat or 90-degree conduit to the next equipment.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installNecessaryConduit"> If Necessary, Install 3/4" Conduit to Box</span></span></label>
-            <div class="step">1. Install 3/4" conduit to the box if required (box in box configuration).</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installFrontConduit"> Install Conduit From Front to Third Box</span></span></label>
-            <div class="step">1. Install conduit from the front to the third box (white, red, green).</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pullWireWRG"> Pull Wire #10 to #10 White, Red, Green</span></span></label>
-            <div class="step">1. Pull #10 to #10 wire (white, red, green) through the conduit.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="pullWireBBW"> Pull Wire #10 to #10 Black, Blue, White</span></span></label>
-            <div class="step">1. Pull #10 to #10 wire (black, blue, white) through the conduit.</div>
-        </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="shareGroundWire"> Share Rest of Equipment Ground Wire</span></span></label>
-            <div class="step">1. Share the rest of the equipment ground wire in the same conduit.</div>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="installEquipment"> Install Equipment to Box (Black, White, Red or Green)</span></span></label>
+            <div class="step">1. Pull Wire #10 to Box</div>
+            <div class="step">2. Pull Wire #10 to Equipment</div>
+            <div class="step">3. Share Rest of Equipment Wire in Same Conduit</div>
+            <div class="step">4. Share Ground Wire</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 12</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 5</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
+            apiKey: "AiSyCaH-pJVKsCnLMOYHamxNh_XMUfj41vGvU",
             authDomain: "padsitepilot.firebaseapp.com",
             projectId: "padsitepilot",
             storageBucket: "padsitepilot.firebasestorage.app",
@@ -127,18 +115,11 @@
                 return;
             }
             const subtasks = {
-                findLocations: document.getElementById('findLocations').checked,
-                installConduitLightPoles: document.getElementById('installConduitLightPoles').checked,
-                installConduitBurner: document.getElementById('installConduitBurner').checked,
-                installConduitBattery: document.getElementById('installConduitBattery').checked,
-                installConduitFuel: document.getElementById('installConduitFuel').checked,
-                install34ConduitBoxes: document.getElementById('install34ConduitBoxes').checked,
-                installSquatConduit: document.getElementById('installSquatConduit').checked,
-                installNecessaryConduit: document.getElementById('installNecessaryConduit').checked,
-                installFrontConduit: document.getElementById('installFrontConduit').checked,
-                pullWireWRG: document.getElementById('pullWireWRG').checked,
-                pullWireBBW: document.getElementById('pullWireBBW').checked,
-                shareGroundWire: document.getElementById('shareGroundWire').checked
+                findLocation: document.getElementById('findLocation').checked,
+                installRack: document.getElementById('installRack').checked,
+                installConduit: document.getElementById('installConduit').checked,
+                installCessnaFlex: document.getElementById('installCessnaFlex').checked,
+                installEquipment: document.getElementById('installEquipment').checked
             };
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtasks } },
@@ -157,18 +138,11 @@
                 .then(doc => {
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
                         const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('findLocations').checked = subtasks.findLocations || false;
-                        document.getElementById('installConduitLightPoles').checked = subtasks.installConduitLightPoles || false;
-                        document.getElementById('installConduitBurner').checked = subtasks.installConduitBurner || false;
-                        document.getElementById('installConduitBattery').checked = subtasks.installConduitBattery || false;
-                        document.getElementById('installConduitFuel').checked = subtasks.installConduitFuel || false;
-                        document.getElementById('install34ConduitBoxes').checked = subtasks.install34ConduitBoxes || false;
-                        document.getElementById('installSquatConduit').checked = subtasks.installSquatConduit || false;
-                        document.getElementById('installNecessaryConduit').checked = subtasks.installNecessaryConduit || false;
-                        document.getElementById('installFrontConduit').checked = subtasks.installFrontConduit || false;
-                        document.getElementById('pullWireWRG').checked = subtasks.pullWireWRG || false;
-                        document.getElementById('pullWireBBW').checked = subtasks.pullWireBBW || false;
-                        document.getElementById('shareGroundWire').checked = subtasks.shareGroundWire || false;
+                        document.getElementById('findLocation').checked = subtasks.findLocation || false;
+                        document.getElementById('installRack').checked = subtasks.installRack || false;
+                        document.getElementById('installConduit').checked = subtasks.installConduit || false;
+                        document.getElementById('installCessnaFlex').checked = subtasks.installCessnaFlex || false;
+                        document.getElementById('installEquipment').checked = subtasks.installEquipment || false;
                     }
                     updateSubtaskTracker();
                 })
