@@ -150,7 +150,9 @@
             const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v-system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
-                const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
+                const taskcontrols = checkbox.closest('.task-controls');
+                const naButton = taskcontrols ? taskcontrols.querySelector(`.na-button`) : null;
+                
                 if (naButton) {
                     if (taskStates.na && taskStates.na[task]) {
                         naButton.classList.add('active');
