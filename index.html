@@ -115,7 +115,7 @@
             };
             const naStates = {};
             for (let task in tasks) {
-                const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
+                const naButton = document.querySelector(`#${task}`).closest('.task-controls');.querySelector('.na-button');
                 naStates[task] = naButton ? naButton.classList.contains('active') : false;
             }
             taskStates.tasks = tasks;
