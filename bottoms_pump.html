@@ -91,7 +91,7 @@
             <div class="step">4. Terminate wires in Bottoms Pump Panel on the bottom of overload.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 10</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 9</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -126,7 +126,6 @@
             }
             const subtasks = {
                 pumpLocation: document.getElementById('pumpLocation').checked,
-                conduitInstall: document.getElementById('conduitInstall').checked,
                 flexInstall: document.getElementById('flexInstall').checked,
                 conduitCut: document.getElementById('conduitCut').checked,
                 pumpPanelHoles: document.getElementById('pumpPanelHoles').checked,
@@ -154,7 +153,6 @@
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
                         const subtasks = doc.data().subtasks[taskId];
                         document.getElementById('pumpLocation').checked = subtasks.pumpLocation || false;
-                        document.getElementById('conduitInstall').checked = subtasks.conduitInstall || false;
                         document.getElementById('flexInstall').checked = subtasks.flexInstall || false;
                         document.getElementById('conduitCut').checked = subtasks.conduitCut || false;
                         document.getElementById('pumpPanelHoles').checked = subtasks.pumpPanelHoles || false;
