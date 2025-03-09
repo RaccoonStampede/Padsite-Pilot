@@ -45,7 +45,7 @@
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="bottoms_pump"> <a href="bottoms_pump.html" onclick="saveCurrentState()">4. Bottoms Pump</a></span> <button class="na-button" onclick="toggleNA('bottoms_pump')">N/A</button></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor"> <a href="air_compressor.html" onclick="saveCurrentState()">5. Air Compressor</a></span> <button class="na-button" onclick="toggleNA('air_compressor')">N/A</button></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="salt_water_pump"> <a href="salt_water_pump.html" onclick="saveCurrentState()">6. Salt Water Pump (SWP)</a></span> <button class="na-button" onclick="toggleNA('salt_water_pump')">N/A</button></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="120v_system"> <a href="120v_system.html" onclick="saveCurrentState()">7. 120V System</a></span> <button class="na-button" onclick="toggleNA('120v_system')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="v120_system"> <a href="v120_system.html" onclick="saveCurrentState()">7. 120V System</a></span> <button class="na-button" onclick="toggleNA('v120_system')">N/A</button></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="burner_management"> <a href="burner_management.html" onclick="saveCurrentState()">8. Burner Management</a></span> <button class="na-button" onclick="toggleNA('burner_management')">N/A</button></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="battery_charger"> <a href="battery_charger.html" onclick="saveCurrentState()">9. Battery Charger</a></span> <button class="na-button" onclick="toggleNA('battery_charger')">N/A</button></span></label></li>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles"> <a href="light_poles.html" onclick="saveCurrentState()">10. Light Poles</a></span> <button class="na-button" onclick="toggleNA('light_poles')">N/A</button></span></label></li>
@@ -91,7 +91,7 @@
             }
             updateTrackers();
 
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 checkbox.addEventListener('change', saveCurrentState);
@@ -107,7 +107,7 @@
                 bottoms_pump: document.getElementById('bottoms_pump').checked,
                 air_compressor: document.getElementById('air_compressor').checked,
                 salt_water_pump: document.getElementById('salt_water_pump').checked,
-                120v_system: document.getElementById('120v_system').checked,
+                v120_system: document.getElementById('v120_system').checked,
                 burner_management: document.getElementById('burner_management').checked,
                 battery_charger: document.getElementById('battery_charger').checked,
                 light_poles: document.getElementById('light_poles').checked,
@@ -144,7 +144,7 @@
         }
 
         function updateTaskStates() {
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
@@ -163,7 +163,7 @@
         }
 
         function updateTrackers() {
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             let completed = 0, pending = 0, na = 0;
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
@@ -185,7 +185,7 @@
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
             localStorage.setItem('currentJobName', currentJobName);
 
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
@@ -248,7 +248,7 @@
         }
 
         function syncSubtaskStates() {
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
             tasks.forEach(taskId => {
                 const checkbox = document.getElementById(taskId);
                 if (taskStates.subtasks && taskStates.subtasks[taskId]) {
