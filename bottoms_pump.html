@@ -126,7 +126,7 @@
             }
             const subtasks = {
                 pumpLocation: document.getElementById('pumpLocation').checked,
-                flexInstall: document.getElementById('installUnistrut').checked,
+                installUnistrut: document.getElementById('installUnistrut').checked,
                 conduitCut: document.getElementById('conduitCut').checked,
                 pumpPanelHoles: document.getElementById('pumpPanelHoles').checked,
                 mountPanel: document.getElementById('mountPanel').checked,
@@ -153,7 +153,7 @@
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
                         const subtasks = doc.data().subtasks[taskId];
                         document.getElementById('pumpLocation').checked = subtasks.pumpLocation || false;
-                        document.getElementById('installUnistrut').checked = subtasks.flexInstall || false;
+                        document.getElementById('installUnistrut').checked = subtasks.installUnistrut || false;
                         document.getElementById('conduitCut').checked = subtasks.conduitCut || false;
                         document.getElementById('pumpPanelHoles').checked = subtasks.pumpPanelHoles || false;
                         document.getElementById('mountPanel').checked = subtasks.mountPanel || false;
