@@ -91,7 +91,7 @@
             }
             updateTrackers();
 
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 checkbox.addEventListener('change', saveCurrentState);
@@ -144,7 +144,7 @@
         }
 
         function updateTaskStates() {
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
@@ -163,7 +163,7 @@
         }
 
         function updateTrackers() {
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             let completed = 0, pending = 0, na = 0;
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
@@ -185,7 +185,7 @@
             document.getElementById('currentJobName').textContent = `Current Job: ${currentJobName}`;
             localStorage.setItem('currentJobName', currentJobName);
 
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
@@ -248,7 +248,7 @@
         }
 
         function syncSubtaskStates() {
-            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_charger', 'light_poles', 'fuel_skid'];
+            const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', '120v_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(taskId => {
                 const checkbox = document.getElementById(taskId);
                 if (taskStates.subtasks && taskStates.subtasks[taskId]) {
