@@ -54,7 +54,7 @@
 </head>
 <body>
     <h1>120V System Subtasks</h1>
-    <a href="index.html" onclick="saveSubtasks('120v_system', event)">Back to Checklist</a>
+    <a href="index.html" onclick="saveSubtasks('120v-system', event)">Back to Checklist</a>
     <ul>
         <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="findLocation"> Find Location of the Following (Cemented Poles)</span></span></label>
             <div class="step">1. Light Pole</div>
@@ -102,7 +102,7 @@
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
-                loadSubtasks(jobName, '120v_system');
+                loadSubtasks(jobName, '120v-system');
             }
             updateSubtaskTracker();
         });
