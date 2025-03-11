@@ -28,6 +28,7 @@
         }
         .task-controls { 
             display: flex; 
+            justify-content: space-between; 
             align-items: center; 
         }
         .task-left { 
@@ -50,18 +51,30 @@
         a:hover { 
             text-decoration: underline; 
         }
+        button { 
+            padding: 5px 8px; 
+            font-size: 0.8em; 
+            background-color: #ff4444; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px; 
+        }
+        button.active { 
+            background-color: #00cc00; 
+        }
     </style>
 </head>
 <body>
     <h1>Air Compressor Subtasks</h1>
     <a href="index.html" onclick="saveSubtasks('air_compressor', event)">Back to Checklist</a>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task1"> Install 3/4" conduit from power panel rack to disconnect on air compressor skid.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task2"> Install 3/4" flex from the end of conduit to the bottom of disconnect on skid.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task3"> Pull wire (#8/#8/#8/#10 THHN) from power panel rack to disconnect on air compressor skid.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task4"> Terminate wires on top side of disconnect on air compressor skid.</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task1"> Install 3/4" conduit from power panel rack to disconnect on air compressor skid.</span> <button class="na-button" onclick="toggleNA('air_compressor_task1')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task2"> Install 3/4" flex from the end of conduit to the bottom of disconnect on skid.</span> <button class="na-button" onclick="toggleNA('air_compressor_task2')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task3"> Pull wire (#8/#8/#8/#10 THHN) from power panel rack to disconnect on air compressor skid.</span> <button class="na-button" onclick="toggleNA('air_compressor_task3')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="air_compressor_task4"> Terminate wires on top side of disconnect on air compressor skid.</span> <button class="na-button" onclick="toggleNA('air_compressor_task4')">N/A</button></span></label></li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 4</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 4, N/A: 0</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -79,16 +92,22 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        let subtaskStates = {};
+
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
                 loadSubtasks(jobName, 'air_compressor');
             }
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => saveSubtasks('air_compressor'));
+            });
             updateSubtaskTracker();
         });
 
         function saveSubtasks(taskId, event) {
-            event.preventDefault(); // Prevent default navigation
+            if (event) event.preventDefault();
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -100,13 +119,20 @@
                 air_compressor_task3: document.getElementById('air_compressor_task3').checked,
                 air_compressor_task4: document.getElementById('air_compressor_task4').checked
             };
+            const naStates = {
+                air_compressor_task1: document.querySelector('#air_compressor_task1').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                air_compressor_task2: document.querySelector('#air_compressor_task2').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                air_compressor_task3: document.querySelector('#air_compressor_task3').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                air_compressor_task4: document.querySelector('#air_compressor_task4').closest('.task-controls').querySelector('.na-button').classList.contains('active')
+            };
+            subtaskStates = { checked: subtasks, na: naStates };
             db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
+                { subtasks: { [taskId]: subtaskStates } },
                 { merge: true }
             ).then(() => {
                 console.log(`Subtasks for ${taskId} saved to Firestore`);
                 updateSubtaskTracker();
-                window.location.href = 'index.html'; // Navigate after save
+                if (event) window.location.href = 'index.html';
             }).catch(error => {
                 console.error('Error saving subtasks:', error);
             });
@@ -116,25 +142,53 @@
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('air_compressor_task1').checked = subtasks.air_compressor_task1 || false;
-                        document.getElementById('air_compressor_task2').checked = subtasks.air_compressor_task2 || false;
-                        document.getElementById('air_compressor_task3').checked = subtasks.air_compressor_task3 || false;
-                        document.getElementById('air_compressor_task4').checked = subtasks.air_compressor_task4 || false;
+                        subtaskStates = doc.data().subtasks[taskId];
+                        const subtasks = subtaskStates.checked || {};
+                        const naStates = subtaskStates.na || {};
+                        ['air_compressor_task1', 'air_compressor_task2', 'air_compressor_task3', 'air_compressor_task4'].forEach(id => {
+                            const checkbox = document.getElementById(id);
+                            const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                            checkbox.checked = subtasks[id] || false;
+                            if (naStates[id]) {
+                                naButton.classList.add('active');
+                                checkbox.disabled = true;
+                                checkbox.checked = false;
+                            } else {
+                                naButton.classList.remove('active');
+                                checkbox.disabled = false;
+                            }
+                        });
                     }
                     updateSubtaskTracker();
                 })
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        function toggleNA(taskId) {
+            const naButton = document.querySelector(`#${taskId}`).closest('.task-controls').querySelector('.na-button');
+            const checkbox = document.getElementById(taskId);
+            if (naButton) {
+                naButton.classList.toggle('active');
+                if (naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+                saveSubtasks('air_compressor');
+            }
+        }
+
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            let completed = 0, pending = 0;
+            let completed = 0, pending = 0, na = 0;
             checkboxes.forEach(checkbox => {
-                if (checkbox.checked) completed++;
+                const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                if (naButton.classList.contains('active')) na++;
+                else if (checkbox.checked) completed++;
                 else pending++;
             });
-            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
         }
     </script>
 </body>
