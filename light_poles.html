@@ -28,6 +28,7 @@
         }
         .task-controls { 
             display: flex; 
+            justify-content: space-between; 
             align-items: center; 
         }
         .task-left { 
@@ -50,20 +51,32 @@
         a:hover { 
             text-decoration: underline; 
         }
+        button { 
+            padding: 5px 8px; 
+            font-size: 0.8em; 
+            background-color: #ff4444; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px; 
+        }
+        button.active { 
+            background-color: #00cc00; 
+        }
     </style>
 </head>
 <body>
     <h1>Light Poles Subtasks</h1>
     <a href="index.html" onclick="saveSubtasks('light_poles', event)">Back to Checklist</a>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task1"> Build light horns - Use Man Lift to mount light horns on light poles with appropriate tools</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task2"> Drill 1/2" to 3/4" hole in light pole at 48" from ground, push fishtape up light pole and wait for person on lift to feed wire back through hole</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task3"> Build switch and receptacle boxes: use 2 bell boxes with 3/4" holes, connect both boxes with 3/4" x 3" nipple, install photocell with 3/4" x 1/2" reducer on top of bell box, connect 3/4" flex on bottom of bell box, use a 3/4" blank (comes with box) on the back of bottom box</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task4"> Mount bell box over hole drilled on light pole using self-tappers, align with the hole in back of top bell box, use self-tappers</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task5"> Terminate wires from 3/4" flex to make pig tails to split circuit to both bell boxes, install GFCI in bottom box and terminate pig tails on line side of GFCI, install clear in-use cover over GFCI, install weatherproof toggle switch in top box by terminating black wire from pigtail with black wire from photocell and terminate on 1 switch screw</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task6"> Terminate black wire from light pole with red wire from photocell and terminate on remaining switch screw, connect grounds together and terminate, terminate white neutrals together, install switch to box and install weatherproof cover</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task1"> Build light horns - Use Man Lift to mount light horns on light poles with appropriate tools</span> <button class="na-button" onclick="toggleNA('light_poles_task1')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task2"> Drill 1/2" to 3/4" hole in light pole at 48" from ground, push fishtape up light pole and wait for person on lift to feed wire back through hole</span> <button class="na-button" onclick="toggleNA('light_poles_task2')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task3"> Build switch and receptacle boxes: use 2 bell boxes with 3/4" holes, connect both boxes with 3/4" x 3" nipple, install photocell with 3/4" x 1/2" reducer on top of bell box, connect 3/4" flex on bottom of bell box, use a 3/4" blank (comes with box) on the back of bottom box</span> <button class="na-button" onclick="toggleNA('light_poles_task3')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task4"> Mount bell box over hole drilled on light pole using self-tappers, align with the hole in back of top bell box, use self-tappers</span> <button class="na-button" onclick="toggleNA('light_poles_task4')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task5"> Terminate wires from 3/4" flex to make pig tails to split circuit to both bell boxes, install GFCI in bottom box and terminate pig tails on line side of GFCI, install clear in-use cover over GFCI, install weatherproof toggle switch in top box by terminating black wire from pigtail with black wire from photocell and terminate on 1 switch screw</span> <button class="na-button" onclick="toggleNA('light_poles_task5')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="light_poles_task6"> Terminate black wire from light pole with red wire from photocell and terminate on remaining switch screw, connect grounds together and terminate, terminate white neutrals together, install switch to box and install weatherproof cover</span> <button class="na-button" onclick="toggleNA('light_poles_task6')">N/A</button></span></label></li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 6</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 6, N/A: 0</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -81,16 +94,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        let subtaskStates = {};
+
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
                 loadSubtasks(jobName, 'light_poles');
             }
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    saveSubtasks('light_poles');
+                    const allComplete = Array.from(checkboxes).every(cb => 
+                        cb.checked || cb.closest('.task-controls').querySelector('.na-button').classList.contains('active')
+                    );
+                    localStorage.setItem('light_poles_complete', allComplete);
+                });
+            });
             updateSubtaskTracker();
         });
 
         function saveSubtasks(taskId, event) {
-            event.preventDefault(); // Prevent default navigation
+            if (event) event.preventDefault();
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -104,13 +129,35 @@
                 light_poles_task5: document.getElementById('light_poles_task5').checked,
                 light_poles_task6: document.getElementById('light_poles_task6').checked
             };
+            const naStates = {
+                light_poles_task1: document.querySelector('#light_poles_task1').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                light_poles_task2: document.querySelector('#light_poles_task2').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                light_poles_task3: document.querySelector('#light_poles_task3').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                light_poles_task4: document.querySelector('#light_poles_task4').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                light_poles_task5: document.querySelector('#light_poles_task5').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                light_poles_task6: document.querySelector('#light_poles_task6').closest('.task-controls').querySelector('.na-button').classList.contains('active')
+            };
+            
+            const allTasksComplete = Object.keys(subtasks).every(key => 
+                subtasks[key] || naStates[key]
+            );
+
+            subtaskStates = { 
+                checked: subtasks, 
+                na: naStates,
+                allComplete: allTasksComplete
+            };
+            
             db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
+                { subtasks: { [taskId]: subtaskStates } },
                 { merge: true }
             ).then(() => {
                 console.log(`Subtasks for ${taskId} saved to Firestore`);
                 updateSubtaskTracker();
-                window.location.href = 'index.html'; // Navigate after save
+                if (event) {
+                    localStorage.setItem(`${taskId}_complete`, allTasksComplete);
+                    window.location.href = 'index.html';
+                }
             }).catch(error => {
                 console.error('Error saving subtasks:', error);
             });
@@ -120,27 +167,53 @@
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('light_poles_task1').checked = subtasks.light_poles_task1 || false;
-                        document.getElementById('light_poles_task2').checked = subtasks.light_poles_task2 || false;
-                        document.getElementById('light_poles_task3').checked = subtasks.light_poles_task3 || false;
-                        document.getElementById('light_poles_task4').checked = subtasks.light_poles_task4 || false;
-                        document.getElementById('light_poles_task5').checked = subtasks.light_poles_task5 || false;
-                        document.getElementById('light_poles_task6').checked = subtasks.light_poles_task6 || false;
+                        subtaskStates = doc.data().subtasks[taskId];
+                        const subtasks = subtaskStates.checked || {};
+                        const naStates = subtaskStates.na || {};
+                        ['light_poles_task1', 'light_poles_task2', 'light_poles_task3', 'light_poles_task4', 'light_poles_task5', 'light_poles_task6'].forEach(id => {
+                            const checkbox = document.getElementById(id);
+                            const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                            checkbox.checked = subtasks[id] || false;
+                            if (naStates[id]) {
+                                naButton.classList.add('active');
+                                checkbox.disabled = true;
+                                checkbox.checked = false;
+                            } else {
+                                naButton.classList.remove('active');
+                                checkbox.disabled = false;
+                            }
+                        });
                     }
                     updateSubtaskTracker();
                 })
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        function toggleNA(taskId) {
+            const naButton = document.querySelector(`#${taskId}`).closest('.task-controls').querySelector('.na-button');
+            const checkbox = document.getElementById(taskId);
+            if (naButton) {
+                naButton.classList.toggle('active');
+                if (naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+                saveSubtasks('light_poles');
+            }
+        }
+
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            let completed = 0, pending = 0;
+            let completed = 0, pending = 0, na = 0;
             checkboxes.forEach(checkbox => {
-                if (checkbox.checked) completed++;
+                const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                if (naButton.classList.contains('active')) na++;
+                else if (checkbox.checked) completed++;
                 else pending++;
             });
-            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
         }
     </script>
 </body>
