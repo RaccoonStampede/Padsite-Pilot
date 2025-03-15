@@ -28,6 +28,7 @@
         }
         .task-controls { 
             display: flex; 
+            justify-content: space-between; 
             align-items: center; 
         }
         .task-left { 
@@ -50,38 +51,50 @@
         a:hover { 
             text-decoration: underline; 
         }
+        button { 
+            padding: 5px 8px; 
+            font-size: 0.8em; 
+            background-color: #ff4444; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px; 
+        }
+        button.active { 
+            background-color: #00cc00; 
+        }
     </style>
 </head>
 <body>
     <h1>Salt Water Pump Subtasks (SWP)</h1>
     <a href="index.html" onclick="saveSubtasks('salt_water_pump', event)">Back to Checklist</a>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="swpLocation"> Salt Water Pump (SWP)</span> <button class="na-button" onclick="toggleNA('swpLocation')">N/A</button></span></label>
             <div class="step">1. Identify and verify the location of the salt water pump (SWP).</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 1” Conduit</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="conduitInstall"> Install 1” Conduit</span> <button class="na-button" onclick="toggleNA('conduitInstall')">N/A</button></span></label>
             <div class="step">1. Install 1” conduit from Power Panel Rack to SWP VFD location.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToVFD"> Install 1” Flex</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToVFD"> Install 1” Flex</span> <button class="na-button" onclick="toggleNA('flexToVFD')">N/A</button></span></label>
             <div class="step">1. Install 1” flex from the end of the conduit to the VFD panel.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull"> Pull Wire</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="wirePull"> Pull Wire</span> <button class="na-button" onclick="toggleNA('wirePull')">N/A</button></span></label>
             <div class="step">1. Pull wire from Power Panel Rack to VFD panel.</div>
             <div class="step">2. Terminate wires on top side of disconnect breaker in panel.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor"> Install 1” Flex</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flexToMotor"> Install 1” Flex</span> <button class="na-button" onclick="toggleNA('flexToMotor')">N/A</button></span></label>
             <div class="step">1. Install 1” flex from VFD to SWP motor.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="motorWire"> Pull Wire</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="motorWire"> Pull Wire</span> <button class="na-button" onclick="toggleNA('motorWire')">N/A</button></span></label>
             <div class="step">1. Pull wire from VFD to pump motor.</div>
             <div class="step">2. Terminate in accordance with nameplate on motor.</div>
         </li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="vfdPanelWire"> Terminate Wires</span></span></label>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="vfdPanelWire"> Terminate Wires</span> <button class="na-button" onclick="toggleNA('vfdPanelWire')">N/A</button></span></label>
             <div class="step">1. Remove cover from the bottom of the VFD pump panel.</div>
             <div class="step">2. Terminate wires on the VFD pump panel according to specifications.</div>
         </li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 7</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 7, N/A: 0</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -99,16 +112,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        let subtaskStates = {};
+
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
                 loadSubtasks(jobName, 'salt_water_pump');
             }
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    saveSubtasks('salt_water_pump');
+                    const allComplete = Array.from(checkboxes).every(cb => 
+                        cb.checked || cb.closest('.task-controls').querySelector('.na-button').classList.contains('active')
+                    );
+                    localStorage.setItem('salt_water_pump_complete', allComplete);
+                });
+            });
             updateSubtaskTracker();
         });
 
         function saveSubtasks(taskId, event) {
-            event.preventDefault(); // Prevent default navigation
+            if (event) event.preventDefault();
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -123,13 +148,36 @@
                 motorWire: document.getElementById('motorWire').checked,
                 vfdPanelWire: document.getElementById('vfdPanelWire').checked
             };
+            const naStates = {
+                swpLocation: document.querySelector('#swpLocation').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                conduitInstall: document.querySelector('#conduitInstall').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flexToVFD: document.querySelector('#flexToVFD').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                wirePull: document.querySelector('#wirePull').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flexToMotor: document.querySelector('#flexToMotor').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                motorWire: document.querySelector('#motorWire').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                vfdPanelWire: document.querySelector('#vfdPanelWire').closest('.task-controls').querySelector('.na-button').classList.contains('active')
+            };
+            
+            const allTasksComplete = Object.keys(subtasks).every(key => 
+                subtasks[key] || naStates[key]
+            );
+
+            subtaskStates = { 
+                checked: subtasks, 
+                na: naStates,
+                allComplete: allTasksComplete
+            };
+            
             db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
+                { subtasks: { [taskId]: subtaskStates } },
                 { merge: true }
             ).then(() => {
                 console.log(`Subtasks for ${taskId} saved to Firestore`);
                 updateSubtaskTracker();
-                window.location.href = 'index.html'; // Navigate after save
+                if (event) {
+                    localStorage.setItem(`${taskId}_complete`, allTasksComplete);
+                    window.location.href = 'index.html';
+                }
             }).catch(error => {
                 console.error('Error saving subtasks:', error);
             });
@@ -139,28 +187,53 @@
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('swpLocation').checked = subtasks.swpLocation || false;
-                        document.getElementById('conduitInstall').checked = subtasks.conduitInstall || false;
-                        document.getElementById('flexToVFD').checked = subtasks.flexToVFD || false;
-                        document.getElementById('wirePull').checked = subtasks.wirePull || false;
-                        document.getElementById('flexToMotor').checked = subtasks.flexToMotor || false;
-                        document.getElementById('motorWire').checked = subtasks.motorWire || false;
-                        document.getElementById('vfdPanelWire').checked = subtasks.vfdPanelWire || false;
+                        subtaskStates = doc.data().subtasks[taskId];
+                        const subtasks = subtaskStates.checked || {};
+                        const naStates = subtaskStates.na || {};
+                        ['swpLocation', 'conduitInstall', 'flexToVFD', 'wirePull', 'flexToMotor', 'motorWire', 'vfdPanelWire'].forEach(id => {
+                            const checkbox = document.getElementById(id);
+                            const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                            checkbox.checked = subtasks[id] || false;
+                            if (naStates[id]) {
+                                naButton.classList.add('active');
+                                checkbox.disabled = true;
+                                checkbox.checked = false;
+                            } else {
+                                naButton.classList.remove('active');
+                                checkbox.disabled = false;
+                            }
+                        });
                     }
                     updateSubtaskTracker();
                 })
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        function toggleNA(taskId) {
+            const naButton = document.querySelector(`#${taskId}`).closest('.task-controls').querySelector('.na-button');
+            const checkbox = document.getElementById(taskId);
+            if (naButton) {
+                naButton.classList.toggle('active');
+                if (naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+                saveSubtasks('salt_water_pump');
+            }
+        }
+
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            let completed = 0, pending = 0;
+            let completed = 0, pending = 0, na = 0;
             checkboxes.forEach(checkbox => {
-                if (checkbox.checked) completed++;
+                const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                if (naButton.classList.contains('active')) na++;
+                else if (checkbox.checked) completed++;
                 else pending++;
             });
-            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
         }
     </script>
 </body>
