@@ -94,7 +94,12 @@
             const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
-                checkbox.addEventListener('change', saveCurrentState);
+                checkbox.addEventListener('change', () => {
+                    if (!checkbox.checked) {
+                        localStorage.setItem(`${task}_complete`, 'false');
+                    }
+                    saveCurrentState();
+                });
             });
         });
 
@@ -192,6 +197,7 @@
                 checkbox.checked = false;
                 checkbox.disabled = false;
                 if (naButton) naButton.classList.remove('active');
+                localStorage.setItem(`${task}_complete`, 'false');
             });
 
             taskStates = { tasks: {}, na: {}, subtasks: {} };
@@ -242,6 +248,8 @@
                         updateTrackers();
                     } else {
                         taskStates = { tasks: {}, na: {}, subtasks: {} };
+                        syncSubtaskStates();
+                        updateTrackers();
                     }
                 })
                 .catch(error => console.error('Error loading job:', error));
@@ -251,13 +259,36 @@
             const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
             tasks.forEach(taskId => {
                 const checkbox = document.getElementById(taskId);
+                const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                
+                const localComplete = localStorage.getItem(`${taskId}_complete`) === 'true';
+                
                 if (taskStates.subtasks && taskStates.subtasks[taskId]) {
                     const subtaskData = taskStates.subtasks[taskId];
-                    const allSubtasksComplete = Object.values(subtaskData).every(state => state === true);
-                    if (checkbox && allSubtasksComplete && !taskStates.na[taskId]) {
+                    const allSubtasksComplete = subtaskData.allComplete || 
+                        (subtaskData.checked && subtaskData.na && 
+                         Object.keys(subtaskData.checked).every(key => 
+                             subtaskData.checked[key] || subtaskData.na[key]
+                         ));
+                    
+                    if (checkbox && (allSubtasksComplete || localComplete) && !taskStates.na[taskId]) {
                         checkbox.checked = true;
                         taskStates.tasks[taskId] = true;
+                    } else if (!taskStates.tasks[taskId] && !taskStates.na[taskId]) {
+                        checkbox.checked = false;
                     }
+                } else if (localComplete && !taskStates.na[taskId]) {
+                    checkbox.checked = true;
+                    taskStates.tasks[taskId] = true;
+                }
+                
+                if (taskStates.na && taskStates.na[taskId]) {
+                    naButton.classList.add('active');
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    naButton.classList.remove('active');
+                    checkbox.disabled = false;
                 }
             });
             saveCurrentState();
