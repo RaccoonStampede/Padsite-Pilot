@@ -21,16 +21,47 @@
         .checklist li { margin: 20px 0; position: relative; }
         a { text-decoration: none; color: #00ccff; }
         a:hover { text-decoration: underline; }
-        button { padding: 5px 8px; font-size: 0.8em; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 3px; }
+        button { 
+            padding: 5px 8px; 
+            font-size: 0.8em; 
+            background-color: #ff4444; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px; 
+        }
         button.active { background-color: #00cc00; }
+        button.control-btn { 
+            margin: 5px; 
+            padding: 8px 12px; 
+            font-size: 1em; 
+        }
         input[type="checkbox"] { 
             transform: scale(1.5); 
             margin-right: 10px; 
             vertical-align: middle;
         }
-        .task-controls { display: flex; justify-content: space-between; align-items: center; }
-        .task-left { display: flex; align-items: center; gap: 10px; }
-        .task-tracker { margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; font-size: 1em; color: #ffffff; }
+        .task-controls { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 5px; 
+            border-radius: 5px; 
+        }
+        .task-controls.completed { background-color: rgba(0, 204, 0, 0.2); }
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .task-tracker { 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 5px; 
+            font-size: 1em; 
+            color: #ffffff; 
+        }
     </style>
 </head>
 <body>
@@ -54,9 +85,10 @@
 
     <div class="task-tracker" id="main-task-tracker">Loading main tasks...</div>
 
-    <button onclick="newJob()">New Job</button>
-    <button onclick="saveJob()">Save Job Progress</button>
-    <button onclick="saveCurrentState(); window.location.href='saved-jobs.html'">View Saved Jobs</button>
+    <button class="control-btn" onclick="newJob()">New Job</button>
+    <button class="control-btn" onclick="saveJob()">Save Job Progress</button>
+    <button class="control-btn" onclick="saveCurrentState(); window.location.href='saved-jobs.html'">View Saved Jobs</button>
+    <button class="control-btn" onclick="resetAll()">Reset All Tasks</button>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -153,6 +185,7 @@
             tasks.forEach(task => {
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
+                const taskControls = checkbox.closest('.task-controls');
                 if (naButton) {
                     if (taskStates.na && taskStates.na[task]) {
                         naButton.classList.add('active');
@@ -163,6 +196,7 @@
                         checkbox.disabled = false;
                         checkbox.checked = taskStates.tasks[task] || false;
                     }
+                    taskControls.classList.toggle('completed', checkbox.checked || localStorage.getItem(`${task}_complete`) === 'true');
                 }
             });
         }
@@ -174,7 +208,7 @@
                 const checkbox = document.getElementById(task);
                 const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
                 if (naButton && naButton.classList.contains('active')) na++;
-                else if (checkbox.checked) completed++;
+                else if (checkbox.checked || localStorage.getItem(`${task}_complete`) === 'true') completed++;
                 else pending++;
             });
             document.getElementById('main-task-tracker').textContent = `Main Tasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
@@ -260,6 +294,7 @@
             tasks.forEach(taskId => {
                 const checkbox = document.getElementById(taskId);
                 const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                const taskControls = checkbox.closest('.task-controls');
                 
                 const localComplete = localStorage.getItem(`${taskId}_complete`) === 'true';
                 
@@ -274,24 +309,58 @@
                     if (checkbox && (allSubtasksComplete || localComplete) && !taskStates.na[taskId]) {
                         checkbox.checked = true;
                         taskStates.tasks[taskId] = true;
+                        taskControls.classList.add('completed');
                     } else if (!taskStates.tasks[taskId] && !taskStates.na[taskId]) {
                         checkbox.checked = false;
+                        taskControls.classList.remove('completed');
                     }
                 } else if (localComplete && !taskStates.na[taskId]) {
                     checkbox.checked = true;
                     taskStates.tasks[taskId] = true;
+                    taskControls.classList.add('completed');
+                } else {
+                    taskControls.classList.remove('completed');
                 }
                 
                 if (taskStates.na && taskStates.na[taskId]) {
                     naButton.classList.add('active');
                     checkbox.disabled = true;
                     checkbox.checked = false;
+                    taskControls.classList.remove('completed');
                 } else {
                     naButton.classList.remove('active');
                     checkbox.disabled = false;
                 }
             });
             saveCurrentState();
+        }
+
+        function resetAll() {
+            if (!currentJobName) {
+                alert('No current job to reset!');
+                return;
+            }
+            if (confirm('Are you sure you want to reset all tasks for this job? This will clear all progress.')) {
+                const tasks = ['power_distribution_rack', 'locate_equipment', 'flare', 'bottoms_pump', 'air_compressor', 'salt_water_pump', 'v120_system', 'burner_management', 'battery_chargers', 'light_poles', 'fuel_skid'];
+                tasks.forEach(task => {
+                    const checkbox = document.getElementById(task);
+                    const naButton = document.querySelector(`#${task}`).closest('.task-controls')?.querySelector('.na-button');
+                    const taskControls = checkbox.closest('.task-controls');
+                    checkbox.checked = false;
+                    checkbox.disabled = false;
+                    if (naButton) naButton.classList.remove('active');
+                    localStorage.setItem(`${task}_complete`, 'false');
+                    taskControls.classList.remove('completed');
+                });
+                taskStates = { tasks: {}, na: {}, subtasks: {} };
+                db.collection('jobs').doc(currentJobName).set(taskStates)
+                    .then(() => {
+                        console.log('Job reset in Firestore');
+                        updateTrackers();
+                        alert('All tasks have been reset!');
+                    })
+                    .catch(error => console.error('Error resetting job:', error));
+            }
         }
     </script>
 </body>
