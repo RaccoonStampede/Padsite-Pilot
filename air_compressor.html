@@ -101,7 +101,13 @@
             }
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => saveSubtasks('air_compressor'));
+                checkbox.addEventListener('change', () => {
+                    saveSubtasks('air_compressor');
+                    const allComplete = Array.from(checkboxes).every(cb => 
+                        cb.checked || cb.closest('.task-controls').querySelector('.na-button').classList.contains('active')
+                    );
+                    localStorage.setItem('air_compressor_complete', allComplete);
+                });
             });
             updateSubtaskTracker();
         });
@@ -125,14 +131,27 @@
                 air_compressor_task3: document.querySelector('#air_compressor_task3').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
                 air_compressor_task4: document.querySelector('#air_compressor_task4').closest('.task-controls').querySelector('.na-button').classList.contains('active')
             };
-            subtaskStates = { checked: subtasks, na: naStates };
+            
+            const allTasksComplete = Object.keys(subtasks).every(key => 
+                subtasks[key] || naStates[key]
+            );
+
+            subtaskStates = { 
+                checked: subtasks, 
+                na: naStates,
+                allComplete: allTasksComplete
+            };
+            
             db.collection('jobs').doc(jobName).set(
                 { subtasks: { [taskId]: subtaskStates } },
                 { merge: true }
             ).then(() => {
                 console.log(`Subtasks for ${taskId} saved to Firestore`);
                 updateSubtaskTracker();
-                if (event) window.location.href = 'index.html';
+                if (event) {
+                    localStorage.setItem(`${taskId}_complete`, allTasksComplete);
+                    window.location.href = 'index.html';
+                }
             }).catch(error => {
                 console.error('Error saving subtasks:', error);
             });
