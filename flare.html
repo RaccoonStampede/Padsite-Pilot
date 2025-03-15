@@ -28,6 +28,7 @@
         }
         .task-controls { 
             display: flex; 
+            justify-content: space-between; 
             align-items: center; 
         }
         .task-left { 
@@ -50,30 +51,42 @@
         a:hover { 
             text-decoration: underline; 
         }
+        button { 
+            padding: 5px 8px; 
+            font-size: 0.8em; 
+            background-color: #ff4444; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px; 
+        }
+        button.active { 
+            background-color: #00cc00; 
+        }
     </style>
 </head>
 <body>
     <h1>Flare Subtasks</h1>
     <a href="index.html" onclick="saveSubtasks('flare', event)">Back to Checklist</a>
     <ul>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task1"> New location: Flare located at far end of most pad sites</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task2"> Install 3/4" conduit on rack from Power Panel Rack to location of flare VFD panel, install a GUAT box on conduit and continue conduit run to the end of pipe rack that stops right at flare stack.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task3"> Install 3/4" flex from GUAT box to Flare VFD panel.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task4"> Install 3/4" flex from end of conduit run to flare blower motor.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task5"> Pull wire #10 THHN (Brown, Orange, Yellow, Green) from Power Panel Rack to GUAT box and into Flare VFD panel.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task6"> Pull wire from flare panel to flare blower motor and terminate in accordance with the nameplate on motor.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task7"> Terminating wires: Flare VFD panel wires (coming from Power Panel Rack) will terminate on top side of breaker inside VFD.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task8"> Blower motor wires will terminate on the drive inside panel, will have to remove covers to access.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task1"> Igniter control box (red plastic box) usually mounted on or near flare VFD panel.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task2"> Install 3/4" flex from VFD panel to igniter panel.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task3"> Pull wire #10 THHN (Black, White, Green) from VFD panel to igniter panel</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task4"> For VFD panel wires terminate on low voltage control transformer, igniter panel wires terminate on power supply terminals marked L1, N, ground.</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task5"> Igniters come pre-wired on flare stack</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task6"> Open round J-box and check wiring, colors (Red/Yellow tied to —/—, Black/White tied to —/—)</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task7"> Run cable down conduit from Flare to Igniter control panel and install into panel</span></span></label></li>
-        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task8"> Terminate wires to green blocks on the inside of door panel labelled (Igniter, Temperature) match colors with cable terminations in J-box on flare stack</span></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task1"> New location: Flare located at far end of most pad sites</span> <button class="na-button" onclick="toggleNA('flare_task1')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task2"> Install 3/4" conduit on rack from Power Panel Rack to location of flare VFD panel, install a GUAT box on conduit and continue conduit run to the end of pipe rack that stops right at flare stack.</span> <button class="na-button" onclick="toggleNA('flare_task2')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task3"> Install 3/4" flex from GUAT box to Flare VFD panel.</span> <button class="na-button" onclick="toggleNA('flare_task3')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task4"> Install 3/4" flex from end of conduit run to flare blower motor.</span> <button class="na-button" onclick="toggleNA('flare_task4')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task5"> Pull wire #10 THHN (Brown, Orange, Yellow, Green) from Power Panel Rack to GUAT box and into Flare VFD panel.</span> <button class="na-button" onclick="toggleNA('flare_task5')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task6"> Pull wire from flare panel to flare blower motor and terminate in accordance with the nameplate on motor.</span> <button class="na-button" onclick="toggleNA('flare_task6')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task7"> Terminating wires: Flare VFD panel wires (coming from Power Panel Rack) will terminate on top side of breaker inside VFD.</span> <button class="na-button" onclick="toggleNA('flare_task7')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="flare_task8"> Blower motor wires will terminate on the drive inside panel, will have to remove covers to access.</span> <button class="na-button" onclick="toggleNA('flare_task8')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task1"> Igniter control box (red plastic box) usually mounted on or near flare VFD panel.</span> <button class="na-button" onclick="toggleNA('igniter_task1')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task2"> Install 3/4" flex from VFD panel to igniter panel.</span> <button class="na-button" onclick="toggleNA('igniter_task2')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task3"> Pull wire #10 THHN (Black, White, Green) from VFD panel to igniter panel</span> <button class="na-button" onclick="toggleNA('igniter_task3')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task4"> For VFD panel wires terminate on low voltage control transformer, igniter panel wires terminate on power supply terminals marked L1, N, ground.</span> <button class="na-button" onclick="toggleNA('igniter_task4')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task5"> Igniters come pre-wired on flare stack</span> <button class="na-button" onclick="toggleNA('igniter_task5')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task6"> Open round J-box and check wiring, colors (Red/Yellow tied to —/—, Black/White tied to —/—)</span> <button class="na-button" onclick="toggleNA('igniter_task6')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task7"> Run cable down conduit from Flare to Igniter control panel and install into panel</span> <button class="na-button" onclick="toggleNA('igniter_task7')">N/A</button></span></label></li>
+        <li><label><span class="task-controls"><span class="task-left"><input type="checkbox" id="igniter_task8"> Terminate wires to green blocks on the inside of door panel labelled (Igniter, Temperature) match colors with cable terminations in J-box on flare stack</span> <button class="na-button" onclick="toggleNA('igniter_task8')">N/A</button></span></label></li>
     </ul>
-    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 16</div>
+    <div class="subtask-tracker" id="subtask-tracker">Subtasks - Completed: 0, Pending: 16, N/A: 0</div>
 
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
@@ -91,16 +104,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        let subtaskStates = {};
+
         window.addEventListener('load', function() {
             const jobName = localStorage.getItem('currentJobName');
             if (jobName) {
                 loadSubtasks(jobName, 'flare');
             }
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    saveSubtasks('flare');
+                    const allComplete = Array.from(checkboxes).every(cb => 
+                        cb.checked || cb.closest('.task-controls').querySelector('.na-button').classList.contains('active')
+                    );
+                    localStorage.setItem('flare_complete', allComplete);
+                });
+            });
             updateSubtaskTracker();
         });
 
         function saveSubtasks(taskId, event) {
-            event.preventDefault(); // Prevent default navigation
+            if (event) event.preventDefault();
             const jobName = localStorage.getItem('currentJobName');
             if (!jobName) {
                 alert('No current job selected. Please start a job on the main page.');
@@ -122,15 +147,47 @@
                 igniter_task5: document.getElementById('igniter_task5').checked,
                 igniter_task6: document.getElementById('igniter_task6').checked,
                 igniter_task7: document.getElementById('igniter_task7').checked,
-                igniter_task8: document.getElementById('igniter_task8').checked,
+                igniter_task8: document.getElementById('igniter_task8').checked
             };
+            const naStates = {
+                flare_task1: document.querySelector('#flare_task1').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task2: document.querySelector('#flare_task2').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task3: document.querySelector('#flare_task3').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task4: document.querySelector('#flare_task4').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task5: document.querySelector('#flare_task5').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task6: document.querySelector('#flare_task6').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task7: document.querySelector('#flare_task7').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                flare_task8: document.querySelector('#flare_task8').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task1: document.querySelector('#igniter_task1').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task2: document.querySelector('#igniter_task2').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task3: document.querySelector('#igniter_task3').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task4: document.querySelector('#igniter_task4').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task5: document.querySelector('#igniter_task5').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task6: document.querySelector('#igniter_task6').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task7: document.querySelector('#igniter_task7').closest('.task-controls').querySelector('.na-button').classList.contains('active'),
+                igniter_task8: document.querySelector('#igniter_task8').closest('.task-controls').querySelector('.na-button').classList.contains('active')
+            };
+            
+            const allTasksComplete = Object.keys(subtasks).every(key => 
+                subtasks[key] || naStates[key]
+            );
+
+            subtaskStates = { 
+                checked: subtasks, 
+                na: naStates,
+                allComplete: allTasksComplete
+            };
+            
             db.collection('jobs').doc(jobName).set(
-                { subtasks: { [taskId]: subtasks } },
+                { subtasks: { [taskId]: subtaskStates } },
                 { merge: true }
             ).then(() => {
                 console.log(`Subtasks for ${taskId} saved to Firestore`);
                 updateSubtaskTracker();
-                window.location.href = 'index.html'; // Navigate after save
+                if (event) {
+                    localStorage.setItem(`${taskId}_complete`, allTasksComplete);
+                    window.location.href = 'index.html';
+                }
             }).catch(error => {
                 console.error('Error saving subtasks:', error);
             });
@@ -140,37 +197,54 @@
             db.collection('jobs').doc(jobName).get()
                 .then(doc => {
                     if (doc.exists && doc.data().subtasks && doc.data().subtasks[taskId]) {
-                        const subtasks = doc.data().subtasks[taskId];
-                        document.getElementById('flare_task1').checked = subtasks.flare_task1 || false;
-                        document.getElementById('flare_task2').checked = subtasks.flare_task2 || false;
-                        document.getElementById('flare_task3').checked = subtasks.flare_task3 || false;
-                        document.getElementById('flare_task4').checked = subtasks.flare_task4 || false;
-                        document.getElementById('flare_task5').checked = subtasks.flare_task5 || false;
-                        document.getElementById('flare_task6').checked = subtasks.flare_task6 || false;
-                        document.getElementById('flare_task7').checked = subtasks.flare_task7 || false;
-                        document.getElementById('flare_task8').checked = subtasks.flare_task8 || false;
-                        document.getElementById('igniter_task1').checked = subtasks.igniter_task1 || false;
-                        document.getElementById('igniter_task2').checked = subtasks.igniter_task2 || false;
-                        document.getElementById('igniter_task3').checked = subtasks.igniter_task3 || false;
-                        document.getElementById('igniter_task4').checked = subtasks.igniter_task4 || false;
-                        document.getElementById('igniter_task5').checked = subtasks.igniter_task5 || false;
-                        document.getElementById('igniter_task6').checked = subtasks.igniter_task6 || false;
-                        document.getElementById('igniter_task7').checked = subtasks.igniter_task7 || false;
-                        document.getElementById('igniter_task8').checked = subtasks.igniter_task8 || false;
+                        subtaskStates = doc.data().subtasks[taskId];
+                        const subtasks = subtaskStates.checked || {};
+                        const naStates = subtaskStates.na || {};
+                        ['flare_task1', 'flare_task2', 'flare_task3', 'flare_task4', 'flare_task5', 'flare_task6', 'flare_task7', 'flare_task8', 
+                         'igniter_task1', 'igniter_task2', 'igniter_task3', 'igniter_task4', 'igniter_task5', 'igniter_task6', 'igniter_task7', 'igniter_task8'].forEach(id => {
+                            const checkbox = document.getElementById(id);
+                            const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                            checkbox.checked = subtasks[id] || false;
+                            if (naStates[id]) {
+                                naButton.classList.add('active');
+                                checkbox.disabled = true;
+                                checkbox.checked = false;
+                            } else {
+                                naButton.classList.remove('active');
+                                checkbox.disabled = false;
+                            }
+                        });
                     }
                     updateSubtaskTracker();
                 })
                 .catch(error => console.error('Error loading subtasks:', error));
         }
 
+        function toggleNA(taskId) {
+            const naButton = document.querySelector(`#${taskId}`).closest('.task-controls').querySelector('.na-button');
+            const checkbox = document.getElementById(taskId);
+            if (naButton) {
+                naButton.classList.toggle('active');
+                if (naButton.classList.contains('active')) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+                saveSubtasks('flare');
+            }
+        }
+
         function updateSubtaskTracker() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            let completed = 0, pending = 0;
+            let completed = 0, pending = 0, na = 0;
             checkboxes.forEach(checkbox => {
-                if (checkbox.checked) completed++;
+                const naButton = checkbox.closest('.task-controls').querySelector('.na-button');
+                if (naButton.classList.contains('active')) na++;
+                else if (checkbox.checked) completed++;
                 else pending++;
             });
-            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}`;
+            document.getElementById('subtask-tracker').textContent = `Subtasks - Completed: ${completed}, Pending: ${pending}, N/A: ${na}`;
         }
     </script>
 </body>
